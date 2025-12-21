@@ -1,7 +1,7 @@
 import { mat4 } from './glm.js';
-
 import { Transform } from './Transform.js';
 import { Camera } from './Camera.js';
+import { device } from './main.js';
 
 export function getLocalModelMatrix(node) {
     const matrix = mat4.create();
@@ -52,4 +52,26 @@ export function getRight(yaw){
         0,
         Math.sin(yaw)
     ]
+}
+
+export async function loadTexture(path) {
+    const bitmap = await fetch(path)
+        .then(r => r.blob())
+        .then(blob => createImageBitmap(blob));
+
+    const texture = device.createTexture({
+        size: [bitmap.width, bitmap.height],
+        format: 'rgba8unorm',
+        usage: GPUTextureUsage.TEXTURE_BINDING |
+               GPUTextureUsage.COPY_DST |
+               GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+
+    device.queue.copyExternalImageToTexture(
+        { source: bitmap },
+        { texture },
+        [bitmap.width, bitmap.height]
+    );
+
+    return texture;
 }

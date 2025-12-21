@@ -8,13 +8,15 @@ export class Cube extends GameObject {
         euler = [0, 0, 0],
         translation = [0, 0, 0],
         scale = [1, 1, 1],
-        name = "Cube"
+        name = "Cube",
+        texture
     } = {}){
         super({
             euler,
             translation,
             scale,
             name,
+            texture,
             update: () => {
                 const t = performance.now() / 1000;
                 const transform = this.getComponentOfType(Transform);
@@ -26,29 +28,52 @@ export class Cube extends GameObject {
     }
 
     createMesh(){
-        const r = this.textureRenderer.color[0];
-        const g = this.textureRenderer.color[1];
-        const b = this.textureRenderer.color[2];
-        const a = this.textureRenderer.color[3];
         const vertices = new Float32Array([
-            // x, y, z, w, r, g, b, a
-            -1, -1, -1,  1,      r,  g,  b,  a,   //   0
-            -1, -1,  1,  1,      r,  g,  b,  a,   //   1
-            -1,  1, -1,  1,      r,  g,  b,  a,   //   2
-            -1,  1,  1,  1,      r,  g,  b,  a,   //   3
-             1, -1, -1,  1,      r,  g,  b,  a,   //   4
-             1, -1,  1,  1,      r,  g,  b,  a,   //   5
-             1,  1, -1,  1,      r,  g,  b,  a,   //   6
-             1,  1,  1,  1,      r,  g,  b,  a,   //   7
+            // position    color   uv
+            // FRONT
+            -1, -1,  1, 1,   0, 1, 0, 1,    0, 0,
+             1, -1,  1, 1,   1, 0, 1, 1,    1, 0,
+             1,  1,  1, 1,   0, 0, 0, 1,    1, 1,
+            -1,  1,  1, 1,   1, 1, 1, 1,    0, 1,
+
+            // BACK
+             1, -1, -1, 1,   0, 1, 1, 1,    0, 0,
+            -1, -1, -1, 1,   1, 0, 0, 1,    1, 0,
+            -1,  1, -1, 1,   0, 0, 1, 1,    1, 1,
+             1,  1, -1, 1,   1, 1, 0, 1,    0, 1,
+
+            // LEFT
+            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,
+            -1, -1,  1, 1,   0, 1, 0, 1,    1, 0,
+            -1,  1,  1, 1,   1, 1, 1, 1,    1, 1,
+            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,
+
+            // RIGHT
+            1, -1,  1, 1,   1, 0, 1, 1,    0, 0,
+            1, -1, -1, 1,   0, 1, 1, 1,    1, 0,
+            1,  1, -1, 1,   1, 1, 0, 1,    1, 1,
+            1,  1,  1, 1,   0, 0, 0, 1,    0, 1,
+
+            // TOP
+            -1,  1,  1, 1,   1, 1, 1, 1,    0, 0,
+             1,  1,  1, 1,   0, 0, 0, 1,    1, 0,
+             1,  1, -1, 1,   1, 1, 0, 1,    1, 1,
+            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,
+
+            // BOTTOM
+            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,
+             1, -1, -1, 1,   0, 1, 1, 1,    1, 0,
+             1, -1,  1, 1,   1, 0, 1, 1,    1, 1,
+            -1, -1,  1, 1,   0, 1, 0, 1,    0, 1,
         ]);
 
         const indices = new Uint32Array([
-            0, 1, 2,    2, 1, 3,
-            4, 0, 6,    6, 0, 2,
-            5, 4, 7,    7, 4, 6,
-            1, 5, 3,    3, 5, 7,
-            6, 2, 7,    7, 2, 3,
-            1, 0, 5,    5, 0, 4,
+            0,  1,  2,   0,  2,  3,    // front
+            4,  5,  6,   4,  6,  7,    // back
+            8,  9, 10,   8, 10, 11,    // left
+            12, 13, 14,  12, 14, 15,   // right
+            16, 17, 18,  16, 18, 19,   // top
+            20, 21, 22,  20, 22, 23,   // bottom
         ]);
 
         const mesh = new Mesh(vertices, indices);

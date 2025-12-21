@@ -7,7 +7,8 @@ import {
     getGlobalModelMatrix,
     getGlobalViewMatrix,
     getProjectionMatrix,
-    Engine
+    Engine,
+    loadTexture
 } from './SceneUtils.js';
 
 import { GameObject } from './GameObject.js';
@@ -36,41 +37,38 @@ const depthTexture = device.createTexture({
 const code = await fetch('shader.wgsl').then(response => response.text());
 const module = device.createShaderModule({ code });
 
-// texture - vaje 4
-const imageBitmap = await fetch('bricks.png')
-    .then(response => response.blob())
-    .then(blob => createImageBitmap(blob));
+// textures
 
-const texture = device.createTexture({
-    size: [imageBitmap.width, imageBitmap.height],
-    format: 'rgba8unorm',
-    usage:
-        GPUTextureUsage.TEXTURE_BINDING |
-        GPUTextureUsage.RENDER_ATTACHMENT |
-        GPUTextureUsage.COPY_DST,
+const bricksTexture = await loadTexture(new URL('./bricks.png', import.meta.url));
+const blankTexture = await loadTexture(new URL('./blank.png', import.meta.url));
+
+export const sampler = device.createSampler({
+    minFilter: 'linear',
+    magFilter: 'linear',
 });
 
-device.queue.copyExternalImageToTexture(
-    { source: imageBitmap },
-    { texture },
-    [imageBitmap.width, imageBitmap.height]);
 
-const sampler = device.createSampler();
+
 
 
 // Create the pipeline
 const vertexBufferLayout = {
-    arrayStride: 32,
+    arrayStride: 40,
     attributes: [
         {
             shaderLocation: 0,
             offset: 0,
-            format: 'float32x4',
+            format: 'float32x4', // position
         },
         {
             shaderLocation: 1,
             offset: 16,
-            format: 'float32x4',
+            format: 'float32x4', // color
+        },
+        {
+            shaderLocation: 2,
+            offset: 32,
+            format: 'float32x2', // texcoords
         },
     ],
 };
@@ -100,8 +98,8 @@ Engine.pipeline = pipeline;
 // Create scene objects
 const scene = new Node();
 
-const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0] });
-const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 100, 0] });
+const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
+const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });
 //const cube3 = new Cube({ translation: [-1,0,0], rotationSpeed: [0.2, 0.3] });
 
 scene.addChild(cube1);

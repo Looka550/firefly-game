@@ -1,6 +1,7 @@
 import { Node } from "./Node.js";
 import { Transform } from './Transform.js';
-import { Engine } from "./SceneUtils.js"
+import { Engine } from "./SceneUtils.js";
+import { sampler } from "./main.js";
 
 export class GameObject extends Node{
     constructor({
@@ -9,6 +10,7 @@ export class GameObject extends Node{
         scale,
         name,
         update = null,
+        texture
     } = {}) {
         super();
         this.name = name;
@@ -30,6 +32,8 @@ export class GameObject extends Node{
             layout: Engine.pipeline.getBindGroupLayout(0),
             entries: [
                 { binding: 0, resource: { buffer: this.uniformBuffer } },
+                { binding: 1, resource: texture.createView() },
+                { binding: 2, resource: sampler },
             ]
         });
     }

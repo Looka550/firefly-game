@@ -1,0 +1,10 @@
+- pause
+- exit (press esc)
+- start function
+
+
+next:
+- put verex and index stuff in gameobject/cube
+- make a basic color texture renderer
+- make a function that moves one vertex
+- make grid of cubes class

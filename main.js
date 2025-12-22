@@ -14,6 +14,8 @@ import {
 import { GameObject } from './GameObject.js';
 import { Cube } from './Cube.js';
 
+import { Model } from './Model.js';
+
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
 export const device = await adapter.requestDevice();
@@ -39,8 +41,10 @@ const module = device.createShaderModule({ code });
 
 // textures
 
-const bricksTexture = await loadTexture(new URL('./bricks.png', import.meta.url));
-const blankTexture = await loadTexture(new URL('./blank.png', import.meta.url));
+const bricksTexture = await loadTexture(new URL("./bricks.png", import.meta.url));
+const blankTexture = await loadTexture(new URL("./blank.png", import.meta.url));
+const monkeyTexture = await loadTexture(new URL("./webgpu/models/monkey/base.png", import.meta.url));
+const catTexture = await loadTexture(new URL("./webgpu/models/cat/base.avif", import.meta.url));
 
 export const sampler = device.createSampler({
     minFilter: 'linear',
@@ -98,13 +102,28 @@ Engine.pipeline = pipeline;
 // Create scene objects
 const scene = new Node();
 
+
+let pathcat = "./webgpu/models/cat/cat.gltf";
+let pathmon = "./webgpu/models/monkey/monkey.gltf";
+
+const cat = new Model({ translation: [2, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: catTexture, gltfPath: pathcat });
+await cat.createMesh(pathcat);
+scene.addChild(cat);
+
+const mon = new Model({ translation: [2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: monkeyTexture, gltfPath: pathmon });
+await mon.createMesh(pathmon);
+scene.addChild(mon);
+
+const cube3 = new Cube({ translation: [-2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: bricksTexture });
+scene.addChild(cube3);
+
+
+
 const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
 const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });
-//const cube3 = new Cube({ translation: [-1,0,0], rotationSpeed: [0.2, 0.3] });
 
 scene.addChild(cube1);
 scene.addChild(cube2);
-//scene.addChild(cube3);
 
 // input
 initInput(canvas);
@@ -159,7 +178,7 @@ function render() {
     const projectionMatrix = getProjectionMatrix(camera);
 
     scene.traverse(node => {
-        if(node instanceof GameObject){
+        if(node instanceof GameObject && node.mesh){
             const modelMatrix = getGlobalModelMatrix(node);
             const matrix = mat4.create()
                 .multiply(projectionMatrix)

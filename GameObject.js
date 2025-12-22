@@ -10,7 +10,6 @@ export class GameObject extends Node{
         scale,
         name,
         update = null,
-        texture
     } = {}) {
         super();
         this.name = name;
@@ -20,22 +19,6 @@ export class GameObject extends Node{
         if(update){
             this.addComponent({ update: update });
         }
-
-        // uniform buffer
-        this.uniformBuffer = Engine.device.createBuffer({
-            size: 16 * 4, // 4x4 matrix
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // bind group
-        this.bindGroup = Engine.device.createBindGroup({
-            layout: Engine.pipeline.getBindGroupLayout(0),
-            entries: [
-                { binding: 0, resource: { buffer: this.uniformBuffer } },
-                { binding: 1, resource: texture.createView() },
-                { binding: 2, resource: sampler },
-            ]
-        });
     }
 
     get transform() {

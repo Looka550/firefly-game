@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
-    <title>Vaja 3</title>
-    <script type="module" src="main.js"></script>
-</head>
-<body>
-    <canvas width="512" height="512"></canvas>
-</body>
+    <title>Vaja 5</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "engine/": "./webgpu/engine/",
+          "dat": "./webgpu/lib/dat.js",
+          "glm": "./webgpu/lib/glm.js"
+         }
+       }
+     </script>
+     <link rel="stylesheet" href="/webgpu/engine/style.css">
+     <script type="module" src="main.js" defer></script>
+  </head>
+  <body>
+    <div class="fullscreen no-touch pixelated">
+      <canvas></canvas>
+    </div>
+  </body>
 </html>

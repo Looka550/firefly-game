@@ -15,6 +15,7 @@ import { GameObject } from './GameObject.js';
 import { Cube } from './Cube.js';
 
 import { Model } from './Model.js';
+import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -28,12 +29,17 @@ canvas.addEventListener("click", () => {
     canvas.requestPointerLock();
 });
 
+
 // Create the depth texture
-const depthTexture = device.createTexture({
-    size: [canvas.width, canvas.height],
-    format: 'depth24plus',
-    usage: GPUTextureUsage.RENDER_ATTACHMENT,
-});
+function createDepthTexture(width, height) {
+    return device.createTexture({
+        size: [width, height],
+        format: 'depth24plus',
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+}
+
+let depthTexture = createDepthTexture(canvas.width, canvas.height);
 
 // Fetch and compile shaders
 const code = await fetch('shader.wgsl').then(response => response.text());
@@ -47,8 +53,13 @@ const monkeyTexture = await loadTexture(new URL("./webgpu/models/monkey/base.png
 const catTexture = await loadTexture(new URL("./webgpu/models/cat/base.avif", import.meta.url));
 
 export const sampler = device.createSampler({
-    minFilter: 'linear',
-    magFilter: 'linear',
+    minFilter : 'linear',
+    magFilter : 'linear',
+    mipmapFilter : 'linear',
+    addressModeU : 'clamp-to-edge',
+    addressModeV : 'clamp-to-edge',
+    addressModeW : 'clamp-to-edge',
+    maxAnisotropy : 1,
 });
 
 
@@ -205,3 +216,10 @@ function frame() {
 }
 
 requestAnimationFrame(frame);
+
+// resize system
+function resize({ displaySize: { width, height }}) {
+    camera.getComponentOfType(Camera).aspect = width / height;
+    depthTexture = createDepthTexture(width, height);
+}
+new ResizeSystem({ canvas, resize }).start();

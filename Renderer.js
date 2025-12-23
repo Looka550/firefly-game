@@ -112,12 +112,24 @@ export class Renderer{
         this.scene.traverse(node => {
             if(node instanceof GameObject && node.mesh){
                 const modelMatrix = getGlobalModelMatrix(node);
-                const matrix = mat4.create()
+                const viewProjMatrix = mat4.create()
                     .multiply(projectionMatrix)
-                    .multiply(viewMatrix)
-                    .multiply(modelMatrix);
+                    .multiply(viewMatrix);
 
-                this.device.queue.writeBuffer(node.uniformBuffer, 0, matrix);
+                // write model matrix
+                this.device.queue.writeBuffer(
+                    node.modelBuffer,
+                    0,
+                    modelMatrix
+                );
+
+                // write view-projection matrix
+                this.device.queue.writeBuffer(
+                    node.viewProjBuffer,
+                    0,
+                    viewProjMatrix
+                );
+
                 renderPass.setBindGroup(0, node.bindGroup);
 
                 renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);

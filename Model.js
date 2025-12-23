@@ -29,21 +29,42 @@ export class Model extends GameObject {
         });
         this.textureRenderer = new TextureRenderer();
         
-        // uniform buffer
-        this.uniformBuffer = Engine.device.createBuffer({
-            size: 16 * 4, // 4x4 matrix
+        // model matrix
+        this.modelBuffer = Engine.device.createBuffer({
+            size: 64,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
+
+        // view-projection matrix
+        this.viewProjBuffer = Engine.device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        // light position
+        this.lightBuffer = Engine.device.createBuffer({
+            size: 16, // vec3 needs 16-byte alignment
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
 
         // bind group
         this.bindGroup = Engine.device.createBindGroup({
             layout: Engine.pipeline.getBindGroupLayout(0),
             entries: [
-                { binding: 0, resource: { buffer: this.uniformBuffer } },
-                { binding: 1, resource: texture.createView() },
-                { binding: 2, resource: sampler },
+                { binding: 0, resource: { buffer: this.modelBuffer } },
+                { binding: 1, resource: { buffer: this.viewProjBuffer } },
+                { binding: 2, resource: texture.createView() },
+                { binding: 3, resource: sampler },
+                { binding: 4, resource: { buffer: this.lightBuffer } },
             ]
         });
+
+        Engine.device.queue.writeBuffer(
+            this.lightBuffer,
+            0,
+            new Float32Array([0, 5, 0]) // example light position
+        );
     }
 
     async createMesh(path){

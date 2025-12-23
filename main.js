@@ -87,16 +87,16 @@ const mon = new Model({ translation: [2, 5, -2], scale: [1, 1, 1], euler: [0, 0,
 await mon.createMesh(pathmon);
 scene.addChild(mon);
 
-const cube3 = new Cube({ translation: [-2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: bricksTexture });
-scene.addChild(cube3);
+//const cube3 = new Cube({ translation: [-2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: bricksTexture });
+//scene.addChild(cube3);
 
 
 
-const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
-const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });
+//const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
+//const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });
 
-scene.addChild(cube1);
-scene.addChild(cube2);
+//scene.addChild(cube1);
+//scene.addChild(cube2);
 
 // input
 initInput(canvas);

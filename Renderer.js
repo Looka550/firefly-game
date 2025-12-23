@@ -28,7 +28,7 @@ export class Renderer{
 
         // Create the pipeline
         const vertexBufferLayout = {
-            arrayStride: 40,
+            arrayStride: 52,
             attributes: [
                 {
                     shaderLocation: 0,
@@ -44,6 +44,11 @@ export class Renderer{
                     shaderLocation: 2,
                     offset: 32,
                     format: 'float32x2', // texcoords
+                },
+                {
+                    shaderLocation: 3,
+                    offset: 40,
+                    format: 'float32x3', // normal
                 },
             ],
         };

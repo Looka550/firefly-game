@@ -28,7 +28,7 @@ export class Model extends GameObject {
             }
         });
         this.textureRenderer = new TextureRenderer();
-
+        
         // uniform buffer
         this.uniformBuffer = Engine.device.createBuffer({
             size: 16 * 4, // 4x4 matrix
@@ -69,7 +69,7 @@ export class Model extends GameObject {
             const mesh = primitive.mesh;
             let vertexCount = mesh.vertices.length;
 
-            vertices = new Float32Array(vertexCount * 10);
+            vertices = new Float32Array(vertexCount * 13);
             for (const v of mesh.vertices) {
                 // position
                 vertices[i++] = v.position[0];
@@ -86,12 +86,17 @@ export class Model extends GameObject {
                 // texcoords
                 vertices[i++] = v.texcoords[0];
                 vertices[i++] = v.texcoords[1];
+
+                // normal
+                vertices[i++] = v.normal[0];
+                vertices[i++] = v.normal[1];
+                vertices[i++] = v.normal[2];
             }
             indices = new Uint32Array(mesh.indices);
         });
 
         this.mesh = new Mesh(vertices, indices);
-        //console.log(vertices);
+        console.log(vertices);
         //console.log(indices);
     }
 }

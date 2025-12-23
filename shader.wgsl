@@ -42,13 +42,17 @@ fn vertex(input: VertexInput) -> VertexOutput {
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var output: FragmentOutput;
 
-    let texColor = textureSample(baseTexture, baseSampler, input.texcoords);
+    let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
 
-    let N = normalize(input.normal); // ensures length=1 after interpolation
-    let L = normalize(lightPosition - input.position); // point light
+    let N = normalize(input.normal);
+    let L = normalize(lightPosition - input.position);
+
     let lambert = max(dot(N, L), 0.0);
 
-    output.color = vec4(texColor.rgb * lambert, texColor.a);
+    let ambient = 0.15;
+    let lighting = lambert + ambient;
+
+    output.color = vec4f(materialColor.rgb * lighting, materialColor.a);
 
     return output;
 }

@@ -116,6 +116,15 @@ export class Renderer{
                     .multiply(projectionMatrix)
                     .multiply(viewMatrix);
 
+                // Compute normalMatrix = inverse(transpose(modelMatrix))
+                const normalMatrix = mat4.create();
+                mat4.copy(normalMatrix, modelMatrix);
+                mat4.invert(normalMatrix, normalMatrix);
+                mat4.transpose(normalMatrix, normalMatrix);
+
+                // write normal matrix
+                this.device.queue.writeBuffer(node.normalBuffer, 0, normalMatrix);
+
                 // write model matrix
                 this.device.queue.writeBuffer(
                     node.modelBuffer,

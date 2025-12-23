@@ -21,6 +21,7 @@ struct FragmentOutput {
 @group(0) @binding(2) var baseTexture : texture_2d<f32>;
 @group(0) @binding(3) var baseSampler : sampler;
 @group(0) @binding(4) var<uniform> lightPosition : vec3f;
+@group(0) @binding(5) var<uniform> normalMatrix : mat4x4f;
 
 @vertex
 fn vertex(input: VertexInput) -> VertexOutput {
@@ -30,7 +31,7 @@ fn vertex(input: VertexInput) -> VertexOutput {
     output.clipPosition = viewProjMatrix * worldPos;
 
     output.position = worldPos.xyz;
-    output.normal = input.normal; // normalMatrix comes next tutorial step
+    output.normal = (normalMatrix * vec4(input.normal, 0.0)).xyz; // <-- normalMatrix applied
     output.texcoords = input.texcoords;
 
     return output;
@@ -43,13 +44,11 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     let texColor = textureSample(baseTexture, baseSampler, input.texcoords);
 
-    let N = normalize(input.normal);
-    let L = normalize(lightPosition - input.position);
-
+    let N = normalize(input.normal); // ensures length=1 after interpolation
+    let L = normalize(lightPosition - input.position); // point light
     let lambert = max(dot(N, L), 0.0);
 
-
-    output.color = vec4f(texColor.rgb * lambert, texColor.a);
+    output.color = vec4(texColor.rgb * lambert, texColor.a);
 
     return output;
 }

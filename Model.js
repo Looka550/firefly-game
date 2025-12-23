@@ -47,6 +47,10 @@ export class Model extends GameObject {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
+        this.normalBuffer = Engine.device.createBuffer({
+            size: 64, // 4x4 matrix
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
 
         // bind group
         this.bindGroup = Engine.device.createBindGroup({
@@ -57,6 +61,7 @@ export class Model extends GameObject {
                 { binding: 2, resource: texture.createView() },
                 { binding: 3, resource: sampler },
                 { binding: 4, resource: { buffer: this.lightBuffer } },
+                { binding: 5, resource: { buffer: this.normalBuffer } },
             ]
         });
 

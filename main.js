@@ -29,18 +29,6 @@ canvas.addEventListener("click", () => {
     canvas.requestPointerLock();
 });
 
-
-// Create the depth texture
-function createDepthTexture(width, height) {
-    return device.createTexture({
-        size: [width, height],
-        format: 'depth24plus',
-        usage: GPUTextureUsage.RENDER_ATTACHMENT,
-    });
-}
-
-let depthTexture = createDepthTexture(canvas.width, canvas.height);
-
 // Fetch and compile shaders
 const code = await fetch('shader.wgsl').then(response => response.text());
 const module = device.createShaderModule({ code });
@@ -66,53 +54,27 @@ export const sampler = device.createSampler({
 
 
 
-// Create the pipeline
-const vertexBufferLayout = {
-    arrayStride: 40,
-    attributes: [
-        {
-            shaderLocation: 0,
-            offset: 0,
-            format: 'float32x4', // position
-        },
-        {
-            shaderLocation: 1,
-            offset: 16,
-            format: 'float32x4', // color
-        },
-        {
-            shaderLocation: 2,
-            offset: 32,
-            format: 'float32x2', // texcoords
-        },
-    ],
-};
-
-const pipeline = device.createRenderPipeline({
-    vertex: {
-        module,
-        buffers: [vertexBufferLayout],
-    },
-    fragment: {
-        module,
-        targets: [{ format }],
-    },
-    depthStencil: {
-        depthWriteEnabled: true,
-        depthCompare: 'less',
-        format: 'depth24plus',
-    },
-    layout: 'auto',
-});
-
-Engine.device = device;
-Engine.pipeline = pipeline;
-
 
 
 // Create scene objects
 const scene = new Node();
 
+const camera = new Node();
+camera.addComponent(new Camera());
+camera.addComponent(new Transform({
+    translation: [0, 0, 5]
+}));
+
+camera.addComponent({
+    update (){
+        parseInput(camera);
+    }
+})
+
+scene.addChild(camera);
+
+import { Renderer } from './Renderer.js';
+const renderer = new Renderer(device, scene, context, camera, module, format, canvas);
 
 let pathcat = "./webgpu/models/cat/cat.gltf";
 let pathmon = "./webgpu/models/monkey/monkey.gltf";
@@ -141,19 +103,6 @@ initInput(canvas);
 
 // camera
 
-const camera = new Node();
-camera.addComponent(new Camera());
-camera.addComponent(new Transform({
-    translation: [0, 0, 5]
-}));
-
-camera.addComponent({
-    update (){
-        parseInput(camera);
-    }
-})
-
-scene.addChild(camera);
 
 // Update all components
 function update() {
@@ -164,62 +113,11 @@ function update() {
     });
 }
 
-function render() {
-    // Render
-    const commandEncoder = device.createCommandEncoder();
-    const renderPass = commandEncoder.beginRenderPass({
-        colorAttachments: [{
-            view: context.getCurrentTexture().createView(),
-            loadOp: 'clear',
-            clearValue: [0.7, 0.8, 0.9, 1],
-            storeOp: 'store',
-        }],
-        depthStencilAttachment: {
-            view: depthTexture.createView(),
-            depthClearValue: 1,
-            depthLoadOp: 'clear',
-            depthStoreOp: 'discard',
-        },
-    });
-    renderPass.setPipeline(pipeline);
-
-
-    // Get the required matrices
-    const viewMatrix = getGlobalViewMatrix(camera);
-    const projectionMatrix = getProjectionMatrix(camera);
-
-    scene.traverse(node => {
-        if(node instanceof GameObject && node.mesh){
-            const modelMatrix = getGlobalModelMatrix(node);
-            const matrix = mat4.create()
-                .multiply(projectionMatrix)
-                .multiply(viewMatrix)
-                .multiply(modelMatrix);
-
-            device.queue.writeBuffer(node.uniformBuffer, 0, matrix);
-            renderPass.setBindGroup(0, node.bindGroup);
-
-            renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
-            renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
-            renderPass.drawIndexed(node.mesh.indexCount);
-        }
-    });
-
-    renderPass.end();
-    device.queue.submit([commandEncoder.finish()]);
-}
 
 function frame() {
     update();
-    render();
+    renderer.render();
     requestAnimationFrame(frame);
 }
 
 requestAnimationFrame(frame);
-
-// resize system
-function resize({ displaySize: { width, height }}) {
-    camera.getComponentOfType(Camera).aspect = width / height;
-    depthTexture = createDepthTexture(width, height);
-}
-new ResizeSystem({ canvas, resize }).start();

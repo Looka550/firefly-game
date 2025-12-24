@@ -87,7 +87,7 @@ export class Renderer{
         this.maxLights = 16;
 
         this.lightsUniformBuffer = this.device.createBuffer({
-            size: this.maxLights * 16 + 32, // 16 lights * 16 bytes + lightCount block
+            size: this.maxLights * 16 + 32, // 16 lights * 16 bytes + lightCount block // more bit najmanj 288
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -99,7 +99,18 @@ export class Renderer{
             }],
         });
 
-        this.lightsSet = false;
+        this.cameraUniformBuffer = this.device.createBuffer({
+            size: 16,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        this.cameraBindGroup = this.device.createBindGroup({
+            layout: this.pipeline.getBindGroupLayout(1),
+            entries: [{
+                binding: 0,
+                resource: { buffer: this.cameraUniformBuffer },
+            }],
+        });
 
 
     }
@@ -129,6 +140,23 @@ export class Renderer{
 
         const viewMatrix = getGlobalViewMatrix(this.camera);
         const projectionMatrix = getProjectionMatrix(this.camera);
+
+        // camera uniforms
+        const cameraMatrix = getGlobalModelMatrix(this.camera);
+        const cameraPosition = vec3.create();
+        mat4.getTranslation(cameraPosition, cameraMatrix);
+
+        this.device.queue.writeBuffer(
+            this.cameraUniformBuffer,
+            0,
+            new Float32Array([
+                cameraPosition[0],
+                cameraPosition[1],
+                cameraPosition[2],
+                0.0,
+            ])
+        );
+
 
         // --- Collect lights (max 16) ---
         const lightNodes = [];
@@ -192,6 +220,7 @@ export class Renderer{
 
                 // --- Nastavimo bind group za luč ---
                 renderPass.setBindGroup(3, this.lightsBindGroup);
+                renderPass.setBindGroup(1, this.cameraBindGroup);
 
                 renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
                 renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');

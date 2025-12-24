@@ -8,3 +8,18 @@ next:
 - make a basic color texture renderer
 - make a function that moves one vertex
 - make grid of cubes class
+
+
+lighting:
+add distance attenuation
+
+visualize light radius
+
+switch to storage buffers (100+ lights)
+
+add gamma correction (your lighting is linear right now)
+dodam Blinn–Phong (bolj stabilen)
+
+ločim diffuse / specular barvo
+
+dodam attenuation

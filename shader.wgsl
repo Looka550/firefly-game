@@ -35,6 +35,13 @@ struct LightsBlock {
 
 @group(3) @binding(0) var<uniform> lightsBlock : LightsBlock;
 
+struct CameraUniforms {
+    position : vec3f,
+    _padding : f32,
+};
+
+@group(1) @binding(0) var<uniform> camera : CameraUniforms;
+
 
 @vertex
 fn vertex(input: VertexInput) -> VertexOutput {
@@ -56,16 +63,29 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
     let N = normalize(input.normal);
+    let V = normalize(camera.position - input.position);
 
     var lighting : f32 = 0.0;
+    var specular : f32 = 0.0;
+
+    let shininess : f32 = 32.0;
 
     for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
         let light = lightsBlock.lights[i];
+
         let L = normalize(light.position - input.position);
         let lambert = max(dot(N, L), 0.0);
+
+        // ---- PHONG SPECULAR ----
+        let R = reflect(-L, N);
+        let spec = pow(max(dot(V, R), 0.0), shininess);
+
         lighting += lambert + light.ambient;
+        specular += spec;
     }
 
-    output.color = vec4f(materialColor.rgb * lighting, materialColor.a);
+    let color = materialColor.rgb * lighting + vec3f(specular);
+    output.color = vec4f(color, materialColor.a);
     return output;
 }
+

@@ -23,14 +23,16 @@ struct FragmentOutput {
 @group(0) @binding(4) var<uniform> normalMatrix : mat4x4f;
 
 struct LightUniforms {
-    position : vec3f,
-    ambient  : f32,
+    position    : vec3f,
+    ambient     : f32,
+    attenuation : f32,
+    _padding    : vec3f, // poravnava na 32 B
 };
 
 struct LightsBlock {
     lights     : array<LightUniforms, 16>,
     lightCount : u32,
-    _padding   : vec3u, // padding to 16-byte alignment
+    _padding   : vec3u,
 };
 
 @group(3) @binding(0) var<uniform> lightsBlock : LightsBlock;
@@ -65,27 +67,36 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     let N = normalize(input.normal);
     let V = normalize(camera.position - input.position);
 
-    var lighting : f32 = 0.0;
-    var specular : f32 = 0.0;
+    var diffuseSum : f32 = 0.0;
+    var specularSum : f32 = 0.0;
 
     let shininess : f32 = 32.0;
 
     for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
         let light = lightsBlock.lights[i];
 
-        let L = normalize(light.position - input.position);
+        let Lvec = light.position - input.position;
+        let distance = length(Lvec);
+        let L = normalize(Lvec);
+
+        // --- Attenuation ---
+        let attenuation = 1.0 / (1.0 + light.attenuation * distance * distance);
+
+        // --- Lambert ---
         let lambert = max(dot(N, L), 0.0);
 
-        // ---- PHONG SPECULAR ----
-        let R = reflect(-L, N);
-        let spec = pow(max(dot(V, R), 0.0), shininess);
+        // --- Blinn-Phong ---
+        let H = normalize(L + V);
+        let spec = pow(max(dot(N, H), 0.0), shininess);
 
-        lighting += lambert + light.ambient;
-        specular += spec;
+        diffuseSum += (lambert + light.ambient) * attenuation;
+        specularSum += spec * attenuation;
     }
 
-    let color = materialColor.rgb * lighting + vec3f(specular);
+    let color =
+        materialColor.rgb * diffuseSum +
+        vec3f(specularSum);
+
     output.color = vec4f(color, materialColor.a);
     return output;
 }
-

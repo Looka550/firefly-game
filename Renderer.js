@@ -87,7 +87,8 @@ export class Renderer{
         this.maxLights = 16;
 
         this.lightsUniformBuffer = this.device.createBuffer({
-            size: this.maxLights * 16 + 32, // 16 lights * 16 bytes + lightCount block // more bit najmanj 288
+            size: this.maxLights * 48 + 32, // = 784 -> zaokroženo na 800
+
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -169,7 +170,7 @@ export class Renderer{
         const lightCount = Math.min(lightNodes.length, this.maxLights);
 
         // Build CPU-side buffer
-        const lightData = new Float32Array(16 * 4); // 16 lights * vec4
+        const lightData = new Float32Array(16 * 12); // 12 floats per light
 
         for (let i = 0; i < lightCount; i++) {
             const lightNode = lightNodes[i];
@@ -179,11 +180,27 @@ export class Renderer{
             const pos = vec3.create();
             mat4.getTranslation(pos, lightMatrix);
 
-            const base = i * 4;
+            const base = i * 12;
+
+            // position (vec3 + padding)
             lightData[base + 0] = pos[0];
             lightData[base + 1] = pos[1];
             lightData[base + 2] = pos[2];
-            lightData[base + 3] = light.ambient;
+            lightData[base + 3] = 0.0;
+
+            // ambient
+            lightData[base + 4] = light.ambient;
+            lightData[base + 5] = 0.0;
+            lightData[base + 6] = 0.0;
+            lightData[base + 7] = 0.0;
+
+            // attenuation
+            lightData[base + 8]  = light.attenuation ?? 0.02;
+            lightData[base + 9]  = 0.0;
+            lightData[base + 10] = 0.0;
+            lightData[base + 11] = 0.0;
+
+            // base + 5..7 = padding
         }
 
         // Write lights array
@@ -193,12 +210,12 @@ export class Renderer{
             lightData
         );
 
-        // Write lightCount (after lights array)
         this.device.queue.writeBuffer(
             this.lightsUniformBuffer,
-            16 * 16,
+            16 * 48, // <-- ZA LUČMI
             new Uint32Array([lightCount])
         );
+
 
 
         // --- Render scene ---

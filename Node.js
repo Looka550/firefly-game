@@ -48,6 +48,10 @@ export class Node {
 
     addComponent(component) {
         this.components.push(component);
+
+        if(component.onAttach){
+            component.onAttach(this);
+        }
     }
 
     removeComponent(component) {

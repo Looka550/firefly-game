@@ -105,8 +105,6 @@ export class Cube extends GameObject {
             12, 13, 14,  12, 14, 15,   // right
             16, 17, 18,  16, 18, 19,   // top
             20, 21, 22,  20, 22, 23,   // bottom
-            // defectove
-            24, 24,24
         ]);
 
         const mesh = new Mesh(vertices, indices);

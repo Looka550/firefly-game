@@ -28,7 +28,7 @@ export class Renderer{
         this.module = module;
 
 
-        // Create the pipeline
+        // pipeline
         const vertexBufferLayout = {
             arrayStride: 52,
             attributes: [
@@ -74,53 +74,42 @@ export class Renderer{
 
         Engine.device = device;
         Engine.pipeline = pipeline;
-        this.pipeline = pipeline;
 
-        // Create the depth texture
+        // initial depth texture
         this.depthTexture = this.createDepthTexture(canvas.width, canvas.height);
 
         // resize system
         new ResizeSystem({ canvas, resize: this.resize.bind(this) }).start();
 
-        this.gpuLights = new Map(); // shrani uniform buffer + bind group za vsako luč
-
         this.maxLights = 16;
 
-        this.lightsUniformBuffer = this.device.createBuffer({
-            size: this.maxLights * 48 + 32, // = 784 -> zaokroženo na 800
+        this.lightsBuffer = this.device.createBuffer({
+            size: this.maxLights * 48 + 32,
 
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
         this.lightsBindGroup = this.device.createBindGroup({
-            layout: this.pipeline.getBindGroupLayout(3),
-            entries: [{
-                binding: 0,
-                resource: { buffer: this.lightsUniformBuffer },
-            }],
+            layout: Engine.pipeline.getBindGroupLayout(3),
+            entries: [
+                { binding: 0, resource: { buffer: this.lightsBuffer } },
+            ],
         });
 
-        this.cameraUniformBuffer = this.device.createBuffer({
+        this.cameraBuffer = this.device.createBuffer({
             size: 16,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
         this.cameraBindGroup = this.device.createBindGroup({
-            layout: this.pipeline.getBindGroupLayout(1),
-            entries: [{
-                binding: 0,
-                resource: { buffer: this.cameraUniformBuffer },
-            }],
+            layout: Engine.pipeline.getBindGroupLayout(1),
+            entries: [
+                { binding: 0, resource: { buffer: this.cameraBuffer } },
+            ],
         });
-
-
     }
 
-    newScene(newScene){
-        this.scene = newScene;
-    }
-
-    render() {
+    render(){
         const commandEncoder = this.device.createCommandEncoder();
         const renderPass = commandEncoder.beginRenderPass({
             colorAttachments: [{
@@ -137,7 +126,7 @@ export class Renderer{
             },
         });
 
-        renderPass.setPipeline(this.pipeline);
+        renderPass.setPipeline(Engine.pipeline);
 
         const viewMatrix = getGlobalViewMatrix(this.camera);
         const projectionMatrix = getProjectionMatrix(this.camera);
@@ -147,36 +136,35 @@ export class Renderer{
         const cameraPosition = vec3.create();
         mat4.getTranslation(cameraPosition, cameraMatrix);
 
-        this.device.queue.writeBuffer(
-            this.cameraUniformBuffer,
-            0,
-            new Float32Array([
-                cameraPosition[0],
-                cameraPosition[1],
-                cameraPosition[2],
-                0.0,
-            ])
-        );
+        const cameraData = new Float32Array([
+            cameraPosition[0],
+            cameraPosition[1],
+            cameraPosition[2],
+            0.0,
+        ]);
+
+        this.device.queue.writeBuffer(this.cameraBuffer, 0, cameraData);
 
 
-        // --- Collect lights (max 16) ---
-        const lightNodes = [];
+        // render lights
+        const lightObjects = [];
         this.scene.traverse(node => {
-            if (node.getComponentOfType?.(Light)) {
-                lightNodes.push(node);
+            if(node.getComponentOfType?.(Light)){
+                lightObjects.push(node);
             }
         });
 
-        const lightCount = Math.min(lightNodes.length, this.maxLights);
+        if(lightObjects.length > this.maxLights){
+            console.log("TOO MANY LIGHTS");
+        }
 
-        // Build CPU-side buffer
         const lightData = new Float32Array(16 * 12); // 12 floats per light
 
-        for (let i = 0; i < lightCount; i++) {
-            const lightNode = lightNodes[i];
-            const light = lightNode.getComponentOfType(Light);
+        for(let i = 0; i < lightObjects.length; i++){
+            const lightObject = lightObjects[i];
+            const light = lightObject.getComponentOfType(Light);
 
-            const lightMatrix = getGlobalModelMatrix(lightNode);
+            const lightMatrix = getGlobalModelMatrix(lightObject);
             const pos = vec3.create();
             mat4.getTranslation(pos, lightMatrix);
 
@@ -195,32 +183,29 @@ export class Renderer{
             lightData[base + 7] = 0.0;
 
             // attenuation
-            lightData[base + 8]  = light.attenuation ?? 0.02;
+            if(light.attenuation){
+                lightData[base + 8]  = light.attenuation;
+            }
+            else{
+                lightData[base + 8]  = 0.02;
+            }
+
             lightData[base + 9]  = 0.0;
             lightData[base + 10] = 0.0;
             lightData[base + 11] = 0.0;
 
-            // base + 5..7 = padding
+            // 0.0 = padding
         }
 
-        // Write lights array
-        this.device.queue.writeBuffer(
-            this.lightsUniformBuffer,
-            0,
-            lightData
-        );
+        // write lights buffers
+        this.device.queue.writeBuffer(this.lightsBuffer, 0, lightData);
 
-        this.device.queue.writeBuffer(
-            this.lightsUniformBuffer,
-            16 * 48, // <-- ZA LUČMI
-            new Uint32Array([lightCount])
-        );
+        this.device.queue.writeBuffer(this.lightsBuffer, 16 * 48, new Uint32Array([lightObjects.length]));
 
 
-
-        // --- Render scene ---
+        // traverse scene
         this.scene.traverse(node => {
-            if (node instanceof GameObject && node.mesh) {
+            if(node instanceof GameObject && node.mesh){
                 const modelMatrix = getGlobalModelMatrix(node);
                 const viewProjMatrix = mat4.create().multiply(projectionMatrix).multiply(viewMatrix);
 
@@ -235,7 +220,6 @@ export class Renderer{
 
                 renderPass.setBindGroup(0, node.bindGroup);
 
-                // --- Nastavimo bind group za luč ---
                 renderPass.setBindGroup(3, this.lightsBindGroup);
                 renderPass.setBindGroup(1, this.cameraBindGroup);
 

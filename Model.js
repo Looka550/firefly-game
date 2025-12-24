@@ -35,7 +35,7 @@ export class Model extends GameObject {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        // view-projection matrix
+        // view projection matrix
         this.viewProjBuffer = Engine.device.createBuffer({
             size: 64,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -58,6 +58,7 @@ export class Model extends GameObject {
                 { binding: 4, resource: { buffer: this.normalBuffer } },
             ]
         });
+
 
     }
 

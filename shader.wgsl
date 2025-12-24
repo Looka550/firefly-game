@@ -7,7 +7,7 @@ struct VertexInput {
 
 struct VertexOutput {
     @builtin(position) clipPosition : vec4f,
-    @location(0) position : vec3f,   // world position
+    @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
 };
@@ -26,20 +26,20 @@ struct LightUniforms {
     position    : vec3f,
     ambient     : f32,
     attenuation : f32,
-    _padding    : vec3f, // poravnava na 32 B
+    padding    : vec3f, // poravnava na 32 B
 };
 
 struct LightsBlock {
     lights     : array<LightUniforms, 16>,
     lightCount : u32,
-    _padding   : vec3u,
+    padding   : vec3u,
 };
 
 @group(3) @binding(0) var<uniform> lightsBlock : LightsBlock;
 
 struct CameraUniforms {
     position : vec3f,
-    _padding : f32,
+    padding : f32,
 };
 
 @group(1) @binding(0) var<uniform> camera : CameraUniforms;

@@ -71,6 +71,7 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     var specularSum : f32 = 0.0;
 
     let shininess : f32 = 32.0;
+    let specularIntensity : f32 = 0.3; // 0 = no specular, 1 = full
 
     for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
         let light = lightsBlock.lights[i];
@@ -90,7 +91,7 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         let spec = pow(max(dot(N, H), 0.0), shininess);
 
         diffuseSum += (lambert + light.ambient) * attenuation;
-        specularSum += spec * attenuation;
+        specularSum += spec * attenuation * specularIntensity;
     }
 
     let color =

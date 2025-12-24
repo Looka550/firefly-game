@@ -143,7 +143,7 @@ const light3 = new GameObject({
     name: "Light",
 });
 
-const lightPosition3 = [2, 5, 0];
+const lightPosition3 = [2, 5, 4];
 
 // dodamo transformacijo (položaj luči)
 light3.addComponent(new Transform({

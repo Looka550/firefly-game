@@ -27,7 +27,8 @@ struct LightUniforms {
     ambient: f32,
 };
 
-@group(3) @binding(0) var<uniform> light: LightUniforms;
+@group(3) @binding(0) var<uniform> light0 : LightUniforms;
+@group(3) @binding(1) var<uniform> light1 : LightUniforms;
 
 @vertex
 fn vertex(input: VertexInput) -> VertexOutput {
@@ -37,12 +38,11 @@ fn vertex(input: VertexInput) -> VertexOutput {
     output.clipPosition = viewProjMatrix * worldPos;
 
     output.position = worldPos.xyz;
-    output.normal = (normalMatrix * vec4(input.normal, 0.0)).xyz; // <-- normalMatrix applied
+    output.normal = (normalMatrix * vec4(input.normal, 0.0)).xyz;
     output.texcoords = input.texcoords;
 
     return output;
 }
-
 
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
@@ -50,10 +50,18 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
 
     let N = normalize(input.normal);
-    let L = normalize(light.position - input.position);
 
-    let lambert = max(dot(N, L), 0.0);
-    let lighting = lambert + light.ambient;
+    // Light 0
+    let L0 = normalize(light0.position - input.position);
+    let lambert0 = max(dot(N, L0), 0.0);
+    let lighting0 = lambert0 + light0.ambient;
+
+    // Light 1
+    let L1 = normalize(light1.position - input.position);
+    let lambert1 = max(dot(N, L1), 0.0);
+    let lighting1 = lambert1 + light1.ambient;
+
+    let lighting = (lighting0 + lighting1) / 1.0; // average contribution
 
     output.color = vec4f(materialColor.rgb * lighting, materialColor.a);
     return output;

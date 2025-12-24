@@ -95,7 +95,7 @@ const light = new GameObject({
     name: "Light",
 });
 
-const lightPosition = [2, 7, -3];
+const lightPosition = [2, 7, -2];
 
 // dodamo transformacijo (položaj luči)
 light.addComponent(new Transform({
@@ -104,7 +104,7 @@ light.addComponent(new Transform({
 
 // dodamo komponento luči (ambientni faktor)
 light.addComponent(new Light({
-    ambient: 0.1, // lahko prilagodiš svetlost ambienta
+    ambient: 0.01, // lahko prilagodiš svetlost ambienta
 }));
 scene.addChild(light);
 
@@ -112,6 +112,34 @@ const lightMarker = new Model({ translation: lightPosition, scale: [0.1, 0.1, 0.
 await lightMarker.createMesh(pathmon);
 // Uporabi teksturo ali material, ki je svetel, npr. rumena barva
 scene.addChild(lightMarker);
+
+
+
+
+const light2 = new GameObject({
+    name: "Light",
+});
+
+const lightPosition2 = [2, 3, -2];
+
+// dodamo transformacijo (položaj luči)
+light2.addComponent(new Transform({
+    translation: lightPosition2,
+}));
+
+// dodamo komponento luči (ambientni faktor)
+light2.addComponent(new Light({
+    ambient: 0.01, // lahko prilagodiš svetlost ambienta
+}));
+scene.addChild(light2);
+
+const lightMarker2 = new Model({ translation: lightPosition2, scale: [0.1, 0.1, 0.1], texture: blankTexture, gltfPath: pathmon });
+await lightMarker2.createMesh(pathmon);
+// Uporabi teksturo ali material, ki je svetel, npr. rumena barva
+scene.addChild(lightMarker2);
+
+
+
 
 //const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
 //const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });

@@ -111,7 +111,7 @@ export class Model extends GameObject {
         });
 
         this.mesh = new Mesh(vertices, indices);
-        console.log(vertices);
+        //console.log(vertices);
         //console.log(indices);
     }
 }

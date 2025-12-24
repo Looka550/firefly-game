@@ -23,12 +23,18 @@ struct FragmentOutput {
 @group(0) @binding(4) var<uniform> normalMatrix : mat4x4f;
 
 struct LightUniforms {
-    position: vec3f,
-    ambient: f32,
+    position : vec3f,
+    ambient  : f32,
 };
 
-@group(3) @binding(0) var<uniform> light0 : LightUniforms;
-@group(3) @binding(1) var<uniform> light1 : LightUniforms;
+struct LightsBlock {
+    lights     : array<LightUniforms, 16>,
+    lightCount : u32,
+    _padding   : vec3u, // padding to 16-byte alignment
+};
+
+@group(3) @binding(0) var<uniform> lightsBlock : LightsBlock;
+
 
 @vertex
 fn vertex(input: VertexInput) -> VertexOutput {
@@ -47,21 +53,18 @@ fn vertex(input: VertexInput) -> VertexOutput {
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var output: FragmentOutput;
-    let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
 
+    let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
     let N = normalize(input.normal);
 
-    // Light 0
-    let L0 = normalize(light0.position - input.position);
-    let lambert0 = max(dot(N, L0), 0.0);
-    let lighting0 = lambert0 + light0.ambient;
+    var lighting : f32 = 0.0;
 
-    // Light 1
-    let L1 = normalize(light1.position - input.position);
-    let lambert1 = max(dot(N, L1), 0.0);
-    let lighting1 = lambert1 + light1.ambient;
-
-    let lighting = (lighting0 + lighting1) / 1.0; // average contribution
+    for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
+        let light = lightsBlock.lights[i];
+        let L = normalize(light.position - input.position);
+        let lambert = max(dot(N, L), 0.0);
+        lighting += lambert + light.ambient;
+    }
 
     output.color = vec4f(materialColor.rgb * lighting, materialColor.a);
     return output;

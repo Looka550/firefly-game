@@ -84,6 +84,24 @@ export class Renderer{
 
         this.gpuLights = new Map(); // shrani uniform buffer + bind group za vsako luč
 
+        this.maxLights = 16;
+
+        this.lightsUniformBuffer = this.device.createBuffer({
+            size: this.maxLights * 16 + 32, // 16 lights * 16 bytes + lightCount block
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        this.lightsBindGroup = this.device.createBindGroup({
+            layout: this.pipeline.getBindGroupLayout(3),
+            entries: [{
+                binding: 0,
+                resource: { buffer: this.lightsUniformBuffer },
+            }],
+        });
+
+        this.lightsSet = false;
+
+
     }
 
     newScene(newScene){
@@ -112,46 +130,47 @@ export class Renderer{
         const viewMatrix = getGlobalViewMatrix(this.camera);
         const projectionMatrix = getProjectionMatrix(this.camera);
 
-        // --- Find the first 2 lights in the scene ---
-        const lightNodes = this.scene.filter(node => node.getComponentOfType?.(Light)).slice(0, 2);
+        // --- Collect lights (max 16) ---
+        const lightNodes = [];
+        this.scene.traverse(node => {
+            if (node.getComponentOfType?.(Light)) {
+                lightNodes.push(node);
+            }
+        });
 
-        let lightBindGroup = null;
+        const lightCount = Math.min(lightNodes.length, this.maxLights);
 
-        if (lightNodes.length > 0) {
-            // Create uniform buffers if not yet created
-            lightNodes.forEach((lightNode, index) => {
-                if (!this.gpuLights.has(lightNode)) {
-                    const lightUniformBuffer = this.device.createBuffer({
-                        size: 16, // vec3 + float ambient
-                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-                    });
+        // Build CPU-side buffer
+        const lightData = new Float32Array(16 * 4); // 16 lights * vec4
 
-                    this.gpuLights.set(lightNode, { lightUniformBuffer });
-                }
-            });
+        for (let i = 0; i < lightCount; i++) {
+            const lightNode = lightNodes[i];
+            const light = lightNode.getComponentOfType(Light);
 
-            // Collect the buffers for bind group
-            const entries = lightNodes.map((lightNode, i) => {
-                const { lightUniformBuffer } = this.gpuLights.get(lightNode);
+            const lightMatrix = getGlobalModelMatrix(lightNode);
+            const pos = vec3.create();
+            mat4.getTranslation(pos, lightMatrix);
 
-                // Write light data to the buffer
-                const lightComponent = lightNode.getComponentOfType(Light);
-                const lightMatrix = getGlobalModelMatrix(lightNode);
-                const lightPosition = vec3.create();
-                mat4.getTranslation(lightPosition, lightMatrix);
-
-                this.device.queue.writeBuffer(lightUniformBuffer, 0, lightPosition);
-                this.device.queue.writeBuffer(lightUniformBuffer, 12, new Float32Array([lightComponent.ambient]));
-
-                return { binding: i, resource: { buffer: lightUniformBuffer } };
-            });
-
-            // Create the bind group for exactly 2 lights
-            lightBindGroup = this.device.createBindGroup({
-                layout: this.pipeline.getBindGroupLayout(3),
-                entries: entries
-            });
+            const base = i * 4;
+            lightData[base + 0] = pos[0];
+            lightData[base + 1] = pos[1];
+            lightData[base + 2] = pos[2];
+            lightData[base + 3] = light.ambient;
         }
+
+        // Write lights array
+        this.device.queue.writeBuffer(
+            this.lightsUniformBuffer,
+            0,
+            lightData
+        );
+
+        // Write lightCount (after lights array)
+        this.device.queue.writeBuffer(
+            this.lightsUniformBuffer,
+            16 * 16,
+            new Uint32Array([lightCount])
+        );
 
 
         // --- Render scene ---
@@ -172,7 +191,7 @@ export class Renderer{
                 renderPass.setBindGroup(0, node.bindGroup);
 
                 // --- Nastavimo bind group za luč ---
-                if (lightBindGroup) renderPass.setBindGroup(3, lightBindGroup); // light0
+                renderPass.setBindGroup(3, this.lightsBindGroup);
 
                 renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
                 renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');

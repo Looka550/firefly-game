@@ -20,8 +20,14 @@ struct FragmentOutput {
 @group(0) @binding(1) var<uniform> viewProjMatrix : mat4x4f;
 @group(0) @binding(2) var baseTexture : texture_2d<f32>;
 @group(0) @binding(3) var baseSampler : sampler;
-@group(0) @binding(4) var<uniform> lightPosition : vec3f;
-@group(0) @binding(5) var<uniform> normalMatrix : mat4x4f;
+@group(0) @binding(4) var<uniform> normalMatrix : mat4x4f;
+
+struct LightUniforms {
+    position: vec3f,
+    ambient: f32,
+};
+
+@group(3) @binding(0) var<uniform> light: LightUniforms;
 
 @vertex
 fn vertex(input: VertexInput) -> VertexOutput {
@@ -41,18 +47,14 @@ fn vertex(input: VertexInput) -> VertexOutput {
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var output: FragmentOutput;
-
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
 
     let N = normalize(input.normal);
-    let L = normalize(lightPosition - input.position);
+    let L = normalize(light.position - input.position);
 
     let lambert = max(dot(N, L), 0.0);
-
-    let ambient = 0.15;
-    let lighting = lambert + ambient;
+    let lighting = lambert + light.ambient;
 
     output.color = vec4f(materialColor.rgb * lighting, materialColor.a);
-
     return output;
 }

@@ -90,7 +90,28 @@ scene.addChild(mon);
 //const cube3 = new Cube({ translation: [-2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: bricksTexture });
 //scene.addChild(cube3);
 
+import { Light } from './Light.js';
+const light = new GameObject({
+    name: "Light",
+});
 
+const lightPosition = [2, 7, -3];
+
+// dodamo transformacijo (položaj luči)
+light.addComponent(new Transform({
+    translation: lightPosition,
+}));
+
+// dodamo komponento luči (ambientni faktor)
+light.addComponent(new Light({
+    ambient: 0.1, // lahko prilagodiš svetlost ambienta
+}));
+scene.addChild(light);
+
+const lightMarker = new Model({ translation: lightPosition, scale: [0.1, 0.1, 0.1], texture: blankTexture, gltfPath: pathmon });
+await lightMarker.createMesh(pathmon);
+// Uporabi teksturo ali material, ki je svetel, npr. rumena barva
+scene.addChild(lightMarker);
 
 //const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
 //const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });

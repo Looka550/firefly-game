@@ -4,10 +4,12 @@ import {
     getProjectionMatrix,
     Engine,
 } from './SceneUtils.js';
-import { quat, mat4 } from './glm.js';
+import { quat, mat4, vec3 } from './glm.js';
 import { GameObject } from './GameObject.js';
 import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
 import { Camera } from './Camera.js';
+
+import { Light } from './Light.js';
 
 export class Renderer{
     constructor(
@@ -79,6 +81,9 @@ export class Renderer{
 
         // resize system
         new ResizeSystem({ canvas, resize: this.resize.bind(this) }).start();
+
+        this.gpuLights = new Map(); // shrani uniform buffer + bind group za vsako luč
+
     }
 
     newScene(newScene){
@@ -86,7 +91,6 @@ export class Renderer{
     }
 
     render() {
-        // render
         const commandEncoder = this.device.createCommandEncoder();
         const renderPass = commandEncoder.beginRenderPass({
             colorAttachments: [{
@@ -102,51 +106,73 @@ export class Renderer{
                 depthStoreOp: 'discard',
             },
         });
+
         renderPass.setPipeline(this.pipeline);
 
-
-        // Get the required matrices
         const viewMatrix = getGlobalViewMatrix(this.camera);
         const projectionMatrix = getProjectionMatrix(this.camera);
 
-        this.scene.traverse(node => {
-            if(node instanceof GameObject && node.mesh){
-                const modelMatrix = getGlobalModelMatrix(node);
-                const viewProjMatrix = mat4.create()
-                    .multiply(projectionMatrix)
-                    .multiply(viewMatrix);
+        // --- Poiščemo prvo luč v sceni ---
+        const lightNode = this.scene.find(node => node.getComponentOfType?.(Light));
+        let lightBindGroup = null;
 
-                // Compute normalMatrix = inverse(transpose(modelMatrix))
+        if (lightNode) {
+            const lightComponent = lightNode.getComponentOfType(Light);
+            const lightMatrix = getGlobalModelMatrix(lightNode);
+            const lightPosition = vec3.create();
+            mat4.getTranslation(lightPosition, lightMatrix);
+
+            // Če še nimamo GPU objekta za to luč, ga ustvarimo
+            if (!this.gpuLights.has(lightNode)) {
+                const lightUniformBuffer = this.device.createBuffer({
+                    size: 16, // vec3 + float ambient
+                    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+                });
+
+                const lightGroup = this.device.createBindGroup({
+                    layout: this.pipeline.getBindGroupLayout(3),
+                    entries: [{ binding: 0, resource: { buffer: lightUniformBuffer } }],
+                });
+
+                this.gpuLights.set(lightNode, { lightUniformBuffer, lightGroup });
+            }
+
+            const { lightUniformBuffer, lightGroup } = this.gpuLights.get(lightNode);
+
+            // Zapišemo pozicijo in ambient v uniform buffer
+            this.device.queue.writeBuffer(lightUniformBuffer, 0, lightPosition);
+            this.device.queue.writeBuffer(lightUniformBuffer, 12, new Float32Array([lightComponent.ambient]));
+
+            lightBindGroup = lightGroup;
+        }
+
+        // --- Render scene ---
+        this.scene.traverse(node => {
+            if (node instanceof GameObject && node.mesh) {
+                const modelMatrix = getGlobalModelMatrix(node);
+                const viewProjMatrix = mat4.create().multiply(projectionMatrix).multiply(viewMatrix);
+
                 const normalMatrix = mat4.create();
                 mat4.copy(normalMatrix, modelMatrix);
                 mat4.invert(normalMatrix, normalMatrix);
                 mat4.transpose(normalMatrix, normalMatrix);
 
-                // write normal matrix
+                this.device.queue.writeBuffer(node.modelBuffer, 0, modelMatrix);
+                this.device.queue.writeBuffer(node.viewProjBuffer, 0, viewProjMatrix);
                 this.device.queue.writeBuffer(node.normalBuffer, 0, normalMatrix);
 
-                // write model matrix
-                this.device.queue.writeBuffer(
-                    node.modelBuffer,
-                    0,
-                    modelMatrix
-                );
-
-                // write view-projection matrix
-                this.device.queue.writeBuffer(
-                    node.viewProjBuffer,
-                    0,
-                    viewProjMatrix
-                );
-
                 renderPass.setBindGroup(0, node.bindGroup);
+
+                // --- Nastavimo bind group za luč ---
+                if (lightBindGroup) {
+                    renderPass.setBindGroup(3, lightBindGroup);
+                }
 
                 renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
                 renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
                 renderPass.drawIndexed(node.mesh.indexCount);
             }
         });
-
 
         renderPass.end();
         this.device.queue.submit([commandEncoder.finish()]);

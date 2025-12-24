@@ -41,11 +41,6 @@ export class Model extends GameObject {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        // light position
-        this.lightBuffer = Engine.device.createBuffer({
-            size: 16, // vec3 needs 16-byte alignment
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
 
         this.normalBuffer = Engine.device.createBuffer({
             size: 64, // 4x4 matrix
@@ -60,16 +55,10 @@ export class Model extends GameObject {
                 { binding: 1, resource: { buffer: this.viewProjBuffer } },
                 { binding: 2, resource: texture.createView() },
                 { binding: 3, resource: sampler },
-                { binding: 4, resource: { buffer: this.lightBuffer } },
-                { binding: 5, resource: { buffer: this.normalBuffer } },
+                { binding: 4, resource: { buffer: this.normalBuffer } },
             ]
         });
 
-        Engine.device.queue.writeBuffer(
-            this.lightBuffer,
-            0,
-            new Float32Array([0, 5, 0]) // example light position
-        );
     }
 
     async createMesh(path){

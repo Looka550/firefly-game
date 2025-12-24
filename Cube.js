@@ -27,9 +27,21 @@ export class Cube extends GameObject {
         this.textureRenderer = new TextureRenderer();
         this.mesh = this.createMesh();
 
-        // uniform buffer
-        this.uniformBuffer = Engine.device.createBuffer({
-            size: 16 * 4, // 4x4 matrix
+       // model matrix
+        this.modelBuffer = Engine.device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        // view projection matrix
+        this.viewProjBuffer = Engine.device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+
+        this.normalBuffer = Engine.device.createBuffer({
+            size: 64, // 4x4 matrix
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -37,9 +49,11 @@ export class Cube extends GameObject {
         this.bindGroup = Engine.device.createBindGroup({
             layout: Engine.pipeline.getBindGroupLayout(0),
             entries: [
-                { binding: 0, resource: { buffer: this.uniformBuffer } },
-                { binding: 1, resource: texture.createView() },
-                { binding: 2, resource: sampler },
+                { binding: 0, resource: { buffer: this.modelBuffer } },
+                { binding: 1, resource: { buffer: this.viewProjBuffer } },
+                { binding: 2, resource: texture.createView() },
+                { binding: 3, resource: sampler },
+                { binding: 4, resource: { buffer: this.normalBuffer } },
             ]
         });
     }
@@ -48,42 +62,40 @@ export class Cube extends GameObject {
         const vertices = new Float32Array([
             // position    color   uv
             // FRONT
-            -1, -1,  1, 1,   0, 1, 0, 1,    0, 0,
-             1, -1,  1, 1,   1, 0, 1, 1,    1, 0,
-             1,  1,  1, 1,   0, 0, 0, 1,    1, 1,
-            -1,  1,  1, 1,   1, 1, 1, 1,    0, 1,
+            -1, -1,  1, 1,   0, 1, 0, 1,    0, 0,   1, 1, 1,
+             1, -1,  1, 1,   1, 0, 1, 1,    1, 0,   1, 1, 1,
+             1,  1,  1, 1,   0, 0, 0, 1,    1, 1,   1, 1, 1,
+            -1,  1,  1, 1,   1, 1, 1, 1,    0, 1,   1, 1, 1,
 
             // BACK
-             1, -1, -1, 1,   0, 1, 1, 1,    0, 0,
-            -1, -1, -1, 1,   1, 0, 0, 1,    1, 0,
-            -1,  1, -1, 1,   0, 0, 1, 1,    1, 1,
-             1,  1, -1, 1,   1, 1, 0, 1,    0, 1,
+             1, -1, -1, 1,   0, 1, 1, 1,    0, 0,   1, 1, 1,
+            -1, -1, -1, 1,   1, 0, 0, 1,    1, 0,   1, 1, 1,
+            -1,  1, -1, 1,   0, 0, 1, 1,    1, 1,   1, 1, 1,
+             1,  1, -1, 1,   1, 1, 0, 1,    0, 1,   1, 1, 1,
 
             // LEFT
-            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,
-            -1, -1,  1, 1,   0, 1, 0, 1,    1, 0,
-            -1,  1,  1, 1,   1, 1, 1, 1,    1, 1,
-            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,
+            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,   1, 1, 1,
+            -1, -1,  1, 1,   0, 1, 0, 1,    1, 0,   1, 1, 1,
+            -1,  1,  1, 1,   1, 1, 1, 1,    1, 1,   1, 1, 1,
+            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,   1, 1, 1,
 
             // RIGHT
-            1, -1,  1, 1,   1, 0, 1, 1,    0, 0,
-            1, -1, -1, 1,   0, 1, 1, 1,    1, 0,
-            1,  1, -1, 1,   1, 1, 0, 1,    1, 1,
-            1,  1,  1, 1,   0, 0, 0, 1,    0, 1,
+            1, -1,  1, 1,   1, 0, 1, 1,    0, 0,   1, 1, 1,
+            1, -1, -1, 1,   0, 1, 1, 1,    1, 0,   1, 1, 1,
+            1,  1, -1, 1,   1, 1, 0, 1,    1, 1,   1, 1, 1,
+            1,  1,  1, 1,   0, 0, 0, 1,    0, 1,   1, 1, 1,
 
             // TOP
-            -1,  1,  1, 1,   1, 1, 1, 1,    0, 0,
-             1,  1,  1, 1,   0, 0, 0, 1,    1, 0,
-             1,  1, -1, 1,   1, 1, 0, 1,    1, 1,
-            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,
+            -1,  1,  1, 1,   1, 1, 1, 1,    0, 0,   1, 1, 1,
+             1,  1,  1, 1,   0, 0, 0, 1,    1, 0,   1, 1, 1,
+             1,  1, -1, 1,   1, 1, 0, 1,    1, 1,   1, 1, 1,
+            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,   1, 1, 1,
 
             // BOTTOM
-            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,
-             1, -1, -1, 1,   0, 1, 1, 1,    1, 0,
-             1, -1,  1, 1,   1, 0, 1, 1,    1, 1,
-            -1, -1,  1, 1,   0, 1, 0, 1,    0, 1,
-            //defective
-            1000, 1000, 1000, 1,    1, 0, 0, 1,  1, 0
+            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,   1, 1, 1,
+             1, -1, -1, 1,   0, 1, 1, 1,    1, 0,   1, 1, 1,
+             1, -1,  1, 1,   1, 0, 1, 1,    1, 1,   1, 1, 1,
+            -1, -1,  1, 1,   0, 1, 0, 1,    0, 1,   1, 1, 1,
         ]);
 
         const indices = new Uint32Array([

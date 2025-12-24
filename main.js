@@ -161,11 +161,11 @@ await lightMarker3.createMesh(pathmon);
 // Uporabi teksturo ali material, ki je svetel, npr. rumena barva
 scene.addChild(lightMarker3);
 
-//const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
-//const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });
+const cube1 = new Cube({ translation: [0, 0, 0], scale: [10, 1, 10], euler: [0, 0, 0], texture: bricksTexture });
+const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture });
 
-//scene.addChild(cube1);
-//scene.addChild(cube2);
+scene.addChild(cube1);
+scene.addChild(cube2);
 
 // input
 initInput(canvas);

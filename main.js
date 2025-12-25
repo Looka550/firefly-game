@@ -171,6 +171,11 @@ const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0,
 scene.addChild(cube1);
 scene.addChild(cube2);
 
+
+// collisions
+import { BoxCollider } from './BoxCollider.js';
+mon.addComponent(new BoxCollider({ texture: blankTexture, debug: true }));
+
 // input
 initInput(canvas);
 

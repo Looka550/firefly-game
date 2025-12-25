@@ -204,7 +204,7 @@ export class Renderer{
 
         // traverse scene
         this.scene.traverse(node => {
-            if(node instanceof GameObject && node.mesh){
+            if(node instanceof GameObject && node.mesh && !node.dontRender){
                 const modelMatrix = getGlobalModelMatrix(node);
                 const viewProjMatrix = mat4.create().multiply(projectionMatrix).multiply(viewMatrix);
 

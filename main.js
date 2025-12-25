@@ -18,6 +18,7 @@ import { Model } from './Model.js';
 import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
 import { BoxCollider } from './BoxCollider.js';
 import { Physics } from './Physics.js';
+import { PlaneCollider } from './PlaneCollider.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -43,6 +44,8 @@ const bricksTexture = await loadTexture(new URL("./bricks.png", import.meta.url)
 const blankTexture = await loadTexture(new URL("./blank.png", import.meta.url));
 const monkeyTexture = await loadTexture(new URL("./webgpu/models/monkey/base.png", import.meta.url));
 const catTexture = await loadTexture(new URL("./webgpu/models/cat/base.avif", import.meta.url));
+const grassTex = await loadTexture(new URL("./assets/grass/base.jpg", import.meta.url));
+const grassNor = await loadTexture(new URL("./assets/grass/normal.png", import.meta.url));
 export const blankTextureView = blankTexture.createView();
 
 export const sampler = device.createSampler({
@@ -190,18 +193,12 @@ const mon2 = new Model({ translation: [0, 5, 2], scale: [1, 1, 1], euler: [0, 0,
 await mon2.createMesh(pathmon);
 scene.addChild(mon2);
 
-import { PlaneCollider } from './PlaneCollider.js';
 
-const plane = new PlaneCollider({ texture: blankTexture, debug: true, name: "plane" });
-scene.addChild(plane);
-
-plane.move({y:3});
 
 mon.setTransform({ scale: [1, 1, 1], translation: [1, 5, 3], euler: [0, 0, 0] });
 mon.setPosition([1, 5, 4]);
 mon.setRotation([45, 0, 0]);
 
-plane.setRotation([20, 0, 0])
 
 mon.move({x : -0.1, z: -2.4, y: 6.4});
 cat.move({y: 0.6});
@@ -210,6 +207,18 @@ mon2.move({z: -5, x: 2});
 
 col.collides();
 col2.collides();
+
+// world building
+
+const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [100, 0, 30] });
+scene.addChild(plane1);
+
+const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [100, 0, 30], euler: [14.5, 0, 0] });
+scene.addChild(slope1);
+
+const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0] });
+scene.addChild(slope2);
+
 
 // input
 initInput(canvas);

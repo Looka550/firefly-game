@@ -7,7 +7,7 @@ let mouseMove = [0, 0];
 let oldAvg = 1;
 
 // settings
-const speed = 0.05;
+const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 

@@ -17,10 +17,12 @@ export class BoxCollider extends GameObject{
         translation = [0, 0, 0],
         scale = [1, 3, 1],
         dynamic = false,
-        normalTexture = null
+        normalTexture = null,
+        gravity = false
     } = {}) {
         super({euler: euler, translation: translation, scale: scale, name: name});
         this.scale = scale;
+        this.gravity = gravity;
 
         this.dontRender = !debug;
         this.dynamic = dynamic;
@@ -36,6 +38,36 @@ export class BoxCollider extends GameObject{
             normalTexture: normalTexture,
             blankTextureView: blankTextureView
         });
+    }
+
+    update(){
+        if(this.gravity){
+            this.velocity ??= [0, 0, 0]; // initialize if not present
+            this.velocity[1] -= 0.981 * 0.016; // gravity per frame
+            this.transform.translation[1] += this.velocity[1] * 0.016;
+ 
+            // check collisions with planes
+            const collisions = physics.checkCollisions(this);
+
+            collisions.forEach(col => {
+                if(col instanceof PlaneCollider){
+                    // find the Y position of the plane at this X,Z
+                    const modelMatrix = getGlobalModelMatrix(col);
+                    const planeCenter = [modelMatrix[12], modelMatrix[13], modelMatrix[14]];
+
+                    // assuming rotation around X-axis only
+                    const rotX = col.euler[0] * Math.PI / 180;
+                    const localZ = this.transform.translation[2] - planeCenter[2];
+                    const planeY = planeCenter[1] + Math.tan(rotX) * localZ;
+
+                    // if below plane, snap up
+                    if(this.transform.translation[1] < planeY){
+                        this.transform.translation[1] = planeY;
+                        this.velocity[1] = 0;
+                    }
+                }
+            });
+        }
     }
 
 
@@ -104,10 +136,10 @@ export class BoxCollider extends GameObject{
             this.max[1] -= margin[1];
             this.max[2] -= margin[2];
         }
-        console.log("rotated: " + rot);
-        console.log("min: " + this.min);
-        console.log("max: " + this.max);
-        console.log("modelMatrix: " + modelMatrix);
+        //console.log("rotated: " + rot);
+        //console.log("min: " + this.min);
+        //console.log("max: " + this.max);
+        //console.log("modelMatrix: " + modelMatrix);
     }
 
     AABBcollision(other){

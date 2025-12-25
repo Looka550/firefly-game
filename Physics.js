@@ -28,16 +28,16 @@ export class Physics{
                 return;
             }
             if(other instanceof BoxCollider){
-                console.log(`box collider: ${col.name} : ${other.name}`);
+                //console.log(`testing box collider: ${col.name} : ${other.name}`);
                 if(col.AABBcollision(other)){
-                    console.log(`COLLISION: ${col.transform.translation} : ${other.transform.translation}`);
+                    console.log(`COLLISION: ${col.name} : ${other.name}`);
                     collisions.push(other);
                 }
             }
             else if(other instanceof PlaneCollider){
-                console.log(`plane collider: ${col.name} : ${other.name}`);
+                //console.log(`testing plane collider: ${col.name} : ${other.name}`);
                 if(other.AABBcollision(col)){
-                    console.log(`PLANE COLLISION: ${col.transform.translation} : ${other.transform.translation}`);
+                    console.log(`PLANE COLLISION: ${col.name} : ${other.name}`);
                     collisions.push(other);
                 }
 

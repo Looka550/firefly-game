@@ -180,9 +180,20 @@ const cube2 = new Cube({ translation: [0, 5, 0], scale: [1, 1, 1], euler: [0, 0,
 scene.addChild(cube1);
 scene.addChild(cube2);
 
+// world building
+
+const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [100, 0, 30], name: "flat grass" });
+scene.addChild(plane1);
+
+const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [100, 0, 30], euler: [14.5, 0, 0], name: "big slope" });
+scene.addChild(slope1);
+
+const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0], name: "small slope" });
+scene.addChild(slope2);
+
 
 // collisions
-const col = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey" });
+const col = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: false });
 mon.addComponent(col);
 
 const col2 = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "cat" });
@@ -203,21 +214,12 @@ mon.setRotation([45, 0, 0]);
 mon.move({x : -0.1, z: -2.4, y: 6.4});
 cat.move({y: 0.6});
 
+mon.move({y: -21, z: 20});
+
 mon2.move({z: -5, x: 2});
 
 col.collides();
 col2.collides();
-
-// world building
-
-const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [100, 0, 30] });
-scene.addChild(plane1);
-
-const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [100, 0, 30], euler: [14.5, 0, 0] });
-scene.addChild(slope1);
-
-const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0] });
-scene.addChild(slope2);
 
 
 // input

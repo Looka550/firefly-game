@@ -90,6 +90,10 @@ scene.addChild(mon);
 //const cube3 = new Cube({ translation: [-2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: bricksTexture });
 //scene.addChild(cube3);
 
+
+const ambient = 0.2;
+
+
 import { Light } from './Light.js';
 const light = new GameObject({
     name: "Light",
@@ -104,7 +108,7 @@ light.addComponent(new Transform({
 
 // dodamo komponento luči (ambientni faktor)
 light.addComponent(new Light({
-    ambient: 0.01, // lahko prilagodiš svetlost ambienta
+    ambient: ambient, // lahko prilagodiš svetlost ambienta
 }));
 scene.addChild(light);
 
@@ -129,7 +133,7 @@ light2.addComponent(new Transform({
 
 // dodamo komponento luči (ambientni faktor)
 light2.addComponent(new Light({
-    ambient: 0.01, // lahko prilagodiš svetlost ambienta
+    ambient: 0, // lahko prilagodiš svetlost ambienta
 }));
 scene.addChild(light2);
 
@@ -152,7 +156,7 @@ light3.addComponent(new Transform({
 
 // dodamo komponento luči (ambientni faktor)
 light3.addComponent(new Light({
-    ambient: 0.01, // lahko prilagodiš svetlost ambienta
+    ambient: 0, // lahko prilagodiš svetlost ambienta
 }));
 scene.addChild(light3);
 

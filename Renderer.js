@@ -174,22 +174,21 @@ export class Renderer{
             lightData[base + 0] = pos[0];
             lightData[base + 1] = pos[1];
             lightData[base + 2] = pos[2];
-            lightData[base + 3] = 0.0;
-
             // ambient
-            lightData[base + 4] = light.ambient;
-            lightData[base + 5] = 0.0;
-            lightData[base + 6] = 0.0;
-            lightData[base + 7] = 0.0;
+            lightData[base + 3] = light.ambient
 
             // attenuation
             if(light.attenuation){
-                lightData[base + 8]  = light.attenuation;
+                lightData[base + 4]  = light.attenuation;
             }
             else{
-                lightData[base + 8]  = 0.02;
+                lightData[base + 4]  = 0.02;
             }
-
+            
+            lightData[base + 5] = 0.0;
+            lightData[base + 6] = 0.0;
+            lightData[base + 7] = 0.0;
+            lightData[base + 8] = 0.0;
             lightData[base + 9]  = 0.0;
             lightData[base + 10] = 0.0;
             lightData[base + 11] = 0.0;

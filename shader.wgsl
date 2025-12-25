@@ -69,6 +69,7 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     var diffuseSum : f32 = 0.0;
     var specularSum : f32 = 0.0;
+    var ambientSum : f32 = 0.0;
 
     let shininess : f32 = 32.0;
     let specularIntensity : f32 = 0.3; // 0 = no specular, 1 = full
@@ -92,11 +93,14 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
         diffuseSum += (lambert + light.ambient) * attenuation;
         specularSum += spec * attenuation * specularIntensity;
+        ambientSum += light.ambient;
     }
 
-    let color =
-        materialColor.rgb * diffuseSum +
+    var color =
+        materialColor.rgb * (diffuseSum + ambientSum) +
         vec3f(specularSum);
+
+    //color = vec3f(ambientSum);
 
     output.color = vec4f(color, materialColor.a);
     return output;

@@ -42,8 +42,8 @@ export function initInput(canvas){
     });
 }
 
-export function parseInput(camera){
-    const transform = camera.getComponentOfType(Transform)
+export function parseInput(player, flight=true){
+    const transform = player.getComponentOfType(Transform)
     const forward = getForward(pitch, yaw);
     const right   = getRight(yaw);
     let move = [0, 0, 0];
@@ -87,6 +87,8 @@ export function parseInput(camera){
     if(keys["shift"]){
         move[1] -= speed;
     }
+
+    move[1] = 0;
 
     transform.translation[0] += move[0];
     transform.translation[1] += move[1];

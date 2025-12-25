@@ -16,10 +16,11 @@ export class PlaneCollider extends GameObject {
         scale = [10, 1, 10],
         dynamic = false,
         axis = "y",
-        normalTexture = null
+        normalTexture = null,
+        tags = []
     } = {}) {
         super({ euler, translation, scale, name });
-
+        this.tags = tags;
         this.dontRender = !debug;
         this.dynamic = dynamic;
         this.axis = axis;

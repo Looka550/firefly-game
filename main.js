@@ -71,16 +71,17 @@ export const physics = new Physics();
 const camera = new Node();
 camera.addComponent(new Camera());
 camera.addComponent(new Transform({
-    translation: [0, 0, 5]
+    translation: [0, 0, 9]
 }));
 
 camera.addComponent({
-    update (){
-        parseInput(camera);
+    update(){
+        parseInput(player, false);
     }
 })
 
-scene.addChild(camera);
+
+//scene.addChild(camera);
 
 import { Renderer } from './Renderer.js';
 const renderer = new Renderer(device, scene, context, camera, module, format, canvas);
@@ -88,13 +89,6 @@ const renderer = new Renderer(device, scene, context, camera, module, format, ca
 let pathcat = "./webgpu/models/cat/cat.gltf";
 let pathmon = "./webgpu/models/monkey/monkey.gltf";
 
-const cat = new Model({ translation: [2, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: catTexture, gltfPath: pathcat });
-await cat.createMesh(pathcat);
-scene.addChild(cat);
-
-const mon = new Model({ translation: [2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: monkeyTexture, gltfPath: pathmon });
-await mon.createMesh(pathmon);
-scene.addChild(mon);
 
 //const cube3 = new Cube({ translation: [-2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: bricksTexture });
 //scene.addChild(cube3);
@@ -182,19 +176,79 @@ scene.addChild(cube2);
 
 // world building
 
-const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [100, 0, 30], name: "flat grass" });
+
+const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [100, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane1);
 
-const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [100, 0, 30], euler: [14.5, 0, 0], name: "big slope" });
+const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [100, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
 scene.addChild(slope1);
 
-const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0], name: "small slope" });
+const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
 
 // collisions
-const col = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: false });
+const player = new GameObject();
+player.addChild(camera);
+const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: true });
+player.addComponent(playerCol);
+playerCol.addComponent({
+    update(){
+        player.nextMove ??= [0, -0.05, 0];
+
+        player.move({y: player.nextMove[1]});
+        let onSlope = false;
+
+        const collisions = playerCol.collides();
+
+        collisions.forEach(plane => {
+            if(plane instanceof PlaneCollider) {
+                if(plane.tags.includes("slope")){
+                    onSlope = true;
+                }
+                else{
+                    player.move({y: -player.nextMove[1]});
+                }
+            }
+        });
+
+        if(onSlope){
+            physics.climbSlope(player, playerCol);
+        }
+    }
+});
+
+
+
+scene.addChild(player);
+
+const cat = new Model({ translation: [2, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: catTexture, gltfPath: pathcat });
+await cat.createMesh(pathcat);
+scene.addChild(cat);
+
+const mon = new Model({ translation: [2, 5, -2], scale: [1, 1, 1], euler: [0, 0, 0], texture: monkeyTexture, gltfPath: pathmon });
+await mon.createMesh(pathmon);
+scene.addChild(mon);
+
+const col = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: true });
 mon.addComponent(col);
+col.addComponent({
+    update(){
+        col.nextMove ??= [0, -0.05, 0];
+
+        col.gameObject.move({y: col.nextMove[1]});
+
+        const collisions = col.collides();
+
+        collisions.forEach(plane => {
+            if(plane instanceof PlaneCollider) {
+                col.gameObject.move({y: -col.nextMove[1]});
+            }
+        });
+    }
+});
+
+
 
 const col2 = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "cat" });
 cat.addComponent(col2);
@@ -214,12 +268,12 @@ mon.setRotation([45, 0, 0]);
 mon.move({x : -0.1, z: -2.4, y: 6.4});
 cat.move({y: 0.6});
 
-mon.move({y: -21, z: 20});
+mon.move({y: -0, z: 10});
 
 mon2.move({z: -5, x: 2});
 
 col.collides();
-col2.collides();
+//col2.collides();
 
 
 // input

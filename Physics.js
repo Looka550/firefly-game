@@ -50,11 +50,24 @@ export class Physics{
         return collisions;
     }
 
-    boxCollision(){
+    climbSlope(player, playerCol){
+        while(true){
+            let onSlope = false;
+            let collisions = playerCol.collides();
 
-    }
+            collisions.forEach(plane => {
+                if(plane instanceof PlaneCollider){
+                    onSlope = true;
+                    return;
+                }
+            });
 
-    planeCollision(){
-
+            if(!onSlope){
+                break;
+            }
+            else{
+                player.move({y: 0.1});
+            }
+        }
     }
 }

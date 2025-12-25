@@ -6,6 +6,7 @@ import { Engine, getGlobalModelMatrix } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 import { physics } from "./main.js";
 import { quat, mat4, vec3 } from './glm.js';
+import { PlaneCollider } from "./PlaneCollider.js";
 
 export class BoxCollider extends GameObject{
     constructor({
@@ -42,12 +43,18 @@ export class BoxCollider extends GameObject{
 
     update(){
         if(this.gravity){
+            //this.move({y: -0.1});
+            //this.collides();
+        }
+        /*
+        if(this.gravity){
             this.velocity ??= [0, 0, 0]; // initialize if not present
             this.velocity[1] -= 0.981 * 0.016; // gravity per frame
             this.transform.translation[1] += this.velocity[1] * 0.016;
  
             // check collisions with planes
             const collisions = physics.checkCollisions(this);
+            console.log("checking collisions: " + collisions);
 
             collisions.forEach(col => {
                 if(col instanceof PlaneCollider){
@@ -56,7 +63,7 @@ export class BoxCollider extends GameObject{
                     const planeCenter = [modelMatrix[12], modelMatrix[13], modelMatrix[14]];
 
                     // assuming rotation around X-axis only
-                    const rotX = col.euler[0] * Math.PI / 180;
+                    const rotX = col.transform.getEuler()[0] * Math.PI / 180;
                     const localZ = this.transform.translation[2] - planeCenter[2];
                     const planeY = planeCenter[1] + Math.tan(rotX) * localZ;
 
@@ -68,6 +75,7 @@ export class BoxCollider extends GameObject{
                 }
             });
         }
+            */
     }
 
 
@@ -79,7 +87,7 @@ export class BoxCollider extends GameObject{
     }
 
     collides(){
-        physics.checkCollisions(this);
+        return(physics.checkCollisions(this));
     }
 
     getBoundaries() {

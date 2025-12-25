@@ -10,6 +10,7 @@ struct VertexOutput {
     @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
+    @location(3) color : vec4f,
 };
 
 struct FragmentOutput {
@@ -55,15 +56,19 @@ fn vertex(input: VertexInput) -> VertexOutput {
     output.position = worldPos.xyz;
     output.normal = (normalMatrix * vec4(input.normal, 0.0)).xyz;
     output.texcoords = input.texcoords;
+    output.color = input.color;
 
     return output;
 }
+
 
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var output: FragmentOutput;
 
-    let materialColor = textureSample(baseTexture, baseSampler, input.texcoords);
+    // --- choose material color ---
+    let materialColor = textureSample(baseTexture, baseSampler, input.texcoords) * input.color;
+
     let N = normalize(input.normal);
     let V = normalize(camera.position - input.position);
 
@@ -72,7 +77,7 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     var ambientSum : f32 = 0.0;
 
     let shininess : f32 = 32.0;
-    let specularIntensity : f32 = 0.3; // 0 = no specular, 1 = full
+    let specularIntensity : f32 = 0.3;
 
     for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
         let light = lightsBlock.lights[i];
@@ -81,13 +86,8 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         let distance = length(Lvec);
         let L = normalize(Lvec);
 
-        // --- Attenuation ---
         let attenuation = 1.0 / (1.0 + light.attenuation * distance * distance);
-
-        // --- Lambert ---
         let lambert = max(dot(N, L), 0.0);
-
-        // --- Blinn-Phong ---
         let H = normalize(L + V);
         let spec = pow(max(dot(N, H), 0.0), shininess);
 
@@ -96,12 +96,8 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         ambientSum += light.ambient;
     }
 
-    var color =
-        materialColor.rgb * (diffuseSum + ambientSum) +
-        vec3f(specularSum);
-
-    //color = vec3f(ambientSum);
-
+    var color = materialColor.rgb * (diffuseSum + ambientSum) + vec3f(specularSum);
     output.color = vec4f(color, materialColor.a);
+
     return output;
 }

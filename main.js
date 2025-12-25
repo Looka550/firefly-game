@@ -16,6 +16,8 @@ import { Cube } from './Cube.js';
 
 import { Model } from './Model.js';
 import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
+import { BoxCollider } from './BoxCollider.js';
+import { Physics } from './Physics.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -58,6 +60,7 @@ export const sampler = device.createSampler({
 
 // Create scene objects
 const scene = new Node();
+export const physics = new Physics();
 
 const camera = new Node();
 camera.addComponent(new Camera());
@@ -173,8 +176,20 @@ scene.addChild(cube2);
 
 
 // collisions
-import { BoxCollider } from './BoxCollider.js';
-mon.addComponent(new BoxCollider({ texture: blankTexture, debug: true }));
+const col = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey" });
+mon.addComponent(col);
+
+const col2 = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "cat" });
+cat.addComponent(col2);
+
+mon.setTransform({ scale: [1, 1, 1], translation: [1, 5, 3], euler: [0, 0, 0] });
+mon.setPosition([1, 5, 2]);
+mon.setRotation([45, 0, 0]);
+
+mon.move({x : -0.9, z: 2.3});
+
+col.collides();
+col2.collides();
 
 // input
 initInput(canvas);

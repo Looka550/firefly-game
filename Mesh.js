@@ -1,4 +1,5 @@
 import { device } from './main.js';
+import { quat, mat4, vec3 } from './glm.js';
 
 export class Mesh{
     constructor(vertices, indices, hasNormals = false){
@@ -6,14 +7,31 @@ export class Mesh{
         this.indices = indices;
         
         if(!hasNormals){
-            console.log("model does not provide normals")
+            //console.log("model does not provide normals")
             this.calculateNormals();
         }
         else{
-            console.log("model provides normals");
+            //console.log("model provides normals");
         }
         
         this.setBuffers();
+
+        this.localMin = vec3.fromValues(Infinity, Infinity, Infinity);
+        this.localMax = vec3.fromValues(-Infinity, -Infinity, -Infinity);
+
+        for (let i = 0; i < this.vertices.length; i += 13) {
+            const x = this.vertices[i + 0];
+            const y = this.vertices[i + 1];
+            const z = this.vertices[i + 2];
+
+            this.localMin[0] = Math.min(this.localMin[0], x);
+            this.localMin[1] = Math.min(this.localMin[1], y);
+            this.localMin[2] = Math.min(this.localMin[2], z);
+
+            this.localMax[0] = Math.max(this.localMax[0], x);
+            this.localMax[1] = Math.max(this.localMax[1], y);
+            this.localMax[2] = Math.max(this.localMax[2], z);
+        }
     }
 
     setBuffers(){

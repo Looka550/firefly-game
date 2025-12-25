@@ -182,11 +182,26 @@ mon.addComponent(col);
 const col2 = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "cat" });
 cat.addComponent(col2);
 
+
+const mon2 = new Model({ translation: [0, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: monkeyTexture, gltfPath: pathmon });
+await mon2.createMesh(pathmon);
+scene.addChild(mon2);
+
+import { PlaneCollider } from './PlaneCollider.js';
+
+const plane = new PlaneCollider({ texture: blankTexture, debug: true, name: "plane" });
+scene.addChild(plane);
+
+plane.move({y:3});
+
 mon.setTransform({ scale: [1, 1, 1], translation: [1, 5, 3], euler: [0, 0, 0] });
 mon.setPosition([1, 5, 4]);
 mon.setRotation([45, 0, 0]);
 
-mon.move({x : -0.1, z: -2.4, y: 5.5});
+plane.setRotation([20, 0, 0])
+
+mon.move({x : -0.1, z: -2.4, y: 6.4});
+cat.move({y: 0.6});
 
 col.collides();
 col2.collides();

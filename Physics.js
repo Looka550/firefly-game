@@ -1,4 +1,5 @@
 import { BoxCollider } from "./BoxCollider.js";
+import { PlaneCollider } from "./PlaneCollider.js";
 
 export class Physics{
     constructor({
@@ -26,15 +27,20 @@ export class Physics{
             if(col === other){
                 return;
             }
-            if(col instanceof BoxCollider){
+            if(other instanceof BoxCollider){
                 console.log(`box collider: ${col.name} : ${other.name}`);
                 if(col.AABBcollision(other)){
                     console.log(`COLLISION: ${col.transform.translation} : ${other.transform.translation}`);
                     collisions.push(other);
                 }
             }
-            else if(col instanceof PlaneCollider){
+            else if(other instanceof PlaneCollider){
                 console.log(`plane collider: ${col.name} : ${other.name}`);
+                if(other.AABBcollision(col)){
+                    console.log(`PLANE COLLISION: ${col.transform.translation} : ${other.transform.translation}`);
+                    collisions.push(other);
+                }
+
             }
             else{
                 console.log(`unknown collider: ${col.name} : ${other.name}`);

@@ -3,7 +3,7 @@ import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
 import { Engine } from "./SceneUtils.js";
-import { sampler } from "./main.js";
+import { sampler, blankTextureView } from "./main.js";
 import { GLTFLoader } from "./webgpu/engine/loaders/GLTFLoader.js";
 import { Model as GLTFModel} from './webgpu/engine/core/core.js';
 
@@ -15,6 +15,7 @@ export class Model extends GameObject {
         name = "Model",
         gltfPath,
         texture,
+        normalTexture = null
     } = {}){
         super({
             euler,
@@ -28,43 +29,29 @@ export class Model extends GameObject {
             }
         });
         this.textureRenderer = new TextureRenderer();
-        
-        // model matrix
-        this.modelBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // view projection matrix
-        this.viewProjBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-
-        this.normalBuffer = Engine.device.createBuffer({
-            size: 64, // 4x4 matrix
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // bind group
-        this.bindGroup = Engine.device.createBindGroup({
-            layout: Engine.pipeline.getBindGroupLayout(0),
-            entries: [
-                { binding: 0, resource: { buffer: this.modelBuffer } },
-                { binding: 1, resource: { buffer: this.viewProjBuffer } },
-                { binding: 2, resource: texture.createView() },
-                { binding: 3, resource: sampler },
-                { binding: 4, resource: { buffer: this.normalBuffer } },
-            ]
-        });
+        this.gltfPath = gltfPath;
 
         this.providesNormals = false;
+
+        this.mesh = null;
+        this.loadMesh(texture, normalTexture, sampler, blankTextureView);
     }
 
-    async createMesh(path){
+    async loadMesh(texture, normalTexture, sampler, blankTextureView) {
+        const structure = await this.createMesh(); // wait for GLTF
+
+        this.mesh = new Mesh({
+            structure,
+            sampler,
+            texture,
+            normalTexture,
+            blankTextureView
+        });
+    }
+
+    async createMesh(){
         const gltfLoader = new GLTFLoader();
-        await gltfLoader.load(new URL(path, import.meta.url));
+        await gltfLoader.load(new URL(this.gltfPath, import.meta.url));
 
         const gtlfScene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
@@ -120,7 +107,10 @@ export class Model extends GameObject {
             indices = new Uint32Array(mesh.indices);
         });
 
-        this.mesh = new Mesh(vertices, indices, this.providesNormals);
+        return {
+            "vertices": vertices,
+            "indices": indices
+        };
 
         //console.log(this.mesh.vertices);
         //console.log(this.mesh.indices);

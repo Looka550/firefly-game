@@ -3,7 +3,7 @@ import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
 import { Engine } from "./SceneUtils.js";
-import { sampler } from "./main.js";
+import { sampler, blankTextureView } from "./main.js";
 
 export class Cube extends GameObject {
     constructor({
@@ -11,7 +11,8 @@ export class Cube extends GameObject {
         translation = [0, 0, 0],
         scale = [1, 1, 1],
         name = "Cube",
-        texture
+        texture,
+        normalTexture = null
     } = {}){
         super({
             euler,
@@ -25,40 +26,18 @@ export class Cube extends GameObject {
             }
         });
         this.textureRenderer = new TextureRenderer();
-        this.mesh = this.createMesh();
-
-       // model matrix
-        this.modelBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // view projection matrix
-        this.viewProjBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-
-        this.normalBuffer = Engine.device.createBuffer({
-            size: 64, // 4x4 matrix
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // bind group
-        this.bindGroup = Engine.device.createBindGroup({
-            layout: Engine.pipeline.getBindGroupLayout(0),
-            entries: [
-                { binding: 0, resource: { buffer: this.modelBuffer } },
-                { binding: 1, resource: { buffer: this.viewProjBuffer } },
-                { binding: 2, resource: texture.createView() },
-                { binding: 3, resource: sampler },
-                { binding: 4, resource: { buffer: this.normalBuffer } },
-            ]
+        const structure = this.createMesh();
+        this.mesh = new Mesh({
+            structure: structure,
+            sampler: sampler,
+            texture: texture,
+            normalTexture: normalTexture,
+            blankTextureView: blankTextureView
         });
     }
 
     createMesh(){
+
         const vertices = new Float32Array([
             // position    color   uv
             // FRONT
@@ -106,9 +85,11 @@ export class Cube extends GameObject {
             16, 17, 18,  16, 18, 19,   // top
             20, 21, 22,  20, 22, 23,   // bottom
         ]);
-
-        const mesh = new Mesh(vertices, indices);
-        return mesh;
+        
+        return {
+            "vertices": vertices,
+            "indices": indices
+        };
     }
 }
 

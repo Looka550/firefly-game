@@ -1,20 +1,37 @@
 import { device } from './main.js';
 import { quat, mat4, vec3 } from './glm.js';
+import { Engine } from './SceneUtils.js';
 
 export class Mesh{
-    constructor(vertices, indices, hasNormals = false){
-        this.vertices = vertices;
-        this.indices = indices;
-        
-        if(!hasNormals){
-            //console.log("model does not provide normals")
+    constructor({
+        hasNormals = false,
+        structure,
+        texture,
+        normalTexture,
+        blankTextureView,
+        sampler
+    }){
+        if (!structure || !structure.vertices || !structure.indices) {
+            throw new Error("Mesh created without valid geometry structure");
+        }
+
+        this.vertices = structure.vertices;
+        this.indices = structure.indices;
+        this.texture = texture;
+        this.normalTexture = normalTexture;
+        this.blankTextureView = blankTextureView;
+        this.sampler = sampler;
+
+        this.setBindGroup();
+
+        if (!hasNormals) {
             this.calculateNormals();
         }
         else{
             //console.log("model provides normals");
         }
         
-        this.setBuffers();
+        this.setVertexBuffers();
 
         this.localMin = vec3.fromValues(Infinity, Infinity, Infinity);
         this.localMax = vec3.fromValues(-Infinity, -Infinity, -Infinity);
@@ -33,8 +50,52 @@ export class Mesh{
             this.localMax[2] = Math.max(this.localMax[2], z);
         }
     }
+    setBindGroup(){
+       // model matrix
+        this.modelBuffer = Engine.device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
 
-    setBuffers(){
+        // view projection matrix
+        this.viewProjBuffer = Engine.device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+
+        this.normalBuffer = Engine.device.createBuffer({
+            size: 64, // 4x4 matrix
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        this.hasNormalMapBuffer = Engine.device.createBuffer({
+            size: 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        Engine.device.queue.writeBuffer(
+            this.hasNormalMapBuffer,
+            0,
+            new Uint32Array([this.normalTexture ? 1 : 0])
+        );
+
+        // bind group
+        this.bindGroup = Engine.device.createBindGroup({
+            layout: Engine.pipeline.getBindGroupLayout(0),
+            entries: [
+                { binding: 0, resource: { buffer: this.modelBuffer } },
+                { binding: 1, resource: { buffer: this.viewProjBuffer } },
+                { binding: 2, resource: this.texture.createView() },
+                { binding: 3, resource: this.sampler },
+                { binding: 4, resource: { buffer: this.normalBuffer } },
+                { binding: 5, resource: this.sampler },
+                { binding: 6, resource: this.normalTexture ? this.normalTexture.createView() : this.blankTextureView },
+                { binding: 7, resource: { buffer: this.hasNormalMapBuffer } }
+            ]
+        });
+    }
+    setVertexBuffers(){
         this.vertexBuffer = device.createBuffer({
             size: this.vertices.byteLength,
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,

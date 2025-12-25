@@ -22,6 +22,10 @@ struct FragmentOutput {
 @group(0) @binding(2) var baseTexture : texture_2d<f32>;
 @group(0) @binding(3) var baseSampler : sampler;
 @group(0) @binding(4) var<uniform> normalMatrix : mat4x4f;
+@group(0) @binding(5) var normalSampler : sampler;
+@group(0) @binding(6) var normalTexture : texture_2d<f32>;
+@group(0) @binding(7) var<uniform> hasNormalMap : u32;
+
 
 struct LightUniforms {
     position    : vec3f,
@@ -65,11 +69,18 @@ fn vertex(input: VertexInput) -> VertexOutput {
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var output: FragmentOutput;
-
+    let test = textureSample(normalTexture, normalSampler, input.texcoords);
     // --- choose material color ---
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords) * input.color;
 
-    let N = normalize(input.normal);
+    var N = normalize(input.normal);
+
+    if (hasNormalMap == 1u) {
+        let normalSample = textureSample(normalTexture, normalSampler, input.texcoords).xyz;
+        let tangentNormal = normalize(normalSample * 2.0 - 1.0);
+        N = normalize(input.normal + tangentNormal * 0.5);
+    }
+
     let V = normalize(camera.position - input.position);
 
     var diffuseSum : f32 = 0.0;

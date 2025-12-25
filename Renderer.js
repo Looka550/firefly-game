@@ -213,11 +213,11 @@ export class Renderer{
                 mat4.invert(normalMatrix, normalMatrix);
                 mat4.transpose(normalMatrix, normalMatrix);
 
-                this.device.queue.writeBuffer(node.modelBuffer, 0, modelMatrix);
-                this.device.queue.writeBuffer(node.viewProjBuffer, 0, viewProjMatrix);
-                this.device.queue.writeBuffer(node.normalBuffer, 0, normalMatrix);
+                this.device.queue.writeBuffer(node.mesh.modelBuffer, 0, modelMatrix);
+                this.device.queue.writeBuffer(node.mesh.viewProjBuffer, 0, viewProjMatrix);
+                this.device.queue.writeBuffer(node.mesh.normalBuffer, 0, normalMatrix);
 
-                renderPass.setBindGroup(0, node.bindGroup);
+                renderPass.setBindGroup(0, node.mesh.bindGroup);
 
                 renderPass.setBindGroup(3, this.lightsBindGroup);
                 renderPass.setBindGroup(1, this.cameraBindGroup);

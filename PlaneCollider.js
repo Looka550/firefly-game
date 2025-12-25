@@ -1,6 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Engine, getGlobalModelMatrix } from "./SceneUtils.js";
-import { sampler } from "./main.js";
+import { sampler, blankTextureView } from "./main.js";
 import { physics } from "./main.js";
 import { vec3 } from './glm.js';
 import { Mesh } from './Mesh.js';
@@ -15,43 +15,25 @@ export class PlaneCollider extends GameObject {
         translation = [0, 0, 0],
         scale = [10, 1, 10],
         dynamic = false,
-        axis = "y"
+        axis = "y",
+        normalTexture = null
     } = {}) {
         super({ euler, translation, scale, name });
 
-        this.mesh = this.createMesh();
         this.dontRender = !debug;
         this.dynamic = dynamic;
         this.axis = axis;
         physics.addCollider(this);
 
-        // model matrix
-        this.modelBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        const structure = this.createMesh();
+        this.mesh = new Mesh({
+            structure: structure,
+            sampler: sampler,
+            texture: texture,
+            normalTexture: normalTexture,
+            blankTextureView: blankTextureView
         });
 
-        this.viewProjBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        this.normalBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // bind group
-        this.bindGroup = Engine.device.createBindGroup({
-            layout: Engine.pipeline.getBindGroupLayout(0),
-            entries: [
-                { binding: 0, resource: { buffer: this.modelBuffer } },
-                { binding: 1, resource: { buffer: this.viewProjBuffer } },
-                { binding: 2, resource: texture.createView() },
-                { binding: 3, resource: sampler },
-                { binding: 4, resource: { buffer: this.normalBuffer } },
-            ]
-        });
 
         this.localMin = vec3.clone(this.mesh.localMin);
         this.localMax = vec3.clone(this.mesh.localMax);
@@ -97,7 +79,9 @@ export class PlaneCollider extends GameObject {
         ]);
         const indices = new Uint32Array([0,1,2, 0,2,3]);
 
-        const mesh = new Mesh(vertices, indices);
-        return mesh;
+        return {
+            "vertices": vertices,
+            "indices": indices
+        };
     }
 }

@@ -3,7 +3,7 @@ import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
 import { Engine, getGlobalModelMatrix } from "./SceneUtils.js";
-import { sampler } from "./main.js";
+import { sampler, blankTextureView } from "./main.js";
 import { physics } from "./main.js";
 import { quat, mat4, vec3 } from './glm.js';
 
@@ -16,51 +16,29 @@ export class BoxCollider extends GameObject{
         euler = [0, 0, 0],
         translation = [0, 0, 0],
         scale = [1, 3, 1],
-        dynamic = false
+        dynamic = false,
+        normalTexture = null
     } = {}) {
         super({euler: euler, translation: translation, scale: scale, name: name});
         this.scale = scale;
 
-        this.mesh = this.createMesh();
         this.dontRender = !debug;
         this.dynamic = dynamic;
-        
-       // model matrix
-        this.modelBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // view projection matrix
-        this.viewProjBuffer = Engine.device.createBuffer({
-            size: 64,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-
-        this.normalBuffer = Engine.device.createBuffer({
-            size: 64, // 4x4 matrix
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        // bind group
-        this.bindGroup = Engine.device.createBindGroup({
-            layout: Engine.pipeline.getBindGroupLayout(0),
-            entries: [
-                { binding: 0, resource: { buffer: this.modelBuffer } },
-                { binding: 1, resource: { buffer: this.viewProjBuffer } },
-                { binding: 2, resource: texture.createView() },
-                { binding: 3, resource: sampler },
-                { binding: 4, resource: { buffer: this.normalBuffer } },
-            ]
-        });
-
-        this.localMin = vec3.clone(this.mesh.localMin);
-        this.localMax = vec3.clone(this.mesh.localMax);
 
         this.min = vec3.create();
         this.max = vec3.create();
+
+        const structure = this.createMesh();
+        this.mesh = new Mesh({
+            structure: structure,
+            sampler: sampler,
+            texture: texture,
+            normalTexture: normalTexture,
+            blankTextureView: blankTextureView
+        });
     }
+
+
 
     onAttach(gameObject){
         gameObject.addChild(this);
@@ -73,6 +51,9 @@ export class BoxCollider extends GameObject{
     }
 
     getBoundaries() {
+        this.localMin = vec3.clone(this.mesh.localMin);
+        this.localMax = vec3.clone(this.mesh.localMax);
+        
         const parentMatrix = getGlobalModelMatrix(this.gameObject);
 
         const scaleMatrix = mat4.create();
@@ -201,8 +182,10 @@ export class BoxCollider extends GameObject{
             20, 21, 22,  20, 22, 23,   // bottom
         ]);
 
-        const mesh = new Mesh(vertices, indices);
-        return mesh;
+        return {
+            "vertices": vertices,
+            "indices": indices
+        };
     }
 /*
     update() {

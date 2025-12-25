@@ -37,10 +37,13 @@ const module = device.createShaderModule({ code });
 
 // textures
 
+const monkeyNormal = await loadTexture(new URL("./webgpu/models/monkey/normal.webp", import.meta.url));
+
 const bricksTexture = await loadTexture(new URL("./bricks.png", import.meta.url));
 const blankTexture = await loadTexture(new URL("./blank.png", import.meta.url));
 const monkeyTexture = await loadTexture(new URL("./webgpu/models/monkey/base.png", import.meta.url));
 const catTexture = await loadTexture(new URL("./webgpu/models/cat/base.avif", import.meta.url));
+export const blankTextureView = blankTexture.createView();
 
 export const sampler = device.createSampler({
     minFilter : 'linear',
@@ -183,7 +186,7 @@ const col2 = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true
 cat.addComponent(col2);
 
 
-const mon2 = new Model({ translation: [0, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: monkeyTexture, gltfPath: pathmon });
+const mon2 = new Model({ translation: [0, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: monkeyTexture, gltfPath: pathmon, normalTexture: monkeyNormal });
 await mon2.createMesh(pathmon);
 scene.addChild(mon2);
 
@@ -202,6 +205,8 @@ plane.setRotation([20, 0, 0])
 
 mon.move({x : -0.1, z: -2.4, y: 6.4});
 cat.move({y: 0.6});
+
+mon2.move({z: -5, x: 2});
 
 col.collides();
 col2.collides();

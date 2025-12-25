@@ -1,4 +1,4 @@
-import { mat4 } from './glm.js';
+import { mat4, vec3, quat } from './glm.js';
 import { Transform } from './Transform.js';
 import { Camera } from './Camera.js';
 import { device } from './main.js';

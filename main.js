@@ -19,6 +19,8 @@ import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
 import { BoxCollider } from './BoxCollider.js';
 import { Physics } from './Physics.js';
 import { PlaneCollider } from './PlaneCollider.js';
+import { Sphere } from './Sphere.js';
+import { Firefly } from './Firefly.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -65,7 +67,7 @@ export const sampler = device.createSampler({
 
 
 // Create scene objects
-const scene = new Node();
+export const scene = new Node();
 export const physics = new Physics();
 
 const camera = new Node();
@@ -76,7 +78,7 @@ camera.addComponent(new Transform({
 
 camera.addComponent({
     update(){
-        parseInput(player, false);
+        parseInput(player, true);
     }
 })
 
@@ -186,12 +188,23 @@ scene.addChild(slope1);
 const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
+// world objects
+/*
+const pathfirefly = "./assets/firefly2/scene.gltf";
+const fireflyTexture = await loadTexture(new URL("./assets/firefly2/textures/Firefly_baseColor.png", import.meta.url));
+const f = new Model({ translation: [-1, 5, -1], scale: [1, 1, 1], euler: [0, 0, 0], texture: fireflyTexture, gltfPath: pathfirefly });
+await f.createMesh(pathfirefly);
+scene.addChild(f);
+*/
+const firefly = new Firefly({texture: blankTexture, scale: [0.3, 0.3, 0.3]});
+scene.addChild(firefly);
 
 // collisions
 const player = new GameObject();
 player.addChild(camera);
 const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: true });
 player.addComponent(playerCol);
+/*
 playerCol.addComponent({
     update(){
         player.nextMove ??= [0, -0.05, 0];
@@ -217,7 +230,7 @@ playerCol.addComponent({
         }
     }
 });
-
+*/
 
 
 scene.addChild(player);
@@ -274,6 +287,8 @@ mon2.move({z: -5, x: 2});
 
 col.collides();
 //col2.collides();
+
+
 
 
 // input

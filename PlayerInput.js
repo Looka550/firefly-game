@@ -88,7 +88,7 @@ export function parseInput(player, flight=true){
         move[1] -= speed;
     }
 
-    move[1] = 0;
+    //move[1] = 0;
 
     transform.translation[0] += move[0];
     transform.translation[1] += move[1];

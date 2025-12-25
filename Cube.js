@@ -12,20 +12,16 @@ export class Cube extends GameObject {
         scale = [1, 1, 1],
         name = "Cube",
         texture,
-        normalTexture = null
+        normalTexture = null,
+        color = [1, 1, 1, 1]
     } = {}){
         super({
             euler,
             translation,
             scale,
             name,
-            update: () => {
-                const t = performance.now() / 1000;
-                const transform = this.getComponentOfType(Transform);
-                const rotation = transform.rotation;
-            }
         });
-        this.textureRenderer = new TextureRenderer();
+        this.color = color;
         const structure = this.createMesh();
         this.mesh = new Mesh({
             structure: structure,
@@ -41,40 +37,40 @@ export class Cube extends GameObject {
         const vertices = new Float32Array([
             // position    color   uv
             // FRONT
-            -1, -1,  1, 1,   0, 1, 0, 1,    0, 0,   1, 1, 1,
-             1, -1,  1, 1,   1, 0, 1, 1,    1, 0,   1, 1, 1,
-             1,  1,  1, 1,   0, 0, 0, 1,    1, 1,   1, 1, 1,
-            -1,  1,  1, 1,   1, 1, 1, 1,    0, 1,   1, 1, 1,
+            -1, -1,  1, 1,   ...this.color,    0, 0,   1, 1, 1,
+             1, -1,  1, 1,   ...this.color,    1, 0,   1, 1, 1,
+             1,  1,  1, 1,   ...this.color,    1, 1,   1, 1, 1,
+            -1,  1,  1, 1,   ...this.color,    0, 1,   1, 1, 1,
 
             // BACK
-             1, -1, -1, 1,   0, 1, 1, 1,    0, 0,   1, 1, 1,
-            -1, -1, -1, 1,   1, 0, 0, 1,    1, 0,   1, 1, 1,
-            -1,  1, -1, 1,   0, 0, 1, 1,    1, 1,   1, 1, 1,
-             1,  1, -1, 1,   1, 1, 0, 1,    0, 1,   1, 1, 1,
+             1, -1, -1, 1,   ...this.color,    0, 0,   1, 1, 1,
+            -1, -1, -1, 1,   ...this.color,    1, 0,   1, 1, 1,
+            -1,  1, -1, 1,   ...this.color,    1, 1,   1, 1, 1,
+             1,  1, -1, 1,   ...this.color,    0, 1,   1, 1, 1,
 
             // LEFT
-            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,   1, 1, 1,
-            -1, -1,  1, 1,   0, 1, 0, 1,    1, 0,   1, 1, 1,
-            -1,  1,  1, 1,   1, 1, 1, 1,    1, 1,   1, 1, 1,
-            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,   1, 1, 1,
+            -1, -1, -1, 1,   ...this.color,    0, 0,   1, 1, 1,
+            -1, -1,  1, 1,   ...this.color,    1, 0,   1, 1, 1,
+            -1,  1,  1, 1,   ...this.color,    1, 1,   1, 1, 1,
+            -1,  1, -1, 1,   ...this.color,    0, 1,   1, 1, 1,
 
             // RIGHT
-            1, -1,  1, 1,   1, 0, 1, 1,    0, 0,   1, 1, 1,
-            1, -1, -1, 1,   0, 1, 1, 1,    1, 0,   1, 1, 1,
-            1,  1, -1, 1,   1, 1, 0, 1,    1, 1,   1, 1, 1,
-            1,  1,  1, 1,   0, 0, 0, 1,    0, 1,   1, 1, 1,
+            1, -1,  1, 1,   ...this.color,     0, 0,   1, 1, 1,
+            1, -1, -1, 1,   ...this.color,     1, 0,   1, 1, 1,
+            1,  1, -1, 1,   ...this.color,     1, 1,   1, 1, 1,
+            1,  1,  1, 1,   ...this.color,     0, 1,   1, 1, 1,
 
             // TOP
-            -1,  1,  1, 1,   1, 1, 1, 1,    0, 0,   1, 1, 1,
-             1,  1,  1, 1,   0, 0, 0, 1,    1, 0,   1, 1, 1,
-             1,  1, -1, 1,   1, 1, 0, 1,    1, 1,   1, 1, 1,
-            -1,  1, -1, 1,   0, 0, 1, 1,    0, 1,   1, 1, 1,
+            -1,  1,  1, 1,   ...this.color,    0, 0,   1, 1, 1,
+             1,  1,  1, 1,   ...this.color,    1, 0,   1, 1, 1,
+             1,  1, -1, 1,   ...this.color,    1, 1,   1, 1, 1,
+            -1,  1, -1, 1,   ...this.color,    0, 1,   1, 1, 1,
 
             // BOTTOM
-            -1, -1, -1, 1,   1, 0, 0, 1,    0, 0,   1, 1, 1,
-             1, -1, -1, 1,   0, 1, 1, 1,    1, 0,   1, 1, 1,
-             1, -1,  1, 1,   1, 0, 1, 1,    1, 1,   1, 1, 1,
-            -1, -1,  1, 1,   0, 1, 0, 1,    0, 1,   1, 1, 1,
+            -1, -1, -1, 1,   ...this.color,    0, 0,   1, 1, 1,
+             1, -1, -1, 1,   ...this.color,    1, 0,   1, 1, 1,
+             1, -1,  1, 1,   ...this.color,    1, 1,   1, 1, 1,
+            -1, -1,  1, 1,   ...this.color,    0, 1,   1, 1, 1,
         ]);
 
         const indices = new Uint32Array([
@@ -92,26 +88,3 @@ export class Cube extends GameObject {
         };
     }
 }
-
-
-/* // spinning
-export class Cube extends GameObject {
-    constructor({
-        rotationSpeed = [0.6, 0.7],
-        translation = [0,0,0] } = {}
-    ){
-        super({
-            transformOptions: { translation },
-            updateFunction: () => {
-                const t = performance.now() / 1000;
-                const transform = this.getComponentOfType(Transform);
-                const rotation = transform.rotation;
-
-                quat.identity(rotation);
-                quat.rotateX(rotation, rotation, t * 0.5);
-                quat.rotateY(rotation, rotation, t * 0.5);
-            }
-        });
-    }
-}
-    */

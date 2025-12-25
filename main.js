@@ -183,10 +183,10 @@ const col2 = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true
 cat.addComponent(col2);
 
 mon.setTransform({ scale: [1, 1, 1], translation: [1, 5, 3], euler: [0, 0, 0] });
-mon.setPosition([1, 5, 2]);
+mon.setPosition([1, 5, 4]);
 mon.setRotation([45, 0, 0]);
 
-mon.move({x : -0.9, z: 2.3});
+mon.move({x : -0.1, z: -2.4, y: 5.5});
 
 col.collides();
 col2.collides();

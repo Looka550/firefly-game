@@ -15,10 +15,11 @@ export class BoxCollider extends GameObject{
         debug = false,
         euler = [0, 0, 0],
         translation = [0, 0, 0],
-        scale = [1, 1, 1],
+        scale = [1, 3, 1],
         dynamic = false
     } = {}) {
         super({euler: euler, translation: translation, scale: scale, name: name});
+        this.scale = scale;
 
         this.mesh = this.createMesh();
         this.dontRender = !debug;
@@ -72,7 +73,14 @@ export class BoxCollider extends GameObject{
     }
 
     getBoundaries() {
-        const modelMatrix = getGlobalModelMatrix(this.gameObject);
+        const parentMatrix = getGlobalModelMatrix(this.gameObject);
+
+        const scaleMatrix = mat4.create();
+        mat4.fromScaling(scaleMatrix, this.scale);
+
+        // combine parent matrix with collider scale
+        const modelMatrix = mat4.create();
+        mat4.multiply(modelMatrix, parentMatrix, scaleMatrix);
 
         const corners = [
             [this.localMin[0], this.localMin[1], this.localMin[2]],
@@ -99,6 +107,26 @@ export class BoxCollider extends GameObject{
             this.max[1] = Math.max(this.max[1], world[1]);
             this.max[2] = Math.max(this.max[2], world[2]);
         }
+
+        // make box smaller if its rotated (because rotated boxes have a larger hitbox)
+        const rot = this.gameObject.transform.getEuler();
+        if(rot != [0, 0, 0]){
+            const size = vec3.sub(vec3.create(), this.max, this.min);
+            const marginFactor = 0.04; // % of size
+            const margin = vec3.scale(vec3.create(), size, marginFactor);
+
+            this.min[0] += margin[0];
+            this.min[1] += margin[1];
+            this.min[2] += margin[2];
+
+            this.max[0] -= margin[0];
+            this.max[1] -= margin[1];
+            this.max[2] -= margin[2];
+        }
+        console.log("rotated: " + rot);
+        console.log("min: " + this.min);
+        console.log("max: " + this.max);
+        console.log("modelMatrix: " + modelMatrix);
     }
 
     AABBcollision(other){

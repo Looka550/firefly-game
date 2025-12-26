@@ -21,6 +21,7 @@ import { Physics } from './Physics.js';
 import { PlaneCollider } from './PlaneCollider.js';
 import { Sphere } from './Sphere.js';
 import { Firefly } from './Firefly.js';
+import { Cylinder } from './Cylinder.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -199,8 +200,11 @@ scene.addChild(f);
 const firefly = new Firefly({texture: blankTexture, scale: [0.3, 0.3, 0.3]});
 scene.addChild(firefly);
 
-const s = new Sphere({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
+const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
+
+const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
+scene.addChild(c);
 
 
 

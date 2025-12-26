@@ -32,9 +32,68 @@ export class Tree extends GameObject {
     }
 
     build(){
-        this.trunk = new Cylinder({ translation: [-2, 5, -2], scale: [2, 5, 2], euler: [0, 0, 0], texture: this.texture, color: [0.278, 0.227, 0.227, 1] });
+        this.getTrunk();
+        this.getBranchCircle({n: 6});
+        this.getLeavesCircle({n: 6});
+    }
+
+    getTrunk(){
+        // trunk
+        this.trunk = new Cylinder({
+            translation: [0, 0, 0],
+            scale: [2, 10, 2],
+            euler: [0, 0, 0],
+            texture: this.texture,
+            color: [0.278, 0.227, 0.227, 1],
+        });
         this.addChild(this.trunk);
-        this.ball = new Sphere({ translation: [-2, 14, -2], scale: [5, 5, 5], euler: [0, 0, 0], texture: this.texture, color: [0.067, 1, 0, 1] });
-        this.addChild(this.ball);
+    }
+
+    getLeavesCircle({n = 3, offset = [12, 22, -6], euler = [45, 120, 0], scale = [10, 10, 10]}){
+        this.branches = new GameObject();
+
+        for (let i = 0; i < n; i++){
+            const angle = (360 / n) * i;
+
+            const branch = new Sphere({
+                translation: offset,
+                scale: scale,
+                euler: euler,
+                texture: this.texture,
+                color: [0.051, 0.451, 0.02, 1],
+            });
+
+            const wrapper = new GameObject();
+            wrapper.addChild(branch);
+            wrapper.setRotation([0, angle, 0]);
+
+            this.branches.addChild(wrapper);
+        }
+
+        this.addChild(this.branches);
+    }
+
+    getBranchCircle({n = 3, offset = [6, 14, -3], euler = [45, 120, 0], scale = [1, 10, 1]}){
+        this.branches = new GameObject();
+
+        for (let i = 0; i < n; i++) {
+            const angle = (360 / n) * i;
+
+            const branch = new Cylinder({
+                translation: offset,
+                scale: scale,
+                euler: euler,
+                texture: this.texture,
+                color: [0.278, 0.227, 0.227, 1],
+            });
+
+            const wrapper = new GameObject();
+            wrapper.addChild(branch);
+            wrapper.setRotation([0, angle, 0]);
+
+            this.branches.addChild(wrapper);
+        }
+
+        this.addChild(this.branches);
     }
 }

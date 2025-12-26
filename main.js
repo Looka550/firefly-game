@@ -99,7 +99,7 @@ let pathmon = "./webgpu/models/monkey/monkey.gltf";
 //scene.addChild(cube3);
 
 
-const ambient = 0.2;
+const ambient = 0.5;
 
 /*
 const light = new GameObject({
@@ -208,7 +208,7 @@ scene.addChild(s);
 //const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 //scene.addChild(c);
 
-const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, -10, 0]});
+const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, 1, 0]});
 scene.addChild(tree);
 
 // collisions

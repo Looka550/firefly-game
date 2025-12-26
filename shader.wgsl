@@ -26,6 +26,11 @@ struct FragmentOutput {
 @group(0) @binding(6) var normalTexture : texture_2d<f32>;
 @group(0) @binding(7) var<uniform> hasNormalMap : u32;
 
+@group(2) @binding(0) var shadowMap : texture_depth_2d;
+@group(2) @binding(1) var shadowSampler : sampler_comparison;
+@group(2) @binding(2) var<uniform> lightViewProj : mat4x4f;
+
+
 
 struct LightUniforms {
     position    : vec3f,
@@ -66,7 +71,47 @@ fn vertex(input: VertexInput) -> VertexOutput {
     return output;
 }
 
+@fragment
+fn fragment(input: VertexOutput) -> FragmentOutput {
+    var out: FragmentOutput;
 
+    // Dummy read to prevent optimization
+    _ = shadowMap;
+    _ = shadowSampler;
+    _ = lightViewProj;
+    _ = lightsBlock;
+    _ = camera;
+    _ = baseTexture;
+    _ = baseSampler;
+    _ = normalSampler;
+    _ = normalTexture;
+    _ = hasNormalMap;
+
+    let lightPos = lightViewProj * vec4f(input.position, 1.0);
+
+    let flippedPos = vec3f(input.position.x, input.position.y, -input.position.z);
+    let lightPosOffset = lightViewProj * vec4f(flippedPos, 1.0);
+
+    let proj = lightPosOffset.xyz / lightPosOffset.w;
+    var uv = proj.xy * 0.5 + 0.5;
+    uv.x -= 1.0 / f32(textureDimensions(shadowMap).x); // shift left by 1 texel
+    uv = clamp(uv, vec2f(0.0), vec2f(1.0));
+
+    // Convert uv to integer coordinates for textureLoad
+    let texSize: vec2u = vec2u(textureDimensions(shadowMap));
+    let texCoord: vec2u = vec2u(uv * vec2f(texSize));
+
+    // Load depth directly
+    let depth: f32 = textureLoad(shadowMap, texCoord, 0);
+
+    out.color = vec4f(depth, depth, depth, 1.0);
+    return out;
+}
+
+
+
+
+/*
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var output: FragmentOutput;
@@ -108,8 +153,26 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         ambientSum += light.ambient;
     }
 
-    var color = materialColor.rgb * (diffuseSum + ambientSum) + vec3f(specularSum);
+// ---- SHADOW TEST (AFTER LIGHTING COMPUTATION) ----
+let lightPos = lightViewProj * vec4f(input.position, 1.0);
+let proj = lightPos.xyz / lightPos.w;
+
+// clamp UVs to [0,1] to avoid branching
+let uv = clamp(proj.xy * 0.5 + 0.5, vec2f(0.0), vec2f(1.0));
+
+// depth compare (ALWAYS executed, uniform control flow)
+let shadow = textureSampleCompare(
+    shadowMap,
+    shadowSampler,
+    uv,
+    proj.z - 0.001
+);
+
+
+
+    var color = materialColor.rgb * ((diffuseSum * shadow) + ambientSum)
+          + vec3f(specularSum * shadow);
     output.color = vec4f(color, materialColor.a);
 
     return output;
-}
+}*/

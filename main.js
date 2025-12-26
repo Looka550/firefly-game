@@ -40,6 +40,9 @@ canvas.addEventListener("click", () => {
 // Fetch and compile shaders
 const code = await fetch('shader.wgsl').then(response => response.text());
 const module = device.createShaderModule({ code });
+        export const shadowModule = device.createShaderModule({
+            code: await fetch('./shadow.wgsl').then(r => r.text()),
+        });
 
 // textures
 
@@ -154,7 +157,7 @@ const light3 = new GameObject({
     name: "Light",
 });
 
-const lightPosition3 = [2, 5, 4];
+const lightPosition3 = [15, 30, 15];
 
 // dodamo transformacijo (položaj luči)
 light3.addComponent(new Transform({
@@ -168,7 +171,7 @@ light3.addComponent(new Light({
 }));
 scene.addChild(light3);
 
-const lightMarker3 = new Model({ translation: lightPosition3, scale: [0.1, 0.1, 0.1], texture: blankTexture, gltfPath: pathmon });
+const lightMarker3 = new Model({ translation: lightPosition3, scale: [0.2, 0.2, 0.2], texture: blankTexture, gltfPath: pathmon });
 await lightMarker3.createMesh(pathmon);
 // Uporabi teksturo ali material, ki je svetel, npr. rumena barva
 scene.addChild(lightMarker3);
@@ -210,12 +213,22 @@ scene.addChild(s);
 
 const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, 1, 0]});
 scene.addChild(tree);
+const tree2 = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-50, 1, -40]});
+scene.addChild(tree2);
 
 // collisions
 const player = new GameObject();
 player.addChild(camera);
-//const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: true });
-//player.addComponent(playerCol);
+const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+player.addComponent(playerCol);
+
+playerCol.addComponent({
+    update(){
+        console.log(player.transform.translation);
+    }
+});
+
+
 /*
 playerCol.addComponent({
     update(){

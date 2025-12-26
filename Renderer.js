@@ -8,7 +8,7 @@ import { quat, mat4, vec3 } from './glm.js';
 import { GameObject } from './GameObject.js';
 import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
 import { Camera } from './Camera.js';
-
+import { shadowModule } from './main.js';
 import { Light } from './Light.js';
 
 export class Renderer{
@@ -107,10 +107,152 @@ export class Renderer{
                 { binding: 0, resource: { buffer: this.cameraBuffer } },
             ],
         });
+
+        // ---- SHADOW MAP ----
+        
+
+        this.shadowSize = 1024;
+
+        this.shadowDepthTexture = device.createTexture({
+            size: [this.shadowSize, this.shadowSize],
+            format: 'depth24plus',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+        });
+
+        this.shadowSampler = device.createSampler({
+            compare: 'less',
+        });
+
+        this.lightMatrixBuffer = this.device.createBuffer({
+            size: 64,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        this.lightMatrixBindGroup = this.device.createBindGroup({
+            layout: Engine.pipeline.getBindGroupLayout(2),
+            entries: [
+                { binding: 0, resource: this.shadowDepthTexture.createView() },
+                { binding: 1, resource: this.shadowSampler },
+                { binding: 2, resource: { buffer: this.lightMatrixBuffer } },
+            ],
+        });
+
+        this.shadowPipeline = device.createRenderPipeline({
+            vertex: {
+                module: shadowModule,
+                entryPoint: 'vertex', // 👈 FIX
+                buffers: [vertexBufferLayout],
+            },
+            fragment: {
+                module: shadowModule,
+                entryPoint: 'fragment',
+                targets: [],
+            },
+            depthStencil: {
+                format: 'depth24plus',
+                depthWriteEnabled: true,
+                depthCompare: 'less',
+            },
+            layout: 'auto',
+        });
+
+
+        this.shadowBindGroup = this.device.createBindGroup({
+            layout: Engine.pipeline.getBindGroupLayout(2),
+            entries: [
+                {
+                    binding: 0,
+                    resource: this.shadowDepthTexture.createView(),
+                },
+                {
+                    binding: 1,
+                    resource: this.shadowSampler,
+                },
+                {
+                    binding: 2,
+                    resource: { buffer: this.lightMatrixBuffer },
+                },
+            ],
+        });
+
     }
 
     render(){
         const commandEncoder = this.device.createCommandEncoder();
+
+// ---- HARD-CODED DIRECTIONAL LIGHT (MWE) ----
+const lightView = mat4.lookAt(
+    mat4.create(),
+    [0, 30, 0],   // light position
+    [0, 0, 0],    // look at
+    [0, 0, -1]
+);
+
+const lightProj = mat4.ortho(
+    mat4.create(),
+    -200, 200,
+    -200, 200,
+    0.1, 50
+);
+
+const lightViewProj = mat4.multiply(
+    mat4.create(),
+    lightProj,
+    lightView
+);
+
+const encoder = this.device.createCommandEncoder();
+
+const shadowPass = encoder.beginRenderPass({
+    colorAttachments: [],
+    depthStencilAttachment: {
+        view: this.shadowDepthTexture.createView(),
+        depthClearValue: 1,
+        depthLoadOp: 'clear',
+        depthStoreOp: 'store',
+    },
+});
+
+shadowPass.setPipeline(this.shadowPipeline);
+
+this.scene.traverse(node => {
+    if(!(node instanceof GameObject && node.mesh && !node.dontRender)) return;
+
+    node.mesh.shadowBindGroup = this.device.createBindGroup({
+        layout: this.shadowPipeline.getBindGroupLayout(0),
+        entries: [
+            { binding: 0, resource: { buffer: node.mesh.modelBuffer } },
+            { binding: 1, resource: { buffer: this.lightMatrixBuffer } },
+        ],
+    });
+
+    this.device.queue.writeBuffer(
+        node.mesh.modelBuffer,
+        0,
+        getGlobalModelMatrix(node)
+    );
+
+        this.device.queue.writeBuffer(
+            this.lightMatrixBuffer,
+            0,
+            lightViewProj
+        );
+
+    shadowPass.setBindGroup(0, node.mesh.shadowBindGroup);
+    shadowPass.setVertexBuffer(0, node.mesh.vertexBuffer);
+    shadowPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
+    shadowPass.drawIndexed(node.mesh.indexCount);
+});
+
+shadowPass.end();
+this.device.queue.submit([encoder.finish()]);
+
+
+
+
+
+
+
         const renderPass = commandEncoder.beginRenderPass({
             colorAttachments: [{
                 view: this.context.getCurrentTexture().createView(),
@@ -217,7 +359,8 @@ export class Renderer{
                 this.device.queue.writeBuffer(node.mesh.viewProjBuffer, 0, viewProjMatrix);
                 this.device.queue.writeBuffer(node.mesh.normalBuffer, 0, normalMatrix);
 
-                renderPass.setBindGroup(0, node.mesh.bindGroup);
+                renderPass.setBindGroup(0, node.mesh.bindGroup);    
+                renderPass.setBindGroup(2, this.shadowBindGroup);
 
                 renderPass.setBindGroup(3, this.lightsBindGroup);
                 renderPass.setBindGroup(1, this.cameraBindGroup);

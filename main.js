@@ -199,6 +199,11 @@ scene.addChild(f);
 const firefly = new Firefly({texture: blankTexture, scale: [0.3, 0.3, 0.3]});
 scene.addChild(firefly);
 
+const s = new Sphere({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
+scene.addChild(s);
+
+
+
 // collisions
 const player = new GameObject();
 player.addChild(camera);

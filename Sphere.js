@@ -32,74 +32,89 @@ export class Sphere extends GameObject {
         });
     }
 
-    createMesh() {
-        const radius = 1;
-        const segments = 16; // ↑ more = smoother
-
+    createMesh(n_slices = 32, n_stacks = 16){ // https://danielsieger.com/blog/2021/03/27/generating-spheres.html
         const vertices = [];
         const indices = [];
-        let indexOffset = 0;
 
-        const faces = [
-            [ 1,  0,  0],
-            [-1,  0,  0],
-            [ 0,  1,  0],
-            [ 0, -1,  0],
-            [ 0,  0,  1],
-            [ 0,  0, -1],
-        ];
+        let index = 0;
 
-        for (const face of faces) {
-            const [fx, fy, fz] = face;
+        const radius = 1;
 
-            for (let y = 0; y <= segments; y++) {
-                for (let x = 0; x <= segments; x++) {
-                    const u = x / segments * 2 - 1;
-                    const v = y / segments * 2 - 1;
+        // add top vertex
+        vertices.push(0, radius, 0, 1); // position
+        vertices.push(...this.color); // color
+        vertices.push(0.5, 0); // uv
+        vertices.push(0, 1, 0); // normal
+        index++;
 
-                    let px = fx ? fx : u;
-                    let py = fy ? fy : v;
-                    let pz = fz ? fz : (fx ? u : v);
+        // add vertices for each stack
+        for (let i = 0; i < n_stacks - 1; i++) {
+            const phi = Math.PI * (i + 1) / n_stacks;
 
-                    // normalize → sphere
-                    const len = Math.hypot(px, py, pz);
-                    px = px / len * radius;
-                    py = py / len * radius;
-                    pz = pz / len * radius;
+            for (let j = 0; j < n_slices; j++) {
+                const theta = 2 * Math.PI * j / n_slices;
 
-                    // position
-                    vertices.push(px, py, pz, 1);
+                const x = Math.sin(phi) * Math.cos(theta) * radius;
+                const y = Math.cos(phi) * radius;
+                const z = Math.sin(phi) * Math.sin(theta) * radius;
 
-                    // color
-                    vertices.push(this.color[0], this.color[1], this.color[2], this.color[3]);
-
-                    // uv (simple planar)
-                    vertices.push(x / segments, y / segments);
-
-                    // normal
-                    vertices.push(px / radius, py / radius, pz / radius);
-                }
+                // position
+                vertices.push(x, y, z, 1);
+                // color
+                vertices.push(...this.color);
+                // uv
+                const u = i / n_slices;
+                const v = j / n_stacks;
+                vertices.push(u, v);
+                // normal (SPHERICAL)
+                vertices.push(x / radius, y / radius, z / radius);
+                index++;
             }
-
-            for (let y = 0; y < segments; y++) {
-                for (let x = 0; x < segments; x++) {
-                    const a = indexOffset + y * (segments + 1) + x;
-                    const b = a + 1;
-                    const c = a + (segments + 1);
-                    const d = c + 1;
-
-                    indices.push(a, c, b);
-                    indices.push(b, c, d);
-                }
-            }
-
-            indexOffset += (segments + 1) * (segments + 1);
         }
-        
+
+        // add bottom vertex
+        vertices.push(0, -radius, 0, 1); // position
+        vertices.push(...this.color); // color
+        vertices.push(0.5, 1); // uv
+        vertices.push(0, -1, 0); // normal
+        index++;
+
+        const topIndex = 0;
+        const bottomIndex = index - 1;
+
+        // top triangles
+        for (let i = 0; i < n_slices; ++i) {
+            let i0 = i + 1;
+            let i1 = (i + 1) % n_slices + 1;
+            indices.push(topIndex, i1, i0);
+
+            i0 = i + n_slices * (n_stacks - 2) + 1;
+            i1 = (i + 1) % n_slices + n_slices * (n_stacks - 2) + 1;
+            indices.push(bottomIndex, i0, i1);
+
+        }
+
+
+
+        // quads for middle stacks
+        for (let j = 0; j < n_stacks - 2; j++) {
+            const j0 = j * n_slices + 1;
+            const j1 = (j + 1) * n_slices + 1;
+            for (let i = 0; i < n_slices; i++) {
+                const i0 = j0 + i;
+                const i1 = j0 + (i + 1) % n_slices;
+                const i2 = j1 + (i + 1) % n_slices;
+                const i3 = j1 + i;
+                
+                // add quad
+                indices.push(i0, i1, i2);
+                indices.push(i0, i2, i3);
+            }
+        }
 
         return {
             vertices: new Float32Array(vertices),
-            indices: new Uint32Array(indices),
+            indices: new Uint32Array(indices)
         };
     }
 

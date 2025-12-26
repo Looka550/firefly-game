@@ -22,6 +22,8 @@ import { PlaneCollider } from './PlaneCollider.js';
 import { Sphere } from './Sphere.js';
 import { Firefly } from './Firefly.js';
 import { Cylinder } from './Cylinder.js';
+import { Tree } from './Tree.js';
+import { Light } from './Light.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -99,8 +101,7 @@ let pathmon = "./webgpu/models/monkey/monkey.gltf";
 
 const ambient = 0.2;
 
-
-import { Light } from './Light.js';
+/*
 const light = new GameObject({
     name: "Light",
 });
@@ -147,7 +148,7 @@ const lightMarker2 = new Model({ translation: lightPosition2, scale: [0.1, 0.1, 
 await lightMarker2.createMesh(pathmon);
 // Uporabi teksturo ali material, ki je svetel, npr. rumena barva
 scene.addChild(lightMarker2);
-
+*/
 
 const light3 = new GameObject({
     name: "Light",
@@ -162,7 +163,8 @@ light3.addComponent(new Transform({
 
 // dodamo komponento luči (ambientni faktor)
 light3.addComponent(new Light({
-    ambient: 0, // lahko prilagodiš svetlost ambienta
+    ambient: ambient, // lahko prilagodiš svetlost ambienta
+    intensity: 5.0
 }));
 scene.addChild(light3);
 
@@ -206,7 +208,6 @@ scene.addChild(s);
 //const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 //scene.addChild(c);
 
-import { Tree } from './Tree.js';
 const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, -10, 0]});
 scene.addChild(tree);
 

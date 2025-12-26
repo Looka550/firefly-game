@@ -31,6 +31,7 @@ struct LightUniforms {
     position    : vec3f,
     ambient     : f32,
     attenuation : f32,
+    intensity   : f32,
     padding    : vec3f, // poravnava na 32 B
 };
 
@@ -102,8 +103,8 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         let H = normalize(L + V);
         let spec = pow(max(dot(N, H), 0.0), shininess);
 
-        diffuseSum += (lambert + light.ambient) * attenuation;
-        specularSum += spec * attenuation * specularIntensity;
+        diffuseSum += (lambert + light.ambient) * attenuation * light.intensity;
+        specularSum += spec * attenuation * specularIntensity * light.intensity;
         ambientSum += light.ambient;
     }
 

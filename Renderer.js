@@ -185,7 +185,7 @@ export class Renderer{
                 lightData[base + 4]  = 0.02;
             }
             
-            lightData[base + 5] = 0.0;
+            lightData[base + 5] = light.intensity;
             lightData[base + 6] = 0.0;
             lightData[base + 7] = 0.0;
             lightData[base + 8] = 0.0;

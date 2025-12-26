@@ -203,16 +203,18 @@ scene.addChild(firefly);
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
 
-const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
-scene.addChild(c);
+//const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
+//scene.addChild(c);
 
-
+import { Tree } from './Tree.js';
+const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, -10, 0]});
+scene.addChild(tree);
 
 // collisions
 const player = new GameObject();
 player.addChild(camera);
-const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: true });
-player.addComponent(playerCol);
+//const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: true, name: "monkey", gravity: true });
+//player.addComponent(playerCol);
 /*
 playerCol.addComponent({
     update(){

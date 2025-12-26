@@ -10,6 +10,7 @@ import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
 import { Camera } from './Camera.js';
 import { shadowModule } from './main.js';
 import { Light } from './Light.js';
+import { lightY, near, far } from "./PlayerInput.js";
 
 export class Renderer{
     constructor(
@@ -183,7 +184,7 @@ export class Renderer{
 // ---- HARD-CODED DIRECTIONAL LIGHT (MWE) ----
 const lightView = mat4.lookAt(
     mat4.create(),
-    [0, 30, 0],   // light position
+    [0, lightY, 0],   // light position
     [0, 0, 0],    // look at
     [0, 0, -1]
 );
@@ -192,7 +193,7 @@ const lightProj = mat4.ortho(
     mat4.create(),
     -200, 200,
     -200, 200,
-    0.1, 50
+    near, far
 );
 
 const lightViewProj = mat4.multiply(

@@ -6,10 +6,39 @@ const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
 
+export let lightY = 54.6; // 30
+export let near = 3.64; // 0.1
+export let far = 64.4; // 50
+
 // settings
 const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
+
+export function getLightY(){
+    if(keys["k"]){
+        lightY -= 0.2;
+    }
+    else if(keys["i"]){
+        lightY += 0.2;
+    }
+    if(keys["j"]){
+        far -= 0.2;
+    }
+    else if(keys["u"]){
+        far += 0.2;
+    }
+    if(keys["h"]){
+        near -= 0.02;
+    }
+    else if(keys["z"]){
+        near += 0.02;
+    }
+    else{
+        return;
+    }
+    console.log(lightY + " : " + near + " : " + far);
+}
 
 export function initInput(canvas){
     document.addEventListener("keydown", (e) => keys[e.key.toLowerCase()] = true);

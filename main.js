@@ -222,9 +222,11 @@ player.addChild(camera);
 const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 player.addComponent(playerCol);
 
+import { getLightY } from './PlayerInput.js';
 playerCol.addComponent({
     update(){
-        console.log(player.transform.translation);
+        //console.log(player.transform.translation);
+        getLightY();
     }
 });
 

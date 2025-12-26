@@ -104,7 +104,11 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     // Load depth directly
     let depth: f32 = textureLoad(shadowMap, texCoord, 0);
 
-    out.color = vec4f(depth, depth, depth, 1.0);
+    let shadowUV = proj.xy * 0.5 + 0.5;
+    let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z);
+    out.color = vec4f(shadowDepth, shadowDepth, shadowDepth, 1.0);
+
+    //out.color = vec4f(depth, depth, depth, 1.0);
     return out;
 }
 

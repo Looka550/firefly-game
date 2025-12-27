@@ -95,8 +95,8 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     let proj = lightPosOffset.xyz / lightPosOffset.w;
     var uv = proj.xy * 0.5 + 0.5;
-    uv.x -= 1.0 / f32(textureDimensions(shadowMap).x); // shift left by 1 texel
-    uv = clamp(uv, vec2f(0.0), vec2f(1.0));
+    //uv.x -= 20.0 / f32(textureDimensions(shadowMap).x); // shift left by 1 texel
+    //uv = clamp(uv, vec2f(0.0), vec2f(1.0));
 
     // Convert uv to integer coordinates for textureLoad
     //let texSize: vec2u = vec2u(textureDimensions(shadowMap));

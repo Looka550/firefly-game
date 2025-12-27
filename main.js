@@ -242,17 +242,17 @@ const player = new GameObject();
 player.addChild(camera);
 const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 player.addComponent(playerCol);
-
+/*
 import { getLightY } from './PlayerInput.js';
 playerCol.addComponent({
     update(){
         //console.log(player.transform.translation);
         getLightY();
     }
-});
+});*/
 
 
-/*
+
 playerCol.addComponent({
     update(){
         player.nextMove ??= [0, -0.05, 0];
@@ -267,9 +267,13 @@ playerCol.addComponent({
                 if(plane.tags.includes("slope")){
                     onSlope = true;
                 }
-                else{
+                else if(plane.tags.includes("flat")){
                     player.move({y: -player.nextMove[1]});
                 }
+                else{
+                    console.log("none of these");
+                }
+                console.log(plane.name + " : " + "player");
             }
         });
 
@@ -278,7 +282,7 @@ playerCol.addComponent({
         }
     }
 });
-*/
+
 
 
 scene.addChild(player);

@@ -112,7 +112,7 @@ export class Renderer{
         // ---- SHADOW MAP ----
         
 
-        this.shadowSize = 1024;
+        this.shadowSize = 4096;
 
         this.shadowDepthTexture = device.createTexture({
             size: [this.shadowSize, this.shadowSize],
@@ -122,6 +122,8 @@ export class Renderer{
 
         this.shadowSampler = device.createSampler({
             compare: 'less',
+            minFilter: 'linear',
+            magFilter: 'linear',
         });
 
         this.lightMatrixBuffer = this.device.createBuffer({

@@ -44,38 +44,58 @@ export class PlaneCollider extends GameObject {
     }
 
 
-    AABBcollision(box){
-        box.getBoundaries();
-        //console.log("Box min:", box.min, "Box max:", box.max);
+AABBcollision(box){
+    box.getBoundaries();
 
-        const modelMatrix = getGlobalModelMatrix(this);
+    const modelMatrix = getGlobalModelMatrix(this);
 
-        // plane normal
-        const rotationMatrix = mat4.create();
-        mat4.fromRotationTranslation(rotationMatrix, this.transform.rotation, [0,0,0]);
+    // rotation only (you already use this)
+    const rotationMatrix = mat4.create();
+    mat4.fromRotationTranslation(rotationMatrix, this.transform.rotation, [0,0,0]);
 
-        const normal = vec3.transformMat4(vec3.create(), [0,1,0], rotationMatrix);
-        vec3.normalize(normal, normal);
+    const normal = vec3.transformMat4(vec3.create(), [0,1,0], rotationMatrix);
+    vec3.normalize(normal, normal);
 
-        const planePos = [modelMatrix[12], modelMatrix[13], modelMatrix[14]];
+    const planePos = [
+        modelMatrix[12],
+        modelMatrix[13],
+        modelMatrix[14]
+    ];
 
-        //console.log("Plane normal:", normal, "Plane position:", planePos);
+    // height test
+    const boxMinProj = vec3.dot(box.min, normal);
+    const boxMaxProj = vec3.dot(box.max, normal);
+    const planeProj = vec3.dot(planePos, normal);
 
-        // project box min and max on plane normal
-        const boxMinProj = vec3.dot(box.min, normal);
-        const boxMaxProj = vec3.dot(box.max, normal);
-        const planeProj = vec3.dot(planePos, normal);
-
-        //console.log("Box proj min/max:", boxMinProj, boxMaxProj, "Plane proj:", planeProj);
-
-        if(boxMinProj <= planeProj && boxMaxProj >= planeProj){
-            return true;
-        }
-        else{
-            //console.log("no coll");
-            return false;
-        }
+    if (!(boxMinProj <= planeProj && boxMaxProj >= planeProj)) {
+        return false;
     }
+
+    // plane local axes
+    const right = vec3.transformMat4(vec3.create(), [1,0,0], rotationMatrix);
+    const forward = vec3.transformMat4(vec3.create(), [0,0,1], rotationMatrix);
+
+    vec3.normalize(right, right);
+    vec3.normalize(forward, forward);
+
+    // box center
+    const boxCenter = vec3.scale(
+        vec3.create(),
+        vec3.add(vec3.create(), box.min, box.max),
+        0.5
+    );
+
+    const toBox = vec3.subtract(vec3.create(), boxCenter, planePos);
+
+    const xDist = vec3.dot(toBox, right);
+    const zDist = vec3.dot(toBox, forward);
+
+    if (Math.abs(xDist) > this.transform.scale[0]) return false;
+    if (Math.abs(zDist) > this.transform.scale[2]) return false;
+
+    return true;
+}
+
 
 
 

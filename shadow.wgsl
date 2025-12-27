@@ -1,4 +1,3 @@
-// shadow.wgsl
 struct VertexInput {
     @location(0) position : vec4f,
 };

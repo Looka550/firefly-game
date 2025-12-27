@@ -71,6 +71,7 @@ fn vertex(input: VertexInput) -> VertexOutput {
     return output;
 }
 
+
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var out: FragmentOutput;
@@ -106,19 +107,19 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     let shadowUV = proj.xy * 0.5 + 0.5;
     //let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z);
-    let normalBias = max(0.01 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.001);
+    let normalBias = max(0.025 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.001);
     //let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z - bias);
 
 
     var shadowSum: f32 = 0.0;
     let texSize: vec2f = vec2f(textureDimensions(shadowMap));
-    for(var x: i32 = -1; x <= 1; x = x + 1){
-        for(var y: i32 = -1; y <= 1; y = y + 1){
+    for(var x: i32 = -2; x <= 2; x = x + 1){
+        for(var y: i32 = -2; y <= 2; y = y + 1){
             let offset: vec2f = vec2f(f32(x)/texSize.x, f32(y)/texSize.y);
             shadowSum += textureSampleCompare(shadowMap, shadowSampler, shadowUV + offset, proj.z - normalBias);
         }
     }
-    let shadow = shadowSum / 9.0;
+    let shadow = shadowSum / 25.0; // 5x5 kernel (-2...2)
 
 
 
@@ -134,6 +135,10 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 /*
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
+    _ = lightViewProj;
+    _ = shadowMap;
+    _ = shadowSampler;
+
     var output: FragmentOutput;
     let test = textureSample(normalTexture, normalSampler, input.texcoords);
     // --- choose material color ---
@@ -173,25 +178,9 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         ambientSum += light.ambient;
     }
 
-// ---- SHADOW TEST (AFTER LIGHTING COMPUTATION) ----
-let lightPos = lightViewProj * vec4f(input.position, 1.0);
-let proj = lightPos.xyz / lightPos.w;
 
-// clamp UVs to [0,1] to avoid branching
-let uv = clamp(proj.xy * 0.5 + 0.5, vec2f(0.0), vec2f(1.0));
-
-// depth compare (ALWAYS executed, uniform control flow)
-let shadow = textureSampleCompare(
-    shadowMap,
-    shadowSampler,
-    uv,
-    proj.z - 0.001
-);
-
-
-
-    var color = materialColor.rgb * ((diffuseSum * shadow) + ambientSum)
-          + vec3f(specularSum * shadow);
+    var color = materialColor.rgb * ((diffuseSum) + ambientSum)
+          + vec3f(specularSum);
     output.color = vec4f(color, materialColor.a);
 
     return output;

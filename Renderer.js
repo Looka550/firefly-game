@@ -191,8 +191,8 @@ const lightView = mat4.lookAt(
 
 const lightProj = mat4.ortho(
     mat4.create(),
-    -200, 200,
-    -200, 200,
+    -600, 600,
+    -600, 600,
     near, far
 );
 

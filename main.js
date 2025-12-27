@@ -184,15 +184,36 @@ scene.addChild(cube2);
 
 // world building
 
-
-const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [100, 0, 30], name: "flat grass", tags: ["flat"] });
+const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane1);
 
-const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [100, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
+const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
 scene.addChild(slope1);
 
-const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [100, 0, 30], euler: [-7, 0, 0], name: "small slope", tags: ["slope"] });
+const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [-7, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
+
+const plane2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+scene.addChild(plane2);
+
+const plane3 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3.344, 171.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+scene.addChild(plane3);
+
+const plane4 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -114], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+scene.addChild(plane4);
+
+const plane5 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -174], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+scene.addChild(plane5);
+
+
+const A = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, 200]});
+scene.addChild(A);
+const B = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-310, 1, 200]});
+scene.addChild(B);
+const C = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-310, 1, -200]});
+scene.addChild(C);
+const D = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, -200]});
+scene.addChild(D);
 
 // world objects
 /*

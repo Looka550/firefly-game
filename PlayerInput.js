@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { net } from "./main.js";
+//import { net } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -15,7 +15,7 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
-
+/*
 export function netConfig(){
     let change = 0;
     if(keys["r"]){
@@ -83,6 +83,7 @@ export function netConfig(){
     }
     //console.log("translation: " + net.transform.translation + ", rotation: " + net.transform.getEuler() + ", scale: " + net.transform.scale);
 }
+*/
 
 export function initInput(canvas){
     document.addEventListener("keydown", (e) => keys[e.key.toLowerCase()] = true);

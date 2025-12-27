@@ -25,6 +25,9 @@ import { Cylinder } from './Cylinder.js';
 import { Tree } from './Tree.js';
 import { Light } from './Light.js';
 import { TransformAnimator } from './TransformAnimator.js';
+import { Net } from "./Net.js";
+import { Lamp } from './Lamp.js';
+import { Renderer } from './Renderer.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -92,7 +95,6 @@ camera.addComponent({
 
 //scene.addChild(camera);
 
-import { Renderer } from './Renderer.js';
 const renderer = new Renderer(device, scene, context, camera, module, format, canvas);
 
 let pathcat = "./webgpu/models/cat/cat.gltf";
@@ -246,10 +248,9 @@ scene.addChild(transparent);
 // collisions
 const player = new GameObject();
 player.addChild(camera);
-
-import { Net } from "./Net.js";
-
+/*
 import { netConfig } from './PlayerInput.js';
+
 export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
 //const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
 player.addChild(net);
@@ -258,6 +259,26 @@ player.addComponent({
         netConfig();
     }
 });
+*/
+
+const fakePlayer = new GameObject();
+scene.addChild(fakePlayer);
+export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, -5, -5], euler: [0, 0, 0]});
+player.addChild(lamp);
+
+const playerBody = new GameObject({ translation: [0, 8, 14] });
+player.addChild(playerBody);
+
+const head = new Sphere({texture: blankTexture, scale: [2, 2, 1], translation: [0, 0, 0], euler: [0, 0, 0]});
+playerBody.addChild(head);
+const neck = new Sphere({texture: blankTexture, scale: [2, 4, 1], translation: [0, -4, 0], euler: [0, 0, 0]});
+playerBody.addChild(neck);
+const body = new Cube({texture: blankTexture, scale: [4, 10, 1], translation: [0, -12, 0], euler: [0, 0, 0]});
+playerBody.addChild(body);
+const armL1 = new Cube({texture: blankTexture, scale: [4, 0.75, 1], translation: [-8, -9, 0], euler: [0, 0, -10]});
+playerBody.addChild(armL1);
+const armL2 = new Cube({texture: blankTexture, scale: [1, 0.75, 6.5], translation: [-12, -9, -5.5], euler: [0, 0, 0]});
+playerBody.addChild(armL2);
 
 
 //net.addComponent(animator);

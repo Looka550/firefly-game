@@ -98,15 +98,31 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     uv = clamp(uv, vec2f(0.0), vec2f(1.0));
 
     // Convert uv to integer coordinates for textureLoad
-    let texSize: vec2u = vec2u(textureDimensions(shadowMap));
-    let texCoord: vec2u = vec2u(uv * vec2f(texSize));
+    //let texSize: vec2u = vec2u(textureDimensions(shadowMap));
+    //let texCoord: vec2u = vec2u(uv * vec2f(texSize));
 
     // Load depth directly
-    let depth: f32 = textureLoad(shadowMap, texCoord, 0);
+    //let depth: f32 = textureLoad(shadowMap, texCoord, 0);
 
     let shadowUV = proj.xy * 0.5 + 0.5;
-    let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z);
-    out.color = vec4f(shadowDepth, shadowDepth, shadowDepth, 1.0);
+    //let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z);
+    let normalBias = max(0.01 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.001);
+    //let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z - bias);
+
+
+    var shadowSum: f32 = 0.0;
+    let texSize: vec2f = vec2f(textureDimensions(shadowMap));
+    for(var x: i32 = -1; x <= 1; x = x + 1){
+        for(var y: i32 = -1; y <= 1; y = y + 1){
+            let offset: vec2f = vec2f(f32(x)/texSize.x, f32(y)/texSize.y);
+            shadowSum += textureSampleCompare(shadowMap, shadowSampler, shadowUV + offset, proj.z - normalBias);
+        }
+    }
+    let shadow = shadowSum / 9.0;
+
+
+
+    out.color = vec4f(shadow, shadow, shadow, 1.0);
 
     //out.color = vec4f(depth, depth, depth, 1.0);
     return out;

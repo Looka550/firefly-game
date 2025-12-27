@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-
+import { net } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -15,29 +15,73 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
-export function getLightY(){
-    if(keys["k"]){
-        lightY -= 0.2;
+
+export function netConfig(){
+    let change = 0;
+    if(keys["r"]){
+        net.swing();
     }
-    else if(keys["i"]){
-        lightY += 0.2;
-    }
-    if(keys["j"]){
-        far -= 0.2;
-    }
-    else if(keys["u"]){
-        far += 0.2;
-    }
-    if(keys["h"]){
-        near -= 0.02;
-    }
-    else if(keys["z"]){
-        near += 0.02;
+    if(keys["t"]){
+        change = 0.2;
+        if(keys["u"]){
+            net.move({x: change});
+        }
+        if(keys["i"]){
+            net.move({y: change});
+        }
+        if(keys["o"]){
+            net.move({z: change});
+        }
+        if(keys["j"]){
+            net.rotate({x: change});
+        }
+        if(keys["k"]){
+            net.rotate({y: change});
+        }
+        if(keys["l"]){
+            net.rotate({z: change});
+        }
+        if(keys["b"]){
+            net.rescale({x: change});
+        }
+        if(keys["n"]){
+            net.rescale({y: change});
+        }
+        if(keys["m"]){
+            net.rescale({z: change});
+        }
     }
     else{
-        return;
+        change = -0.2;
+        if(keys["u"]){
+            net.move({x: change});
+        }
+        if(keys["i"]){
+            net.move({y: change});
+        }
+        if(keys["o"]){
+            net.move({z: change});
+        }
+        if(keys["j"]){
+            net.rotate({x: change});
+        }
+        if(keys["k"]){
+            net.rotate({y: change});
+        }
+        if(keys["l"]){
+            net.rotate({z: change});
+        }
+        if(keys["b"]){
+            net.rescale({x: change});
+        }
+        if(keys["n"]){
+            net.rescale({y: change});
+        }
+        if(keys["m"]){
+            net.rescale({z: change});
+        }
     }
-    console.log(lightY + " : " + near + " : " + far);
+    //console.log("translation: " + net.transform.translation + ", rotation: " + net.transform.getEuler() + ", scale: " + net.transform.scale);
 }
 
 export function initInput(canvas){

@@ -9,6 +9,7 @@ import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
 import { quat, vec3 } from "./glm.js";
 import { RotateAroundPointAnimator } from "./RotateAroundPointAnimator.js";
+import { BoxCollider } from "./BoxCollider.js";
 
 export class Firefly extends GameObject {
     constructor({
@@ -46,6 +47,9 @@ export class Firefly extends GameObject {
         this.addChild(this.wingL);
         this.wingR = new Cube({ translation: [-3.4, 6, -2], scale: [1.5, 0.2, 0.5], euler: [0, 0, 0], texture: this.texture, color: [0.71, 0.867, 1, 1] });
         this.addChild(this.wingR);
+
+        const col = new BoxCollider({ translation: [0, 0, 0], scale: [2, 0.4, 2], texture: this.texture, debug: false, dynamic: true, name: "firefly" });
+        this.body.addComponent(col);
     }
 
     animateWings(){

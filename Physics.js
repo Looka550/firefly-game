@@ -30,7 +30,7 @@ export class Physics{
             if(other instanceof BoxCollider){
                 //console.log(`testing box collider: ${col.name} : ${other.name}`);
                 if(col.AABBcollision(other)){
-                    console.log(`COLLISION: ${col.name} : ${other.name}`);
+                    //console.log(`COLLISION: ${col.name} : ${other.name}`);
                     collisions.push(other);
                 }
             }

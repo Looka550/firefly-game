@@ -57,4 +57,26 @@ export class GameObject extends Node{
         );
         this.setPosition(newPos);
     }
+
+    rotate({ x = 0, y = 0, z = 0}){
+        const t = this.transform;
+        const rot = t.getEuler();
+        const newRot = vec3.fromValues(
+            rot[0] + x,
+            rot[1] + y,
+            rot[2] + z
+        );
+        this.setRotation(newRot);
+    }
+
+    rescale({ x = 0, y = 0, z = 0}){
+        const t = this.transform;
+        const sc = t.scale;
+        const newSc = vec3.fromValues(
+            sc[0] + x,
+            sc[1] + y,
+            sc[2] + z
+        );
+        this.setScale(newSc);
+    }
 }

@@ -229,7 +229,7 @@ scene.addChild(firefly);
 
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
-
+/*
 const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, 1, 0]});
 scene.addChild(tree);
 const tree2 = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-50, 1, -40]});
@@ -241,30 +241,7 @@ scene.addChild(transparent);
 
 //const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 //scene.addChild(c);
-
-const transform = tree2.getComponentOfType(Transform);
-
-const startTransform = {
-    translation: vec3.fromValues(0, 0, 0),
-    rotation: quat.create(),
-    scale: vec3.fromValues(1, 1, 1),
-};
-
-const endTransform = {
-    translation: vec3.fromValues(0, 15, 0),
-    rotation: quat.fromEuler(quat.create(), 0, 180, 0),
-    scale: vec3.fromValues(2, 2, 2),
-};
-
-const animator = new TransformAnimator({
-    gameObject: tree2,
-    startTransform,
-    endTransform,
-    frames: 1000,
-    loop: true
-});
-
-tree2.addComponent(animator);
+*/
 
 // collisions
 const player = new GameObject();
@@ -272,11 +249,29 @@ player.addChild(camera);
 
 import { Net } from "./Net.js";
 
-const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [10, 10, 0]});
-scene.addChild(net);
+import { netConfig } from './PlayerInput.js';
+export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
+//const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
+player.addChild(net);
+player.addComponent({
+    update(){
+        netConfig();
+    }
+});
 
-const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
-player.addComponent(playerCol);
+
+//net.addComponent(animator);
+
+
+
+
+
+
+
+
+
+//const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+//player.addComponent(playerCol);
 
 
 /*

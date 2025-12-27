@@ -2,7 +2,7 @@ import { GameObject } from "./GameObject.js";
 import { Engine, getGlobalModelMatrix } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 import { physics } from "./main.js";
-import { vec3, mat4 } from './glm.js';
+import { vec3, mat4, quat } from './glm.js';
 import { Mesh } from './Mesh.js';
 
 export class PlaneCollider extends GameObject {
@@ -49,12 +49,22 @@ AABBcollision(box){
 
     const modelMatrix = getGlobalModelMatrix(this);
 
-    // rotation only (you already use this)
     const rotationMatrix = mat4.create();
-    mat4.fromRotationTranslation(rotationMatrix, this.transform.rotation, [0,0,0]);
+
+    let planeRotation = null;
+    if(this.transform.getEuler()[0] > 90){ // bug fix for negative rotation slopes
+        planeRotation = quat.create();
+        quat.fromEuler(planeRotation, this.transform.getEuler()[0] - 180, this.transform.getEuler()[1], this.transform.getEuler()[2]);
+    }
+    else{
+        planeRotation = this.transform.rotation;
+    }
+
+    mat4.fromRotationTranslation(rotationMatrix, planeRotation, [0,0,0]);
 
     const normal = vec3.transformMat4(vec3.create(), [0,1,0], rotationMatrix);
     vec3.normalize(normal, normal);
+    
 
     const planePos = [
         modelMatrix[12],

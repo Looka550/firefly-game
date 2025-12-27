@@ -1,6 +1,6 @@
 export class Light {
     constructor({
-        ambient = 0.1,
+        ambient = 0,
         attenuation = 0.02,
         intensity = 1.0
     } = {}) {

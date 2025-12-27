@@ -71,71 +71,15 @@ fn vertex(input: VertexInput) -> VertexOutput {
     return output;
 }
 
-/*
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
-    var out: FragmentOutput;
-
-    // Dummy read to prevent optimization
-    _ = shadowMap;
-    _ = shadowSampler;
-    _ = lightViewProj;
-    _ = lightsBlock;
-    _ = camera;
-    _ = baseTexture;
-    _ = baseSampler;
-    _ = normalSampler;
-    _ = normalTexture;
-    _ = hasNormalMap;
-
-    let lightPos = lightViewProj * vec4f(input.position, 1.0);
-
-    let flippedPos = vec3f(input.position.x, input.position.y, -input.position.z);
-    let lightPosOffset = lightViewProj * vec4f(flippedPos, 1.0);
-
-    let proj = lightPosOffset.xyz / lightPosOffset.w;
-    var uv = proj.xy * 0.5 + 0.5;
-
-    let shadowUV = proj.xy * 0.5 + 0.5;
-    let normalBias = max(0.025 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.001);
-
-
-    var shadowSum: f32 = 0.0;
-    let texSize: vec2f = vec2f(textureDimensions(shadowMap));
-    for(var x: i32 = -2; x <= 2; x = x + 1){
-        for(var y: i32 = -2; y <= 2; y = y + 1){
-            let offset: vec2f = vec2f(f32(x)/texSize.x, f32(y)/texSize.y);
-            shadowSum += textureSampleCompare(shadowMap, shadowSampler, shadowUV + offset, proj.z - normalBias);
-        }
-    }
-    let shadow = shadowSum / 25.0; // 5x5 kernel (-2...2)
-
-
-
-    out.color = vec4f(shadow, shadow, shadow, 1.0);
-
-    //out.color = vec4f(depth, depth, depth, 1.0);
-    return out;
-}
-*/
-
-
-
-
-@fragment
-fn fragment(input: VertexOutput) -> FragmentOutput {
-    _ = lightViewProj;
-    _ = shadowMap;
-    _ = shadowSampler;
-
     var output: FragmentOutput;
-    let test = textureSample(normalTexture, normalSampler, input.texcoords);
-    // --- choose material color ---
+
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords) * input.color;
 
     var N = normalize(input.normal);
 
-    if (hasNormalMap == 1u) {
+    if(hasNormalMap == 1u){
         let normalSample = textureSample(normalTexture, normalSampler, input.texcoords).xyz;
         let tangentNormal = normalize(normalSample * 2.0 - 1.0);
         N = normalize(input.normal + tangentNormal * 0.5);

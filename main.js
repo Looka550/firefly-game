@@ -157,7 +157,7 @@ const light3 = new GameObject({
     name: "Light",
 });
 
-const lightPosition3 = [15, 30, 15];
+const lightPosition3 = [0, 80, 0];
 
 // dodamo transformacijo (položaj luči)
 light3.addComponent(new Transform({
@@ -166,8 +166,8 @@ light3.addComponent(new Transform({
 
 // dodamo komponento luči (ambientni faktor)
 light3.addComponent(new Light({
-    ambient: ambient, // lahko prilagodiš svetlost ambienta
-    intensity: 5.0
+    ambient: 0.3, // lahko prilagodiš svetlost ambienta
+    intensity: 180.0
 }));
 scene.addChild(light3);
 
@@ -190,7 +190,7 @@ scene.addChild(plane1);
 const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
 scene.addChild(slope1);
 
-const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [-7, 0, 0], name: "small slope", tags: ["slope"] });
+const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
 const plane2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
@@ -255,7 +255,7 @@ playerCol.addComponent({
 
 playerCol.addComponent({
     update(){
-        player.nextMove ??= [0, -0.05, 0];
+        player.nextMove ??= [0, -0.00, 0]; // -0.05 = gravity
 
         player.move({y: player.nextMove[1]});
         let onSlope = false;

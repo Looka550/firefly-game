@@ -109,7 +109,7 @@ export class Renderer{
             ],
         });
 
-        // ---- SHADOW MAP ----
+        // shadows
         
 
         this.shadowSize = 4096;
@@ -143,7 +143,7 @@ export class Renderer{
         this.shadowPipeline = device.createRenderPipeline({
             vertex: {
                 module: shadowModule,
-                entryPoint: 'vertex', // 👈 FIX
+                entryPoint: 'vertex',
                 buffers: [vertexBufferLayout],
             },
             fragment: {
@@ -183,78 +183,72 @@ export class Renderer{
     render(){
         const commandEncoder = this.device.createCommandEncoder();
 
-// ---- HARD-CODED DIRECTIONAL LIGHT (MWE) ----
-const lightView = mat4.lookAt(
-    mat4.create(),
-    [0, lightY, 0],   // light position
-    [0, 0, 0],    // look at
-    [0, 0, -1]
-);
-
-const lightProj = mat4.ortho(
-    mat4.create(),
-    -600, 600,
-    -600, 600,
-    near, far
-);
-
-const lightViewProj = mat4.multiply(
-    mat4.create(),
-    lightProj,
-    lightView
-);
-
-const encoder = this.device.createCommandEncoder();
-
-const shadowPass = encoder.beginRenderPass({
-    colorAttachments: [],
-    depthStencilAttachment: {
-        view: this.shadowDepthTexture.createView(),
-        depthClearValue: 1,
-        depthLoadOp: 'clear',
-        depthStoreOp: 'store',
-    },
-});
-
-shadowPass.setPipeline(this.shadowPipeline);
-
-this.scene.traverse(node => {
-    if(!(node instanceof GameObject && node.mesh && !node.dontRender)) return;
-
-    node.mesh.shadowBindGroup = this.device.createBindGroup({
-        layout: this.shadowPipeline.getBindGroupLayout(0),
-        entries: [
-            { binding: 0, resource: { buffer: node.mesh.modelBuffer } },
-            { binding: 1, resource: { buffer: this.lightMatrixBuffer } },
-        ],
-    });
-
-    this.device.queue.writeBuffer(
-        node.mesh.modelBuffer,
-        0,
-        getGlobalModelMatrix(node)
-    );
-
-        this.device.queue.writeBuffer(
-            this.lightMatrixBuffer,
-            0,
-            lightViewProj
+        // shadow render pass
+        const lightView = mat4.lookAt(
+            mat4.create(),
+            [0, lightY, 0], // light position
+            [0, 0, 0], // look at
+            [0, 0, -1] // -z vector
         );
 
-    shadowPass.setBindGroup(0, node.mesh.shadowBindGroup);
-    shadowPass.setVertexBuffer(0, node.mesh.vertexBuffer);
-    shadowPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
-    shadowPass.drawIndexed(node.mesh.indexCount);
-});
+        const lightProj = mat4.ortho( // map size
+            mat4.create(),
+            -600, 600,
+            -600, 600,
+            near, far
+        );
 
-shadowPass.end();
-this.device.queue.submit([encoder.finish()]);
+        const lightViewProj = mat4.multiply(
+            mat4.create(),
+            lightProj,
+            lightView
+        );
 
 
+        const shadowPass = commandEncoder.beginRenderPass({
+            colorAttachments: [],
+            depthStencilAttachment: {
+                view: this.shadowDepthTexture.createView(),
+                depthClearValue: 1,
+                depthLoadOp: 'clear',
+                depthStoreOp: 'store',
+            },
+        });
 
+        shadowPass.setPipeline(this.shadowPipeline);
 
+        this.scene.traverse(node => {
+            if(node instanceof GameObject && node.mesh && !node.dontRender){
+                node.mesh.shadowBindGroup = this.device.createBindGroup({
+                    layout: this.shadowPipeline.getBindGroupLayout(0),
+                    entries: [
+                        { binding: 0, resource: { buffer: node.mesh.modelBuffer } },
+                        { binding: 1, resource: { buffer: this.lightMatrixBuffer } },
+                    ],
+                });
 
+                this.device.queue.writeBuffer(
+                    node.mesh.modelBuffer,
+                    0,
+                    getGlobalModelMatrix(node)
+                );
 
+                    this.device.queue.writeBuffer(
+                        this.lightMatrixBuffer,
+                        0,
+                        lightViewProj
+                    );
+
+                shadowPass.setBindGroup(0, node.mesh.shadowBindGroup);
+                shadowPass.setVertexBuffer(0, node.mesh.vertexBuffer);
+                shadowPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
+                shadowPass.drawIndexed(node.mesh.indexCount);
+            }
+        });
+
+        shadowPass.end();
+
+        // main render pass
 
         const renderPass = commandEncoder.beginRenderPass({
             colorAttachments: [{
@@ -351,7 +345,16 @@ this.device.queue.submit([encoder.finish()]);
         this.scene.traverse(node => {
             if(node instanceof GameObject && node.mesh && !node.dontRender){
                 const modelMatrix = getGlobalModelMatrix(node);
-                const viewProjMatrix = mat4.create().multiply(projectionMatrix).multiply(viewMatrix);
+
+                let viewProjMatrix = null;
+                try{
+                    viewProjMatrix = mat4.create().multiply(projectionMatrix).multiply(viewMatrix);
+                }catch (error){
+                    console.log("projection: " + projectionMatrix);
+                    console.log("view: " + viewMatrix);
+                    return;
+                }
+
 
                 const normalMatrix = mat4.create();
                 mat4.copy(normalMatrix, modelMatrix);

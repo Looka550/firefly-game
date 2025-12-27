@@ -71,7 +71,7 @@ fn vertex(input: VertexInput) -> VertexOutput {
     return output;
 }
 
-
+/*
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     var out: FragmentOutput;
@@ -95,20 +95,9 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     let proj = lightPosOffset.xyz / lightPosOffset.w;
     var uv = proj.xy * 0.5 + 0.5;
-    //uv.x -= 20.0 / f32(textureDimensions(shadowMap).x); // shift left by 1 texel
-    //uv = clamp(uv, vec2f(0.0), vec2f(1.0));
-
-    // Convert uv to integer coordinates for textureLoad
-    //let texSize: vec2u = vec2u(textureDimensions(shadowMap));
-    //let texCoord: vec2u = vec2u(uv * vec2f(texSize));
-
-    // Load depth directly
-    //let depth: f32 = textureLoad(shadowMap, texCoord, 0);
 
     let shadowUV = proj.xy * 0.5 + 0.5;
-    //let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z);
     let normalBias = max(0.025 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.001);
-    //let shadowDepth = textureSampleCompare(shadowMap, shadowSampler, shadowUV, proj.z - bias);
 
 
     var shadowSum: f32 = 0.0;
@@ -128,11 +117,11 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     //out.color = vec4f(depth, depth, depth, 1.0);
     return out;
 }
+*/
 
 
 
 
-/*
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput {
     _ = lightViewProj;
@@ -173,15 +162,40 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
         let H = normalize(L + V);
         let spec = pow(max(dot(N, H), 0.0), shininess);
 
-        diffuseSum += (lambert + light.ambient) * attenuation * light.intensity;
+        diffuseSum += lambert * attenuation * light.intensity;
         specularSum += spec * attenuation * specularIntensity * light.intensity;
         ambientSum += light.ambient;
     }
 
 
-    var color = materialColor.rgb * ((diffuseSum) + ambientSum)
-          + vec3f(specularSum);
-    output.color = vec4f(color, materialColor.a);
+    // shadows
+    let lightPos = lightViewProj * vec4f(input.position, 1.0);
 
+    let flippedPos = vec3f(input.position.x, input.position.y, -input.position.z);
+    let lightPosOffset = lightViewProj * vec4f(flippedPos, 1.0);
+
+    let proj = lightPosOffset.xyz / lightPosOffset.w;
+    var uv = proj.xy * 0.5 + 0.5;
+
+    let shadowUV = proj.xy * 0.5 + 0.5;
+    let normalBias = max(0.20 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.002);
+
+
+    var shadowSum: f32 = 0.0;
+    let texSize: vec2f = vec2f(textureDimensions(shadowMap));
+    for(var x: i32 = -2; x <= 2; x = x + 1){
+        for(var y: i32 = -2; y <= 2; y = y + 1){
+            let offset: vec2f = vec2f(f32(x)/texSize.x, f32(y)/texSize.y);
+            shadowSum += textureSampleCompare(shadowMap, shadowSampler, shadowUV + offset, proj.z - normalBias);
+        }
+    }
+    let shadow = shadowSum / 25.0; // 5x5 kernel (-2...2)
+
+    //var color = materialColor.rgb * ((diffuseSum) + ambientSum) + vec3f(specularSum);
+
+    var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * shadow;
+
+    output.color = vec4f(color, materialColor.a); // color + shadows
+    //output.color = vec4f(vec3f(shadow), 1.0); // only shadows
     return output;
-}*/
+}

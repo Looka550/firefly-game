@@ -52,7 +52,7 @@ AABBcollision(box){
     const rotationMatrix = mat4.create();
 
     let planeRotation = null;
-    if(this.transform.getEuler()[0] > 90){ // bug fix for negative rotation slopes
+    if(this.transform.getEuler()[0] > 90){ // bug fix for 90...180 rotation slopes
         planeRotation = quat.create();
         quat.fromEuler(planeRotation, this.transform.getEuler()[0] - 180, this.transform.getEuler()[1], this.transform.getEuler()[2]);
     }

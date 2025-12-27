@@ -157,7 +157,7 @@ const light3 = new GameObject({
     name: "Light",
 });
 
-const lightPosition3 = [0, 80, 0];
+const lightPosition3 = [0, 200, 0];
 
 // dodamo transformacijo (položaj luči)
 light3.addComponent(new Transform({
@@ -167,7 +167,7 @@ light3.addComponent(new Transform({
 // dodamo komponento luči (ambientni faktor)
 light3.addComponent(new Light({
     ambient: 0.3, // lahko prilagodiš svetlost ambienta
-    intensity: 180.0
+    intensity: 700.0
 }));
 scene.addChild(light3);
 
@@ -240,8 +240,15 @@ scene.addChild(tree2);
 // collisions
 const player = new GameObject();
 player.addChild(camera);
-const playerCol = new BoxCollider({ texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+
+import { Net } from "./Net.js";
+
+const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [10, 10, 0]});
+scene.addChild(net);
+
+const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 player.addComponent(playerCol);
+
 /*
 import { getLightY } from './PlayerInput.js';
 playerCol.addComponent({
@@ -252,7 +259,7 @@ playerCol.addComponent({
 });*/
 
 
-
+/*
 playerCol.addComponent({
     update(){
         player.nextMove ??= [0, -0.00, 0]; // -0.05 = gravity
@@ -282,7 +289,7 @@ playerCol.addComponent({
         }
     }
 });
-
+*/
 
 
 scene.addChild(player);

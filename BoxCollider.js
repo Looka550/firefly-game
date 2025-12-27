@@ -16,7 +16,7 @@ export class BoxCollider extends GameObject{
         debug = false,
         euler = [0, 0, 0],
         translation = [0, 0, 0],
-        scale = [1, 3, 1],
+        scale = [1, 1, 1],
         dynamic = false,
         normalTexture = null,
         gravity = false
@@ -93,7 +93,7 @@ export class BoxCollider extends GameObject{
     getBoundaries() {
         this.localMin = vec3.clone(this.mesh.localMin);
         this.localMax = vec3.clone(this.mesh.localMax);
-        
+
         const parentMatrix = getGlobalModelMatrix(this.gameObject);
 
         const scaleMatrix = mat4.create();

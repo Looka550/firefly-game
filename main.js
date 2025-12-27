@@ -229,13 +229,19 @@ scene.addChild(firefly);
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
 
-//const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
-//scene.addChild(c);
-
 const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, 1, 0]});
 scene.addChild(tree);
 const tree2 = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-50, 1, -40]});
 scene.addChild(tree2);
+
+const transparent = new Cube({ translation: [0, 5, -14], scale: [1, 3, 1], euler: [0, 0, 0], texture: blankTexture, color: [1, 1, 1, 0.3] });
+transparent.transparent = true; // transparent materials have to be created LAST
+scene.addChild(transparent);
+
+//const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
+//scene.addChild(c);
+
+
 
 // collisions
 const player = new GameObject();
@@ -248,6 +254,7 @@ scene.addChild(net);
 
 const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 player.addComponent(playerCol);
+
 
 /*
 import { getLightY } from './PlayerInput.js';

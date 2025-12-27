@@ -14,6 +14,7 @@ export class GameObject extends Node{
     } = {}) {
         super();
         this.name = name;
+        this.transparent = false;
 
         this.addComponent(new Transform({ euler, translation, scale }));
 

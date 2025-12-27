@@ -63,7 +63,21 @@ export class Renderer{
             },
             fragment: {
                 module,
-                targets: [{ format }],
+                targets: [{
+                    format,
+                    blend: {
+                        color: {
+                            srcFactor: 'src-alpha',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add',
+                        },
+                        alpha: {
+                            srcFactor: 'one',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add',
+                        },
+                    },
+                }],
             },
             depthStencil: {
                 depthWriteEnabled: true,
@@ -72,6 +86,7 @@ export class Renderer{
             },
             layout: 'auto',
         });
+
 
         Engine.device = device;
         Engine.pipeline = pipeline;

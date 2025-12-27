@@ -1,4 +1,4 @@
-import { quat, mat4 } from './glm.js';
+import { quat, mat4, vec3 } from './glm.js';
 import { Transform } from './Transform.js';
 import { Camera } from './Camera.js';
 import { Node } from './Node.js';
@@ -24,6 +24,7 @@ import { Firefly } from './Firefly.js';
 import { Cylinder } from './Cylinder.js';
 import { Tree } from './Tree.js';
 import { Light } from './Light.js';
+import { TransformAnimator } from './TransformAnimator.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -241,7 +242,29 @@ scene.addChild(transparent);
 //const c = new Cylinder({ translation: [-3, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 //scene.addChild(c);
 
+const transform = tree2.getComponentOfType(Transform);
 
+const startTransform = {
+    translation: vec3.fromValues(0, 0, 0),
+    rotation: quat.create(),
+    scale: vec3.fromValues(1, 1, 1),
+};
+
+const endTransform = {
+    translation: vec3.fromValues(0, 15, 0),
+    rotation: quat.fromEuler(quat.create(), 0, 180, 0),
+    scale: vec3.fromValues(2, 2, 2),
+};
+
+const animator = new TransformAnimator({
+    gameObject: tree2,
+    startTransform,
+    endTransform,
+    frames: 1000,
+    loop: true
+});
+
+tree2.addComponent(animator);
 
 // collisions
 const player = new GameObject();

@@ -28,6 +28,7 @@ import { TransformAnimator } from './TransformAnimator.js';
 import { Net } from "./Net.js";
 import { Lamp } from './Lamp.js';
 import { Renderer } from './Renderer.js';
+import { WorldGenerator } from './WorldGenerator.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -209,15 +210,6 @@ const plane5 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture
 scene.addChild(plane5);
 
 
-const A = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, 200]});
-scene.addChild(A);
-const B = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-310, 1, 200]});
-scene.addChild(B);
-const C = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-310, 1, -200]});
-scene.addChild(C);
-const D = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, -200]});
-scene.addChild(D);
-
 // NORTH WORLD BORDER
 const borderN = new GameObject({ translation: [0, 15, -204], texture: blankTexture});
 const colN = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: false, dynamic: false, name: "border north", tags: ["border", "north"] });
@@ -243,6 +235,30 @@ const player = new GameObject();
 player.addChild(camera);
 const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
 player.addComponent(playerCol);
+
+/*
+const A = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, 200]});
+scene.addChild(A);
+const B = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-310, 1, 200]});
+scene.addChild(B);
+const C = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-310, 1, -200]});
+scene.addChild(C);
+const D = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, -200]});
+scene.addChild(D);
+
+const E = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 14, -84]});
+scene.addChild(E);
+const F = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 0, -25]});
+scene.addChild(F);
+const G = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 0, 27]});
+scene.addChild(G);
+const H = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 6, 81.5]});
+scene.addChild(H);
+*/
+
+const generator = new WorldGenerator({ texture: blankTexture, treeTexture: blankTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [7, -25], [0, 27], [3, 81.5], [6, 200]]});
+generator.generateTrees(20, 20);
+generator.generateFireflies(20, 5, 5);
 
 
 playerCol.addComponent({
@@ -307,11 +323,11 @@ scene.addChild(firefly2);
 
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
-
+/*
 const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, 1, 0]});
 scene.addChild(tree);
 const tree2 = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-50, 1, -40]});
-scene.addChild(tree2);
+scene.addChild(tree2);*/
 /*
 const transparent = new Cube({ translation: [0, 5, -14], scale: [1, 3, 1], euler: [0, 0, 0], texture: blankTexture, color: [1, 1, 1, 0.3] });
 transparent.transparent = true; // transparent materials have to be created LAST

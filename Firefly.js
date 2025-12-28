@@ -77,8 +77,10 @@ export class Firefly extends GameObject {
         if(this.stage != 0){
             return;
         }
-        const hinge = [2, 0, 0];
-        const anim = new RotateAroundPointAnimator({startRotation: [0, 0, 0], endRotation: [0, -360, 0], point: hinge, gameObject: this, frames: 300, loop: false});
+
+        let t = getWorldTranslation(this);
+        const hinge = [t.translation[0] + 2, t.translation[1], t.translation[2]];
+        const anim = new RotateAroundPointAnimator({startRotation: [0, 0, 0], endRotation: [0, 360, 0], point: hinge, gameObject: this, frames: 300, loop: false});
         this.addComponent(anim);
     }
 

@@ -18,7 +18,9 @@ export class Tree extends GameObject {
         translation = [0, 0, 0],
         scale = [1, 1, 1],
         name = "Tree",
-        texture
+        texture,
+        leaves = 6,
+        leavesColor = [0.051, 0.451, 0.02, 1]
     } = {}){
         super({
             euler,
@@ -27,6 +29,8 @@ export class Tree extends GameObject {
             name,
         });
         this.texture = texture
+        this.leaves = leaves;
+        this.leavesColor = leavesColor;
 
         this.build();
 
@@ -34,8 +38,8 @@ export class Tree extends GameObject {
 
     build(){
         this.getTrunk();
-        this.getBranchCircle({n: 6});
-        this.getLeavesCircle({n: 6});
+        this.getBranchCircle({n: this.leaves});
+        this.getLeavesCircle({n: this.leaves});
 
         // NORTH BORDER
         const borderN = new GameObject({ translation: [0, 15, 2], texture: this.texture});
@@ -82,7 +86,7 @@ export class Tree extends GameObject {
                 scale: scale,
                 euler: euler,
                 texture: this.texture,
-                color: [0.051, 0.451, 0.02, 1],
+                color: this.leavesColor,
             });
 
             const wrapper = new GameObject();

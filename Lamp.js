@@ -228,7 +228,7 @@ export class Lamp extends GameObject {
             offsetY *= -1;
         }
 
-        const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false, stage: 1 });
+        const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false, stage: 1, intensit: 10.0 });
         this.cage.addChild(firefly);
 
         this.fireflies.push(firefly);

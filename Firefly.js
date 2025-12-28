@@ -21,7 +21,8 @@ export class Firefly extends GameObject {
         name = "Firefly",
         texture,
         addCollider = true,
-        stage = 0
+        stage = 0,
+        intensity = 1.0
     } = {}){
         super({
             euler,
@@ -34,6 +35,7 @@ export class Firefly extends GameObject {
         this.stage = stage;
         this.destroyed = false;
 
+        this.intensity = intensity;
         this.scaleOriginal = vec3.clone(scale);
 
         this.build();
@@ -61,7 +63,7 @@ export class Firefly extends GameObject {
 
         light.addComponent(new Light({
             ambient: 0,
-            intensity: 1.0
+            intensity: this.intensity
         }));
         this.tail.addChild(light);
 

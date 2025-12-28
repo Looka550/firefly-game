@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net } from "./main.js";
+import { lamp, net, moon } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -15,7 +15,31 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
+export function rotateConfig(){
+    if(keys["u"]){
+        moon.rotate({x: 0.2});
+    }
+    if(keys["j"]){
+        moon.rotate({x: -0.2});
+    }
+    if(keys["i"]){
+        moon.rotate({y: 0.2});
+    }
+    if(keys["k"]){
+        moon.rotate({y: -0.2});
+    }
+    if(keys["o"]){
+        moon.rotate({z: 0.2});
+    }
+    if(keys["l"]){
+        moon.rotate({z: -0.2});
+    }
+    console.log("moon: " + moon.transform.getEuler());
+}
+
+
 export function lightConfig(){
+    return;
     if(keys["u"]){
         lightY += 0.2;
     }

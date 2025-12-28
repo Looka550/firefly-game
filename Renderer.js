@@ -269,7 +269,7 @@ export class Renderer{
             colorAttachments: [{
                 view: this.context.getCurrentTexture().createView(),
                 loadOp: 'clear',
-                clearValue: [0.7, 0.8, 0.9, 1],
+                clearValue: [0.165, 0.161, 0.2, 1],
                 storeOp: 'store',
             }],
             depthStencilAttachment: {

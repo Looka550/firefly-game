@@ -110,10 +110,9 @@ export class Lamp extends GameObject {
     }
 
     release(){
-        if(this.swinging || !this.CollectedAll){
+        if(this.swinging || !this.lampOn || !this.collectedAll){
             return;
         }
-
 
         this.swinging = true;
 
@@ -153,7 +152,6 @@ export class Lamp extends GameObject {
         if(this.swinging){
             return;
         }
-
         this.swinging = true;
 
         const transformA = {

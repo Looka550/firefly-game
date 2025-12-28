@@ -22,6 +22,9 @@ export function testConfig(){
     if(keys["b"]){
         net.swing();
     }
+    if(keys["c"]){
+        lamp.release();
+    }
     if(keys["u"]){
         assistLight1.move({x: 0.2});
     }

@@ -1,32 +1,8 @@
-- pause
-- exit (press esc)
-- start function
-
-
-next:
-- put verex and index stuff in gameobject/cube
-- make a basic color texture renderer
-- make a function that moves one vertex
-- make grid of cubes class
-
-
-lighting:
-add distance attenuation
-
-visualize light radius
-
-switch to storage buffers (100+ lights)
-
-add gamma correction (your lighting is linear right now)
-dodam Blinn–Phong (bolj stabilen)
-
-ločim diffuse / specular barvo
-
-dodam attenuation
-
-
-MAKE LEAVES MOVE
-
-
-- grass texture
-- tree texture
+make 32 lights
+adjust light parameters
+make moon
+add gravity
+only release after collecting all
+optimization (delta)
+copyrights attribution
+refactor code (clean)

@@ -6,17 +6,39 @@ const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
 
-export let lightY = 54.6; // 30
-export let near = 3.64; // 0.1
-export let far = 64.4; // 50
+export let lightY = 63.8; // 30
+export let near = -9.38; // 0.1
+export let far = 78.6; // 50
 
 // settings
 const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
+export function lightConfig(){
+    if(keys["u"]){
+        lightY += 0.2;
+    }
+    if(keys["j"]){
+        lightY -= 0.2;
+    }
+    if(keys["i"]){
+        near += 0.2;
+    }
+    if(keys["k"]){
+        near -= 0.2;
+    }
+    if(keys["o"]){
+        far += 0.2;
+    }
+    if(keys["l"]){
+        far -= 0.2;
+    }
+    console.log(lightY + " : " + near + " : " + far);
+}
 
 export function netConfig(){
+    return;
     let change = 0;
     if(keys["5"]){
         net.swing();

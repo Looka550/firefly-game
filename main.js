@@ -345,7 +345,7 @@ scene.addChild(transparent);
 // collisions
 
 
-import { netConfig } from './PlayerInput.js';
+import { netConfig, lightConfig } from './PlayerInput.js';
 
 export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
 //const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
@@ -354,6 +354,7 @@ player.addChild(net);
 player.addComponent({
     update(){
         netConfig();
+        lightConfig();
     }
 });
 

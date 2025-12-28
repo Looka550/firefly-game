@@ -122,7 +122,7 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
     var uv = proj.xy * 0.5 + 0.5;
 
     let shadowUV = proj.xy * 0.5 + 0.5;
-    let normalBias = max(0.20 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.002);
+    let normalBias = max(0.65 * (1.0 - dot(input.normal, normalize(vec3f(0, -1, 0)))), 0.2);
 
 
     var shadowSum: f32 = 0.0;

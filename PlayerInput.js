@@ -6,9 +6,9 @@ const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
 
-export let lightY = 63.8; // 30
-export let near = -9.38; // 0.1
-export let far = 78.6; // 50
+export let lightY = 65.8; // 30
+export let near = -14.78; // 0.1
+export let far = 54; // 50
 
 // settings
 const speed = 0.2;
@@ -28,6 +28,7 @@ export function trueGrounded(){
 
 
 export function testConfig(){
+    return;
     if(keys["v"]){
         lamp.swing();
     }
@@ -59,6 +60,7 @@ export function testConfig(){
 }
 
 export function rotateConfig(){
+    return;
     if(keys["u"]){
         playerCol.move({x: 0.2});
     }
@@ -82,7 +84,7 @@ export function rotateConfig(){
 
 
 export function lightConfig(){
-    return;
+
     if(keys["u"]){
         lightY += 0.2;
     }

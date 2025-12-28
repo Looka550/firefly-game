@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net, moon, assistLight1 } from "./main.js";
+import { lamp, net, moon, assistLight1, playerCol } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -14,6 +14,15 @@ export let far = 78.6; // 50
 const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
+
+// gravity (jumping)
+let verticalVelocity = 0;
+let grounded = false;
+
+const gravity = -0.015;   // tweak
+const jumpForce = 0.35;   // tweak
+const groundY = 0;        // your floor height
+
 
 export function testConfig(){
     if(keys["v"]){
@@ -47,26 +56,25 @@ export function testConfig(){
 }
 
 export function rotateConfig(){
-    return;
     if(keys["u"]){
-        moon.rotate({x: 0.2});
+        playerCol.move({x: 0.2});
     }
     if(keys["j"]){
-        moon.rotate({x: -0.2});
+        playerCol.move({x: -0.2});
     }
     if(keys["i"]){
-        moon.rotate({y: 0.2});
+        playerCol.move({y: 0.2});
     }
     if(keys["k"]){
-        moon.rotate({y: -0.2});
+        playerCol.move({y: -0.2});
     }
     if(keys["o"]){
-        moon.rotate({z: 0.2});
+        playerCol.move({z: 0.2});
     }
     if(keys["l"]){
-        moon.rotate({z: -0.2});
+        playerCol.move({z: -0.2});
     }
-    console.log("moon: " + moon.transform.getEuler());
+    //console.log("playerCol: " + playerCol.transform.translation);
 }
 
 
@@ -200,7 +208,7 @@ export function initInput(canvas){
     });
 }
 
-export function parseInput(playerWrapper, player, flight=true){
+export function parseInput(playerWrapper, player, flight = false){
     const wrapperTransform = playerWrapper.getComponentOfType(Transform);
     const transform = player.getComponentOfType(Transform);
     const forward = getForward(pitch, yaw);
@@ -239,19 +247,42 @@ export function parseInput(playerWrapper, player, flight=true){
     move[0] *= speed;
     move[1] *= speed;
     move[2] *= speed;
+    
+    if(flight){
+        if(keys[" "]){
+            move[1] += speed;
+        }
+        if(keys["shift"]){
+            move[1] -= speed;
+        }
+    }
 
-    if(keys[" "]){
-        move[1] += speed;
-    }
-    if(keys["shift"]){
-        move[1] -= speed;
-    }
 
     //move[1] = 0;
 
     wrapperTransform.translation[0] += move[0];
     wrapperTransform.translation[1] += move[1];
     wrapperTransform.translation[2] += move[2];
+
+    if(!flight){
+        if (keys[" "] && grounded) {
+            verticalVelocity = jumpForce;
+            grounded = false;
+        }
+
+        // gravity
+        verticalVelocity += gravity;
+
+        // apply vertical velocity
+        wrapperTransform.translation[1] += verticalVelocity;
+
+        // ground collision
+        if (wrapperTransform.translation[1] <= groundY) {
+            wrapperTransform.translation[1] = groundY;
+            verticalVelocity = 0;
+            grounded = true;
+        }
+    }
 
     // looking
     yaw += -mouseMove[0] * sensitivity;
@@ -264,9 +295,9 @@ export function parseInput(playerWrapper, player, flight=true){
     if(pitch < -Math.PI/2){
         pitch = -Math.PI/2;
     }
-    quat.identity(transform.rotation);
-    quat.rotateY(transform.rotation, transform.rotation, yaw);
-    quat.rotateX(transform.rotation, transform.rotation, pitch);
+    quat.identity(wrapperTransform.rotation);
+    quat.rotateY(wrapperTransform.rotation, wrapperTransform.rotation, yaw);
+    quat.rotateX(wrapperTransform.rotation, wrapperTransform.rotation, pitch);
 
 
     mouseMove = [0, 0];

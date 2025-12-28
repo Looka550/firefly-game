@@ -99,7 +99,7 @@ camera.addComponent(new Transform({
 
 camera.addComponent({
     update(){
-        parseInput(playerWrapper, player, true);
+        parseInput(playerWrapper, player, false);
     }
 })
 
@@ -172,6 +172,13 @@ const light3 = new GameObject({
 });
 
 const lightPosition3 = [0, 200, 0];
+
+const ambientLight = new GameObject({name: "Ambient Light"});
+ambientLight.addComponent(new Light({
+    ambient: 0.5,
+    intensity: 0
+}));
+scene.addChild(ambientLight);
 
 export const moon = new Sphere({ translation: [0, 400, 0], scale: [50, 50, 50], euler: [90, 0, 0], texture: moonTexture, normalTexture: moonNormal, color: [0.251, 0.208, 0.208, 1]});
 scene.addChild(moon);
@@ -262,8 +269,11 @@ scene.addChild(borderW);
 
 const player = new GameObject();
 player.addChild(camera);
-const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
-player.addComponent(playerCol);
+
+const playerBoxCollider = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
+export const playerCol = new GameObject({ translation: [0, 0, 8.6] });
+playerCol.addComponent(playerBoxCollider);
+playerWrapper.addChild(playerCol);
 
 /*
 const A = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, 200]});
@@ -284,20 +294,20 @@ scene.addChild(G);
 const H = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 6, 81.5]});
 scene.addChild(H);
 */
-export const firefliesCount = 1;
-const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: leavesTexture, trunkTexture: trunkTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [7, -25], [0, 27], [3, 81.5], [6, 200]]});
+export const firefliesCount = 20;
+const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: leavesTexture, trunkTexture: trunkTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [0, -25], [0, 27], [0, 81.5], [6, 200]]});
 generator.generateTrees(40, 20);
 generator.generateFireflies(firefliesCount, 5, 5);
 
 
 playerCol.addComponent({
     update(){
-        player.nextMove ??= [0.05, -0.00, 0.05]; // -0.05 = gravity
+        playerWrapper.nextMove ??= [0.05, -0.00, 0.05]; // -0.05 = gravity
 
-        player.move({y: player.nextMove[1]});
+        playerWrapper.move({y: playerWrapper.nextMove[1]});
         let onSlope = false;
 
-        const collisions = playerCol.collides();
+        const collisions = playerBoxCollider.collides();
 
         collisions.forEach(col => {
             if(col instanceof PlaneCollider) {
@@ -305,33 +315,34 @@ playerCol.addComponent({
                     onSlope = true;
                 }
                 else if(col.tags.includes("flat")){
-                    player.move({y: -player.nextMove[1]});
+                    playerWrapper.move({y: -playerWrapper.nextMove[1]});
                 }
                 else{
                     console.log("none of these");
                 }
-                console.log(col.name + " : " + "player");
+
             }
             else{
                 if(col.tags.includes("border")){
+                    //console.log(playerCol.transform.translation + " : " + playerCol.transform.scale);
                     if(col.tags.includes("north")){
-                        physics.pushBorder(player, playerCol, [0, 0, player.nextMove[2]]);
+                        physics.pushBorder(playerWrapper, playerBoxCollider, [0, 0, playerWrapper.nextMove[2]]);
                     }
                     if(col.tags.includes("south")){
-                        physics.pushBorder(player, playerCol, [0, 0, -player.nextMove[2]]);
+                        physics.pushBorder(playerWrapper, playerBoxCollider, [0, 0, -playerWrapper.nextMove[2]]);
                     }
                     if(col.tags.includes("east")){
-                        physics.pushBorder(player, playerCol, [-player.nextMove[0], 0, 0]);
+                        physics.pushBorder(playerWrapper, playerBoxCollider, [-playerWrapper.nextMove[0], 0, 0]);
                     }
                     if(col.tags.includes("west")){
-                        physics.pushBorder(player, playerCol, [player.nextMove[0], 0, 0]);
+                        physics.pushBorder(playerWrapper, playerBoxCollider, [playerWrapper.nextMove[0], 0, 0]);
                     }
                 }
             }
         });
 
         if(onSlope){
-            physics.climbSlope(player, playerCol);
+            physics.climbSlope(playerWrapper, playerBoxCollider);
         }
     }
 });

@@ -71,7 +71,7 @@ export class Physics{
         }
     }
 
-    pushBorder(player, playerCol, move){
+    pushBorder(playerWrapper, playerCol, move){
         while(true){
             let inBorder = false;
             let collisions = playerCol.collides();
@@ -87,7 +87,7 @@ export class Physics{
                 break;
             }
             else{
-                player.move({x: move[0], y: move[1], z: move[2]});
+                playerWrapper.move({x: move[0], y: move[1], z: move[2]});
             }
         }
     }

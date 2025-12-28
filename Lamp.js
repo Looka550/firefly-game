@@ -3,7 +3,7 @@ import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
 import { Engine, getGlobalModelMatrix, getWorldTranslation } from "./SceneUtils.js";
-import { sampler, blankTextureView, scene, playerWrapper, firefliesCount } from "./main.js";
+import { sampler, blankTextureView, scene, playerWrapper, firefliesCount, animationSpeed } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -100,7 +100,7 @@ export class Lamp extends GameObject {
                     transformA,
                     transformB,
                 ],
-                frames: 100,
+                frames: Math.round(100 / animationSpeed),
                 loop: false
             });
 
@@ -141,7 +141,7 @@ export class Lamp extends GameObject {
                 transformA,
                 transformB,
             ],
-            frames: 100,
+            frames: Math.round(100 / animationSpeed),
             loop: false
         });
 
@@ -181,7 +181,7 @@ export class Lamp extends GameObject {
                     transformB,
                     transformC,
                 ],
-                frames: 30,
+                frames: Math.round(30 / animationSpeed),
                 loop: false
             });
         }
@@ -193,7 +193,7 @@ export class Lamp extends GameObject {
                     transformB,
                     transformA,
                 ],
-                frames: 30,
+                frames: Math.round(30 / animationSpeed),
                 loop: false
             });
         }

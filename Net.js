@@ -3,7 +3,7 @@ import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
 import { Engine } from "./SceneUtils.js";
-import { sampler, blankTextureView } from "./main.js";
+import { sampler, blankTextureView, animationSpeed } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -118,7 +118,7 @@ export class Net extends GameObject {
                 transformAOffset,
                 transformA,
             ],
-            frames: 20,
+            frames: 10,
             loop: false
         });
         this.addComponent(animator);

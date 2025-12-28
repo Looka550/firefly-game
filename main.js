@@ -117,6 +117,7 @@ let pathmon = "./webgpu/models/monkey/monkey.gltf";
 
 
 const ambient = 0.5;
+export let animationSpeed = 1;
 
 /*
 const light = new GameObject({
@@ -568,6 +569,7 @@ function frame(time) {
     const dt = (time - lastTime) / 1000 * factor; // seconds
     lastTime = time;
     //console.log("dt: " + dt);
+    animationSpeed = Math.abs(dt);
 
     update(dt);
     renderer.render();

@@ -2,7 +2,7 @@ import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
-import { sampler, blankTextureView, scene, playerWrapper } from "./main.js";
+import { sampler, blankTextureView, scene, playerWrapper, animationSpeed } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -82,7 +82,7 @@ export class Firefly extends GameObject {
 
         let t = getWorldTranslation(this);
         const hinge = [t.translation[0] + 2, t.translation[1], t.translation[2]];
-        const anim = new RotateAroundPointAnimator({startRotation: [0, 0, 0], endRotation: [0, 360, 0], point: hinge, gameObject: this, frames: 300, loop: false});
+        const anim = new RotateAroundPointAnimator({startRotation: [0, 0, 0], endRotation: [0, 360, 0], point: hinge, gameObject: this, frames: Math.round(300 / animationSpeed), loop: false});
         this.addComponent(anim);
     }
 
@@ -92,9 +92,9 @@ export class Firefly extends GameObject {
 
     animateWings(){
         const hinge = [-1.91, 5, -2];
-        const animR = new RotateAroundPointAnimator({startRotation: [0, 0, -30], endRotation: [0, 0, 30], point: hinge, gameObject: this.wingR, frames: 50, loop: true});
+        const animR = new RotateAroundPointAnimator({startRotation: [0, 0, -30], endRotation: [0, 0, 30], point: hinge, gameObject: this.wingR, frames: Math.round(50 / animationSpeed), loop: true});
         this.wingR.addComponent(animR);
-        const animL = new RotateAroundPointAnimator({startRotation: [0, 0, 30], endRotation: [0, 0, -30], point: hinge, gameObject: this.wingL, frames: 50, loop: true});
+        const animL = new RotateAroundPointAnimator({startRotation: [0, 0, 30], endRotation: [0, 0, -30], point: hinge, gameObject: this.wingL, frames: Math.round(50 / animationSpeed), loop: true});
         this.wingL.addComponent(animL);
     }
 
@@ -128,7 +128,7 @@ export class Firefly extends GameObject {
                     transformB,
                     transformC
                 ],
-                frames: 300,
+                frames: Math.round(300 / animationSpeed),
                 loop: false
             });
 

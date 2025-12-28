@@ -18,9 +18,11 @@ export class Tree extends GameObject {
         translation = [0, 0, 0],
         scale = [1, 1, 1],
         name = "Tree",
-        texture,
+        leavesTexture,
         leaves = 6,
-        leavesColor = [0.051, 0.451, 0.02, 1]
+        leavesColor = [0.051, 0.451, 0.02, 1],
+        trunkTexture,
+        texture
     } = {}){
         super({
             euler,
@@ -28,9 +30,11 @@ export class Tree extends GameObject {
             scale,
             name,
         });
-        this.texture = texture
+        this.leavesTexture = leavesTexture;
+        this.trunkTexture = trunkTexture;
         this.leaves = leaves;
         this.leavesColor = leavesColor;
+        this.texture = texture;
 
         this.build();
 
@@ -69,7 +73,7 @@ export class Tree extends GameObject {
             translation: [0, 0, 0],
             scale: [2, 10, 2],
             euler: [0, 0, 0],
-            texture: this.texture,
+            texture: this.trunkTexture,
             color: [0.278, 0.227, 0.227, 1],
         });
         this.addChild(this.trunk);
@@ -85,7 +89,7 @@ export class Tree extends GameObject {
                 translation: offset,
                 scale: scale,
                 euler: euler,
-                texture: this.texture,
+                texture: this.leavesTexture,
                 color: this.leavesColor,
             });
 
@@ -109,7 +113,7 @@ export class Tree extends GameObject {
                 translation: offset,
                 scale: scale,
                 euler: euler,
-                texture: this.texture,
+                texture: this.trunkTexture,
                 color: [0.278, 0.227, 0.227, 1],
             });
 

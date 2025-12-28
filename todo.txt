@@ -30,5 +30,3 @@ MAKE LEAVES MOVE
 
 - grass texture
 - tree texture
-- fireflies generation
-- tree generation

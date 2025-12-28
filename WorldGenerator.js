@@ -27,7 +27,8 @@ export class WorldGenerator extends GameObject {
         minZ,
         maxZ,
         checkpoints = [],
-        treeTexture,
+        leavesTexture,
+        trunkTexture,
         fireflyTexture
     } = {}){
         super({
@@ -43,7 +44,8 @@ export class WorldGenerator extends GameObject {
         this.minZ = minZ;
         this.maxZ = maxZ;
         this.makeCheckpoints(checkpoints);
-        this.treeTexture = treeTexture;
+        this.leavesTexture = leavesTexture;
+        this.trunkTexture = trunkTexture;
         this.fireflyTexture = fireflyTexture;
 
         this.trees = [];
@@ -87,7 +89,7 @@ export class WorldGenerator extends GameObject {
 
             const tree = { x, y, z };
             this.trees.push(tree);
-            const treeObject = new Tree({texture: this.treeTexture, scale: [1, 1, 1], translation: [x, y, z], leavesColor: leavesColor, leaves: leaves});
+            const treeObject = new Tree({trunkTexture: this.trunkTexture, leavesTexture: this.leavesTexture, texture: this.texture, scale: [1, 1, 1], translation: [x, y, z], leavesColor: leavesColor, leaves: leaves});
             scene.addChild(treeObject);
 
         }

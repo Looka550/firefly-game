@@ -59,6 +59,11 @@ const monkeyTexture = await loadTexture(new URL("./webgpu/models/monkey/base.png
 const catTexture = await loadTexture(new URL("./webgpu/models/cat/base.avif", import.meta.url));
 const grassTex = await loadTexture(new URL("./assets/grass/base.jpg", import.meta.url));
 const grassNor = await loadTexture(new URL("./assets/grass/normal.png", import.meta.url));
+
+const grassTexture = await loadTexture(new URL("./assets/grass2/grass.jpg", import.meta.url));
+const leavesTexture = await loadTexture(new URL("./assets/leaves/leaves.jpg", import.meta.url));
+const trunkTexture = await loadTexture(new URL("./assets/trunk/trunk.jpg", import.meta.url));
+
 export const blankTextureView = blankTexture.createView();
 
 export const sampler = device.createSampler({
@@ -188,25 +193,25 @@ scene.addChild(cube2);
 
 // world building
 
-const plane1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+const plane1 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane1);
 
-const slope1 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
+const slope1 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
 scene.addChild(slope1);
 
-const slope2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
+const slope2 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
-const plane2 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+const plane2 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane2);
 
-const plane3 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, -3.344, 171.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+const plane3 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -3.344, 171.5], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane3);
 
-const plane4 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -114], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+const plane4 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -114], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane4);
 
-const plane5 = new PlaneCollider({ texture: grassTex, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -174], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
+const plane5 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -174], scale: [300, 0, 30], name: "flat grass", tags: ["flat"] });
 scene.addChild(plane5);
 
 
@@ -256,7 +261,7 @@ const H = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 6,
 scene.addChild(H);
 */
 
-const generator = new WorldGenerator({ texture: blankTexture, treeTexture: blankTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [7, -25], [0, 27], [3, 81.5], [6, 200]]});
+const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: leavesTexture, trunkTexture: trunkTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [7, -25], [0, 27], [3, 81.5], [6, 200]]});
 generator.generateTrees(20, 20);
 generator.generateFireflies(20, 5, 5);
 

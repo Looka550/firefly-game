@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net, moon } from "./main.js";
+import { lamp, net, moon, assistLight1 } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -15,7 +15,36 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
+export function testConfig(){
+    if(keys["v"]){
+        lamp.swing();
+    }
+    if(keys["b"]){
+        net.swing();
+    }
+    if(keys["u"]){
+        assistLight1.move({x: 0.2});
+    }
+    if(keys["j"]){
+        assistLight1.move({x: -0.2});
+    }
+    if(keys["i"]){
+        assistLight1.move({y: 0.2});
+    }
+    if(keys["k"]){
+        assistLight1.move({y: -0.2});
+    }
+    if(keys["o"]){
+        assistLight1.move({z: 0.2});
+    }
+    if(keys["l"]){
+        assistLight1.move({z: -0.2});
+    }
+    //console.log("move: " + assistLight1.transform.translation);
+}
+
 export function rotateConfig(){
+    return;
     if(keys["u"]){
         moon.rotate({x: 0.2});
     }
@@ -168,8 +197,9 @@ export function initInput(canvas){
     });
 }
 
-export function parseInput(player, flight=true){
-    const transform = player.getComponentOfType(Transform)
+export function parseInput(playerWrapper, player, flight=true){
+    const wrapperTransform = playerWrapper.getComponentOfType(Transform);
+    const transform = player.getComponentOfType(Transform);
     const forward = getForward(pitch, yaw);
     const right   = getRight(yaw);
     let move = [0, 0, 0];
@@ -216,9 +246,9 @@ export function parseInput(player, flight=true){
 
     //move[1] = 0;
 
-    transform.translation[0] += move[0];
-    transform.translation[1] += move[1];
-    transform.translation[2] += move[2];
+    wrapperTransform.translation[0] += move[0];
+    wrapperTransform.translation[1] += move[1];
+    wrapperTransform.translation[2] += move[2];
 
     // looking
     yaw += -mouseMove[0] * sensitivity;

@@ -1,8 +1,4 @@
-make moon
 add gravity
-only release after collecting all
 optimization (delta)
 copyrights attribution
 refactor code (clean)
-
-bug fix half the map is dark 

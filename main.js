@@ -89,6 +89,8 @@ export const sampler = device.createSampler({
 export const scene = new Node("scene");
 export const physics = new Physics();
 
+export const playerWrapper = new GameObject();
+
 const camera = new Node();
 camera.addComponent(new Camera());
 camera.addComponent(new Transform({
@@ -97,7 +99,7 @@ camera.addComponent(new Transform({
 
 camera.addComponent({
     update(){
-        parseInput(player, true);
+        parseInput(playerWrapper, player, true);
     }
 })
 
@@ -174,57 +176,19 @@ const lightPosition3 = [0, 200, 0];
 export const moon = new Sphere({ translation: [0, 400, 0], scale: [50, 50, 50], euler: [90, 0, 0], texture: moonTexture, normalTexture: moonNormal, color: [0.251, 0.208, 0.208, 1]});
 scene.addChild(moon);
 
-const assistIntensity = 100;
 
-const moonAssist1 = new GameObject({name: "Light"});
-moonAssist1.addComponent(new Transform({
-    translation: [0, 400, 100]
-}));
-moonAssist1.addComponent(new Light({
-    ambient: 0,
-    intensity: assistIntensity
-}));
-scene.addChild(moonAssist1);
-
-const moonAssist2 = new GameObject({name: "Light"});
-moonAssist2.addComponent(new Transform({
-    translation: [0, 400, -100]
-}));
-moonAssist2.addComponent(new Light({
-    ambient: 0,
-    intensity: assistIntensity
-}));
-scene.addChild(moonAssist2);
-
-const moonAssist3 = new GameObject({name: "Light"});
-moonAssist3.addComponent(new Transform({
-    translation: [100, 400, 0]
-}));
-moonAssist3.addComponent(new Light({
-    ambient: 0,
-    intensity: assistIntensity
-}));
-scene.addChild(moonAssist3);
-
-const moonAssist4 = new GameObject({name: "Light"});
-moonAssist4.addComponent(new Transform({
-    translation: [-100, 400, 0]
-}));
-moonAssist4.addComponent(new Light({
-    ambient: 0,
-    intensity: assistIntensity
-}));
-scene.addChild(moonAssist4);
-
-const moonAssist5 = new GameObject({name: "Light"});
-moonAssist5.addComponent(new Transform({
-    translation: [0, 300, 0]
-}));
-moonAssist5.addComponent(new Light({
-    ambient: 0,
-    intensity: assistIntensity * 15
-}));
-scene.addChild(moonAssist5);
+const moonAssistPositions = [[0, 335, 0], [0, 335, -40]];
+for(let i = 0; i < moonAssistPositions.length; i++){
+    const moonAssist = new GameObject({name: "Light"});
+    moonAssist.addComponent(new Transform({
+        translation: moonAssistPositions[i]
+    }));
+    moonAssist.addComponent(new Light({
+        ambient: 0,
+        intensity: 40
+    }));
+    scene.addChild(moonAssist);
+}
 
 
 /*
@@ -253,7 +217,7 @@ scene.addChild(cube2);
 
 // world building
 
-const plane1 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNormal, translation: [-10, -10, 0], scale: [300, 0, 30], name: "flat grass1", tags: ["flat"] });
+const plane1 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [300, 0, 30], name: "flat grass1", tags: ["flat"] });
 scene.addChild(plane1);
 
 const slope1 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
@@ -262,16 +226,16 @@ scene.addChild(slope1);
 const slope2 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
-const plane2 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNormal, debug: true, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass2", tags: ["flat"] }); // [-10, -3.344, 111.5]
+const plane2 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass2", tags: ["flat"] }); // [-10, -3.344, 111.5]
 scene.addChild(plane2);
 
-const plane3 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNormal, debug: true, translation: [-10, -3.344, 171.5], scale: [300, 0, 30], name: "flat grass3", tags: ["flat"] }); // [-10, -3.344, 171.5]
+const plane3 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 171.5], scale: [300, 0, 30], name: "flat grass3", tags: ["flat"] }); // [-10, -3.344, 171.5]
 scene.addChild(plane3);
 
-const plane4 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNormal, translation: [-10, 4.503, -114], scale: [300, 0, 30], name: "flat grass-1", tags: ["flat"] });
+const plane4 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -114], scale: [300, 0, 30], name: "flat grass-1", tags: ["flat"] });
 scene.addChild(plane4);
 
-const plane5 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNormal, translation: [-10, 4.503, -174], scale: [300, 0, 30], name: "flat grass-2", tags: ["flat"] });
+const plane5 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -174], scale: [300, 0, 30], name: "flat grass-2", tags: ["flat"] });
 scene.addChild(plane5);
 
 
@@ -320,10 +284,10 @@ scene.addChild(G);
 const H = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [0, 6, 81.5]});
 scene.addChild(H);
 */
-
+export const firefliesCount = 1;
 const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: leavesTexture, trunkTexture: trunkTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [7, -25], [0, 27], [3, 81.5], [6, 200]]});
-generator.generateTrees(20, 20);
-generator.generateFireflies(20, 5, 5);
+generator.generateTrees(40, 20);
+generator.generateFireflies(firefliesCount, 5, 5);
 
 
 playerCol.addComponent({
@@ -385,10 +349,7 @@ scene.addChild(firefly);
 const firefly2 = new Firefly({translation: [-12, 5.5, 177], texture: blankTexture, scale: [0.6, 0.6, 0.6]});
 scene.addChild(firefly2);
 
-const lightObj = new GameObject({translation: [-25, 5.5, 177], texture: blankTexture, scale: [0.6, 0.6, 0.6]});
-const lightTest = new Light({intensity: 3.0});
-lightObj.addComponent(lightTest);
-scene.addChild(lightObj);
+
 
 
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
@@ -410,7 +371,7 @@ scene.addChild(transparent);
 // collisions
 
 
-import { netConfig, lightConfig, rotateConfig } from './PlayerInput.js';
+import { netConfig, lightConfig, rotateConfig, testConfig } from './PlayerInput.js';
 
 export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
 //const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
@@ -419,6 +380,7 @@ player.addChild(net);
 player.addComponent({
     update(){
         //console.log(player.transform.translation);
+        testConfig();
         rotateConfig();
         netConfig();
         lightConfig();
@@ -432,9 +394,24 @@ scene.addChild(fakePlayer);
 export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, -5, -5]});
 
 //export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, 10, -5]});
-lamp.addFirefly();
-
+//lamp.addFirefly();
 player.addChild(lamp);
+
+
+
+export const assistLight1 = new GameObject({name: "Assist light"});
+/*
+assistLight1.addComponent(new Transform({
+    translation: [-1, 0, -1]
+}));
+assistLight1.addComponent(new Light({
+    ambient: 0,
+    intensity: 2.0
+}));
+playerWrapper.addChild(assistLight1);
+*/
+//const assistLightPositions = [[-21, 3.4, -12], [16.5, 0, -12], [-13.8, 0, -14.6], [-9.6, 0, -2.2], [8.2, -4, -3.2], [0.2, 0, -24], [23.8, 3.2-22.6], [-4.4, -0.8, -14.4]];
+
 
 
 const playerBody = new GameObject({ translation: [0, 8, 14] });
@@ -495,8 +472,8 @@ playerCol.addComponent({
 });
 */
 
-
-scene.addChild(player);
+playerWrapper.addChild(player);
+scene.addChild(playerWrapper);
 
 const cat = new Model({ translation: [2, 5, 2], scale: [1, 1, 1], euler: [0, 0, 0], texture: catTexture, gltfPath: pathcat });
 await cat.createMesh(pathcat);

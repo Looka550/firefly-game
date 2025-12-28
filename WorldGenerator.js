@@ -139,11 +139,11 @@ export class WorldGenerator extends GameObject {
                 continue;
             }
 
-            const offsetY = rand(-2, 2);
+            const offsetY = rand(-2, 0);
 
             const firefly = { x, y, z };
             this.fireflies.push(firefly);
-            const fireflyObject = new Firefly({texture: this.fireflyTexture, scale: [1, 1, 1], translation: [x, y + 5 + offsetY, z],});
+            const fireflyObject = new Firefly({texture: this.fireflyTexture, scale: [1, 1, 1], translation: [x, y + 5 + offsetY, z], intensity: 3});
             scene.addChild(fireflyObject);
 
         }

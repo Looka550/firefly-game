@@ -3,7 +3,7 @@ import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
 import { Engine, getGlobalModelMatrix, getWorldTranslation } from "./SceneUtils.js";
-import { sampler, blankTextureView, scene } from "./main.js";
+import { sampler, blankTextureView, scene, playerWrapper, firefliesCount } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -14,6 +14,7 @@ import { Cone } from "./Cone.js";
 import { BoxCollider } from "./BoxCollider.js";
 import { TransformPipelineAnimator } from './TransformPipelineAnimator.js';
 import { Firefly } from "./Firefly.js";
+import { Light } from "./Light.js";
 
 export class Lamp extends GameObject {
     constructor({
@@ -33,7 +34,10 @@ export class Lamp extends GameObject {
         this.lampOn = true;
 
         this.fireflies = [];
+        this.assistLights = [];
         this.swinging = false;
+        this.playerLit = false;
+        this.collectedAll = false;
 
         this.originalTransformOn = {
             translation: vec3.fromValues(-4, -5, -5),
@@ -106,9 +110,10 @@ export class Lamp extends GameObject {
     }
 
     release(){
-        if(this.swinging){
+        if(this.swinging || !this.CollectedAll){
             return;
         }
+
 
         this.swinging = true;
 
@@ -229,9 +234,36 @@ export class Lamp extends GameObject {
         }
 
         const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false, stage: 1, intensit: 10.0 });
-        this.cage.addChild(firefly);
 
+        this.cage.addChild(firefly);
         this.fireflies.push(firefly);
+
+        if(this.fireflies.length == firefliesCount){
+            this.collectedAll = true;
+        }
+
+        if(!this.playerLit){ // assist lights
+            const assistLightPositions = [[19.4, -0.2, 26.4], [-18.8, -0.2, 26.4], [0, -0.2, 26.4]];
+            for(let i = 0; i < assistLightPositions.length; i++){
+                const assistLight = new GameObject({name: "Assist light"});
+                assistLight.addComponent(new Transform({
+                    translation: assistLightPositions[i]
+                }));
+                assistLight.addComponent(new Light({
+                    ambient: 0,
+                    intensity: 1.0
+                }));
+                playerWrapper.addChild(assistLight);
+                this.assistLights.push(assistLight);
+            }
+
+            this.playerLit = true;
+        }
+        else{
+            for(let i = 0; i < this.assistLights.length; i++){
+                this.assistLights[i].intensity = this.fireflies.length;
+            }
+        }
     }
 }
 

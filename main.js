@@ -218,24 +218,24 @@ scene.addChild(C);
 const D = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, -200]});
 scene.addChild(D);
 
-// NORTH BORDER
+// NORTH WORLD BORDER
 const borderN = new GameObject({ translation: [0, 15, -204], texture: blankTexture});
-const colN = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: true, dynamic: false, name: "border north", tags: ["border", "north"] });
+const colN = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: false, dynamic: false, name: "border north", tags: ["border", "north"] });
 borderN.addComponent(colN);
 scene.addChild(borderN);
-// SOUTH BORDER
+// SOUTH WORLD BORDER
 const borderS = new GameObject({ translation: [0, 15, 201.5], texture: blankTexture});
-const colS = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: true, dynamic: false, name: "border south", tags: ["border", "south"] });
+const colS = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: false, dynamic: false, name: "border south", tags: ["border", "south"] });
 borderS.addComponent(colS);
 scene.addChild(borderS);
-// EAST BORDER
+// EAST WORLD BORDER
 const borderE = new GameObject({ translation: [286, 15, 0], texture: blankTexture});
-const colE = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: true, dynamic: false, name: "border east", tags: ["border", "east"] });
+const colE = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: false, dynamic: false, name: "border east", tags: ["border", "east"] });
 borderE.addComponent(colE);
 scene.addChild(borderE);
-//WEST BORDER
+//WEST WORLD BORDER
 const borderW = new GameObject({ translation: [-286, 15, 0], texture: blankTexture});
-const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: true, dynamic: false, name: "border west", tags: ["border", "west"] });
+const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: false, dynamic: false, name: "border west", tags: ["border", "west"] });
 borderW.addComponent(colW);
 scene.addChild(borderW);
 
@@ -304,12 +304,12 @@ scene.addChild(firefly);
 
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
-/*
+
 const tree = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-20, 1, 0]});
 scene.addChild(tree);
 const tree2 = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [-50, 1, -40]});
 scene.addChild(tree2);
-
+/*
 const transparent = new Cube({ translation: [0, 5, -14], scale: [1, 3, 1], euler: [0, 0, 0], texture: blankTexture, color: [1, 1, 1, 0.3] });
 transparent.transparent = true; // transparent materials have to be created LAST
 scene.addChild(transparent);

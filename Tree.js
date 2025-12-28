@@ -10,6 +10,7 @@ import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
 import { quat, vec3 } from "./glm.js";
 import { RotateAroundPointAnimator } from "./RotateAroundPointAnimator.js";
 import { Cylinder } from "./Cylinder.js";
+import { BoxCollider } from "./BoxCollider.js";
 
 export class Tree extends GameObject {
     constructor({
@@ -35,6 +36,27 @@ export class Tree extends GameObject {
         this.getTrunk();
         this.getBranchCircle({n: 6});
         this.getLeavesCircle({n: 6});
+
+        // NORTH BORDER
+        const borderN = new GameObject({ translation: [0, 15, 2], texture: this.texture});
+        const colN = new BoxCollider({ scale: [1, 30, 0.2], texture: this.texture, debug: false, dynamic: false, name: "border north", tags: ["border", "north"] });
+        borderN.addComponent(colN);
+        this.addChild(borderN);
+        // SOUTH BORDER
+        const borderS = new GameObject({ translation: [0, 15, -2], texture: this.texture});
+        const colS = new BoxCollider({ scale: [1, 30, 0.2], texture: this.texture, debug: false, dynamic: false, name: "border south", tags: ["border", "south"] });
+        borderS.addComponent(colS);
+        this.addChild(borderS);
+        // EAST BORDER
+        const borderE = new GameObject({ translation: [-2, 15, 0], texture: this.texture});
+        const colE = new BoxCollider({ scale: [0.2, 30, 1], texture: this.texture, debug: false, dynamic: false, name: "border east", tags: ["border", "east"] });
+        borderE.addComponent(colE);
+        this.addChild(borderE);
+        //WEST BORDER
+        const borderW = new GameObject({ translation: [2, 15, 0], texture: this.texture});
+        const colW = new BoxCollider({ scale: [0.2, 30, 1], texture: this.texture, debug: false, dynamic: false, name: "border west", tags: ["border", "west"] });
+        borderW.addComponent(colW);
+        this.addChild(borderW);
     }
 
     getTrunk(){

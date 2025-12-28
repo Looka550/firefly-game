@@ -297,7 +297,7 @@ const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: lea
 generator.generateTrees(40, 20);
 generator.generateFireflies(firefliesCount, 5, 5);
 
-
+import { trueGrounded } from './PlayerInput.js';
 playerCol.addComponent({
     update(){
         playerWrapper.nextMove ??= [0.05, -0.05, 0.05]; // -0.05 = gravity
@@ -311,9 +311,11 @@ playerCol.addComponent({
             if(col instanceof PlaneCollider) {
                 if(col.tags.includes("slope")){
                     onSlope = true;
+                    trueGrounded();
                 }
                 else if(col.tags.includes("flat")){
                     playerWrapper.move({y: -playerWrapper.nextMove[1]});
+                    trueGrounded();
                 }
                 else{
                     console.log("none of these");

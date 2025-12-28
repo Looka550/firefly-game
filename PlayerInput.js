@@ -15,6 +15,17 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
+// gravity
+let verticalVelocity = 0;
+let grounded = true;
+const gravity = -0.015;
+const jumpVelocity = 0.35;
+
+export function trueGrounded(){
+    verticalVelocity = 0;
+    grounded = true;
+}
+
 
 export function testConfig(){
     if(keys["v"]){
@@ -250,6 +261,17 @@ export function parseInput(playerWrapper, player, flight = false){
 
     if(!flight){
         move[1] = 0;
+    }
+
+    if(!flight){
+        if(keys[" "] && grounded){
+            verticalVelocity = jumpVelocity;
+            grounded = false;
+        }
+        if(!grounded){
+            verticalVelocity += gravity;
+            wrapperTransform.translation[1] += verticalVelocity;
+        }
     }
 
 

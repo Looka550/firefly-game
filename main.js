@@ -233,16 +233,16 @@ scene.addChild(slope1);
 const slope2 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
-const plane2 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 111.5], scale: [300, 0, 30], name: "flat grass2", tags: ["flat"] }); // [-10, -3.344, 111.5]
+const plane2 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 111.5], scale: [300, 0, 32], name: "flat grass2", tags: ["flat"] }); // [-10, -3.344, 111.5]
 scene.addChild(plane2);
 
-const plane3 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 171.5], scale: [300, 0, 30], name: "flat grass3", tags: ["flat"] }); // [-10, -3.344, 171.5]
+const plane3 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 171.5], scale: [300, 0, 28], name: "flat grass3", tags: ["flat"] }); // [-10, -3.344, 171.5]
 scene.addChild(plane3);
 
-const plane4 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -114], scale: [300, 0, 30], name: "flat grass-1", tags: ["flat"] });
+const plane4 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -114], scale: [300, 0, 32], name: "flat grass-1", tags: ["flat"] });
 scene.addChild(plane4);
 
-const plane5 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -174], scale: [300, 0, 30], name: "flat grass-2", tags: ["flat"] });
+const plane5 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, 4.503, -174], scale: [300, 0, 28], name: "flat grass-2", tags: ["flat"] });
 scene.addChild(plane5);
 
 
@@ -270,10 +270,8 @@ scene.addChild(borderW);
 const player = new GameObject();
 player.addChild(camera);
 
-const playerBoxCollider = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
-export const playerCol = new GameObject({ translation: [0, 0, 8.6] });
-playerCol.addComponent(playerBoxCollider);
-playerWrapper.addChild(playerCol);
+export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+playerWrapper.addComponent(playerCol);
 
 /*
 const A = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, 200]});
@@ -302,12 +300,12 @@ generator.generateFireflies(firefliesCount, 5, 5);
 
 playerCol.addComponent({
     update(){
-        playerWrapper.nextMove ??= [0.05, -0.00, 0.05]; // -0.05 = gravity
+        playerWrapper.nextMove ??= [0.05, -0.05, 0.05]; // -0.05 = gravity
 
         playerWrapper.move({y: playerWrapper.nextMove[1]});
         let onSlope = false;
 
-        const collisions = playerBoxCollider.collides();
+        const collisions = playerCol.collides();
 
         collisions.forEach(col => {
             if(col instanceof PlaneCollider) {
@@ -316,6 +314,7 @@ playerCol.addComponent({
                 }
                 else if(col.tags.includes("flat")){
                     playerWrapper.move({y: -playerWrapper.nextMove[1]});
+                    console.log("on flat plane: " + col.name);
                 }
                 else{
                     console.log("none of these");
@@ -326,24 +325,26 @@ playerCol.addComponent({
                 if(col.tags.includes("border")){
                     //console.log(playerCol.transform.translation + " : " + playerCol.transform.scale);
                     if(col.tags.includes("north")){
-                        physics.pushBorder(playerWrapper, playerBoxCollider, [0, 0, playerWrapper.nextMove[2]]);
+                        physics.pushBorder(playerWrapper, playerCol, [0, 0, playerWrapper.nextMove[2]]);
                     }
                     if(col.tags.includes("south")){
-                        physics.pushBorder(playerWrapper, playerBoxCollider, [0, 0, -playerWrapper.nextMove[2]]);
+                        physics.pushBorder(playerWrapper, playerCol, [0, 0, -playerWrapper.nextMove[2]]);
                     }
                     if(col.tags.includes("east")){
-                        physics.pushBorder(playerWrapper, playerBoxCollider, [-playerWrapper.nextMove[0], 0, 0]);
+                        physics.pushBorder(playerWrapper, playerCol, [-playerWrapper.nextMove[0], 0, 0]);
                     }
                     if(col.tags.includes("west")){
-                        physics.pushBorder(playerWrapper, playerBoxCollider, [playerWrapper.nextMove[0], 0, 0]);
+                        physics.pushBorder(playerWrapper, playerCol, [playerWrapper.nextMove[0], 0, 0]);
                     }
                 }
             }
         });
 
         if(onSlope){
-            physics.climbSlope(playerWrapper, playerBoxCollider);
+            physics.climbSlope(playerWrapper, playerCol);
         }
+
+        
     }
 });
 

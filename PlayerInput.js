@@ -15,14 +15,6 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
-// gravity (jumping)
-let verticalVelocity = 0;
-let grounded = false;
-
-const gravity = -0.015;   // tweak
-const jumpForce = 0.35;   // tweak
-const groundY = 0;        // your floor height
-
 
 export function testConfig(){
     if(keys["v"]){
@@ -248,41 +240,22 @@ export function parseInput(playerWrapper, player, flight = false){
     move[1] *= speed;
     move[2] *= speed;
     
-    if(flight){
-        if(keys[" "]){
-            move[1] += speed;
-        }
-        if(keys["shift"]){
-            move[1] -= speed;
-        }
+
+    if(keys[" "]){
+        move[1] += speed;
+    }
+    if(keys["shift"]){
+        move[1] -= speed;
     }
 
+    if(!flight){
+        move[1] = 0;
+    }
 
-    //move[1] = 0;
 
     wrapperTransform.translation[0] += move[0];
     wrapperTransform.translation[1] += move[1];
     wrapperTransform.translation[2] += move[2];
-
-    if(!flight){
-        if (keys[" "] && grounded) {
-            verticalVelocity = jumpForce;
-            grounded = false;
-        }
-
-        // gravity
-        verticalVelocity += gravity;
-
-        // apply vertical velocity
-        wrapperTransform.translation[1] += verticalVelocity;
-
-        // ground collision
-        if (wrapperTransform.translation[1] <= groundY) {
-            wrapperTransform.translation[1] = groundY;
-            verticalVelocity = 0;
-            grounded = true;
-        }
-    }
 
     // looking
     yaw += -mouseMove[0] * sensitivity;
@@ -295,9 +268,9 @@ export function parseInput(playerWrapper, player, flight = false){
     if(pitch < -Math.PI/2){
         pitch = -Math.PI/2;
     }
-    quat.identity(wrapperTransform.rotation);
-    quat.rotateY(wrapperTransform.rotation, wrapperTransform.rotation, yaw);
-    quat.rotateX(wrapperTransform.rotation, wrapperTransform.rotation, pitch);
+    quat.identity(transform.rotation);
+    quat.rotateY(transform.rotation, transform.rotation, yaw);
+    quat.rotateX(transform.rotation, transform.rotation, pitch);
 
 
     mouseMove = [0, 0];

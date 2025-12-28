@@ -19,12 +19,14 @@ export class BoxCollider extends GameObject{
         scale = [1, 1, 1],
         dynamic = false,
         normalTexture = null,
-        gravity = false
+        gravity = false,
+        tags = []
     } = {}) {
         super({euler: euler, translation: translation, scale: scale, name: name});
         this.scale = scale;
         this.gravity = gravity;
         this.destroyed = false;
+        this.tags = tags;
 
         this.dontRender = !debug;
         this.dynamic = dynamic;

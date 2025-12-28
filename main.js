@@ -218,6 +218,79 @@ scene.addChild(C);
 const D = new Tree({texture: blankTexture, scale: [1, 1, 1], translation: [280, 1, -200]});
 scene.addChild(D);
 
+// NORTH BORDER
+const borderN = new GameObject({ translation: [0, 15, -204], texture: blankTexture});
+const colN = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: true, dynamic: false, name: "border north", tags: ["border", "north"] });
+borderN.addComponent(colN);
+scene.addChild(borderN);
+// SOUTH BORDER
+const borderS = new GameObject({ translation: [0, 15, 201.5], texture: blankTexture});
+const colS = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: true, dynamic: false, name: "border south", tags: ["border", "south"] });
+borderS.addComponent(colS);
+scene.addChild(borderS);
+// EAST BORDER
+const borderE = new GameObject({ translation: [286, 15, 0], texture: blankTexture});
+const colE = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: true, dynamic: false, name: "border east", tags: ["border", "east"] });
+borderE.addComponent(colE);
+scene.addChild(borderE);
+//WEST BORDER
+const borderW = new GameObject({ translation: [-286, 15, 0], texture: blankTexture});
+const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: true, dynamic: false, name: "border west", tags: ["border", "west"] });
+borderW.addComponent(colW);
+scene.addChild(borderW);
+
+const player = new GameObject();
+player.addChild(camera);
+const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+player.addComponent(playerCol);
+
+
+playerCol.addComponent({
+    update(){
+        player.nextMove ??= [0.05, -0.00, 0.05]; // -0.05 = gravity
+
+        player.move({y: player.nextMove[1]});
+        let onSlope = false;
+
+        const collisions = playerCol.collides();
+
+        collisions.forEach(col => {
+            if(col instanceof PlaneCollider) {
+                if(col.tags.includes("slope")){
+                    onSlope = true;
+                }
+                else if(col.tags.includes("flat")){
+                    player.move({y: -player.nextMove[1]});
+                }
+                else{
+                    console.log("none of these");
+                }
+                console.log(col.name + " : " + "player");
+            }
+            else{
+                if(col.tags.includes("border")){
+                    if(col.tags.includes("north")){
+                        physics.pushBorder(player, playerCol, [0, 0, player.nextMove[2]]);
+                    }
+                    if(col.tags.includes("south")){
+                        physics.pushBorder(player, playerCol, [0, 0, -player.nextMove[2]]);
+                    }
+                    if(col.tags.includes("east")){
+                        physics.pushBorder(player, playerCol, [-player.nextMove[0], 0, 0]);
+                    }
+                    if(col.tags.includes("west")){
+                        physics.pushBorder(player, playerCol, [player.nextMove[0], 0, 0]);
+                    }
+                }
+            }
+        });
+
+        if(onSlope){
+            physics.climbSlope(player, playerCol);
+        }
+    }
+});
+
 // world objects
 /*
 const pathfirefly = "./assets/firefly2/scene.gltf";
@@ -246,8 +319,7 @@ scene.addChild(transparent);
 */
 
 // collisions
-const player = new GameObject();
-player.addChild(camera);
+
 
 import { netConfig } from './PlayerInput.js';
 
@@ -288,28 +360,15 @@ const armL2 = new Cube({texture: blankTexture, scale: [1, 0.75, 6.5], translatio
 playerBody.addChild(armL2);
 
 
+
+
+
 //net.addComponent(animator);
 
 
 
 
 
-
-
-
-
-//const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
-//player.addComponent(playerCol);
-
-
-/*
-import { getLightY } from './PlayerInput.js';
-playerCol.addComponent({
-    update(){
-        //console.log(player.transform.translation);
-        getLightY();
-    }
-});*/
 
 
 /*

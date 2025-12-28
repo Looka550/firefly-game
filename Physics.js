@@ -70,4 +70,25 @@ export class Physics{
             }
         }
     }
+
+    pushBorder(player, playerCol, move){
+        while(true){
+            let inBorder = false;
+            let collisions = playerCol.collides();
+
+            collisions.forEach(col => {
+                if(col instanceof BoxCollider && col.tags.includes("border")){
+                    inBorder = true;
+                    return;
+                }
+            });
+
+            if(!inBorder){
+                break;
+            }
+            else{
+                player.move({x: move[0], y: move[1], z: move[2]});
+            }
+        }
+    }
 }

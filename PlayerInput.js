@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-//import { net } from "./main.js";
+import { lamp } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -15,75 +15,75 @@ const speed = 0.2;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
-/*
+
 export function netConfig(){
     let change = 0;
     if(keys["r"]){
-        net.swing();
+        lamp.swing();
     }
     if(keys["t"]){
         change = 0.2;
         if(keys["u"]){
-            net.move({x: change});
+            lamp.move({x: change});
         }
         if(keys["i"]){
-            net.move({y: change});
+            lamp.move({y: change});
         }
         if(keys["o"]){
-            net.move({z: change});
+            lamp.move({z: change});
         }
         if(keys["j"]){
-            net.rotate({x: change});
+            lamp.rotate({x: change});
         }
         if(keys["k"]){
-            net.rotate({y: change});
+            lamp.rotate({y: change});
         }
         if(keys["l"]){
-            net.rotate({z: change});
+            lamp.rotate({z: change});
         }
         if(keys["b"]){
-            net.rescale({x: change});
+            lamp.rescale({x: change});
         }
         if(keys["n"]){
-            net.rescale({y: change});
+            lamp.rescale({y: change});
         }
         if(keys["m"]){
-            net.rescale({z: change});
+            lamp.rescale({z: change});
         }
     }
     else{
         change = -0.2;
         if(keys["u"]){
-            net.move({x: change});
+            lamp.move({x: change});
         }
         if(keys["i"]){
-            net.move({y: change});
+            lamp.move({y: change});
         }
         if(keys["o"]){
-            net.move({z: change});
+            lamp.move({z: change});
         }
         if(keys["j"]){
-            net.rotate({x: change});
+            lamp.rotate({x: change});
         }
         if(keys["k"]){
-            net.rotate({y: change});
+            lamp.rotate({y: change});
         }
         if(keys["l"]){
-            net.rotate({z: change});
+            lamp.rotate({z: change});
         }
         if(keys["b"]){
-            net.rescale({x: change});
+            lamp.rescale({x: change});
         }
         if(keys["n"]){
-            net.rescale({y: change});
+            lamp.rescale({y: change});
         }
         if(keys["m"]){
-            net.rescale({z: change});
+            lamp.rescale({z: change});
         }
     }
-    //console.log("translation: " + net.transform.translation + ", rotation: " + net.transform.getEuler() + ", scale: " + net.transform.scale);
+    //console.log("translation: " + lamp.transform.translation + ", rotation: " + lamp.transform.getEuler() + ", scale: " + lamp.transform.scale);
 }
-*/
+
 
 export function initInput(canvas){
     document.addEventListener("keydown", (e) => keys[e.key.toLowerCase()] = true);

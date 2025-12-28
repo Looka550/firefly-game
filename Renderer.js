@@ -357,8 +357,13 @@ export class Renderer{
 
 
         // traverse scene
+        const transparents = [];
         this.scene.traverse(node => {
             if(node instanceof GameObject && node.mesh && !node.dontRender){
+                if(node.transparent){
+                    transparents.push(node);
+                    return;
+                }
                 const modelMatrix = getGlobalModelMatrix(node);
 
                 let viewProjMatrix = null;
@@ -390,6 +395,39 @@ export class Renderer{
                 renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
                 renderPass.drawIndexed(node.mesh.indexCount);
             }
+        });
+
+        transparents.forEach(node => { // render transparents last
+            const modelMatrix = getGlobalModelMatrix(node);
+
+            let viewProjMatrix = null;
+            try{
+                viewProjMatrix = mat4.create().multiply(projectionMatrix).multiply(viewMatrix);
+            }catch (error){
+                console.log("projection: " + projectionMatrix);
+                console.log("view: " + viewMatrix);
+                return;
+            }
+
+
+            const normalMatrix = mat4.create();
+            mat4.copy(normalMatrix, modelMatrix);
+            mat4.invert(normalMatrix, normalMatrix);
+            mat4.transpose(normalMatrix, normalMatrix);
+
+            this.device.queue.writeBuffer(node.mesh.modelBuffer, 0, modelMatrix);
+            this.device.queue.writeBuffer(node.mesh.viewProjBuffer, 0, viewProjMatrix);
+            this.device.queue.writeBuffer(node.mesh.normalBuffer, 0, normalMatrix);
+
+            renderPass.setBindGroup(0, node.mesh.bindGroup);    
+            renderPass.setBindGroup(2, this.shadowBindGroup);
+
+            renderPass.setBindGroup(3, this.lightsBindGroup);
+            renderPass.setBindGroup(1, this.cameraBindGroup);
+
+            renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
+            renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
+            renderPass.drawIndexed(node.mesh.indexCount);
         });
 
         renderPass.end();

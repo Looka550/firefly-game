@@ -13,6 +13,7 @@ import { Cylinder } from "./Cylinder.js";
 import { Cone } from "./Cone.js";
 import { BoxCollider } from "./BoxCollider.js";
 import { TransformPipelineAnimator } from './TransformPipelineAnimator.js';
+import { Firefly } from "./Firefly.js";
 
 export class Lamp extends GameObject {
     constructor({
@@ -29,7 +30,7 @@ export class Lamp extends GameObject {
             name,
         });
         this.texture = texture
-        this.lampOff = false;
+        this.lampOn = true;
 
         this.swinging = false;
 
@@ -52,7 +53,10 @@ export class Lamp extends GameObject {
         const bottom = new Cylinder({ translation: [0, -0.01, 0], scale: [2, 0.4, 2], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
         this.addChild(bottom);
         const glass = new Cylinder({ translation: [0, 2.4, 0], scale: [2, 2, 2], euler: [0, 0, 0], texture: this.texture, color: [1, 1, 1, 0.2] });
+        glass.transparent = true;
         this.addChild(glass);
+        this.cage = new GameObject({ translation: [0.15, -0.4, 0.15], scale: [0.7, 0.9, 0.7] });
+        glass.addChild(this.cage);
         const top = new Cylinder({ translation: [0, 4.8, 0], scale: [2, 0.4, 2], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
         this.addChild(top);
         const rod = new Cylinder({ translation: [0, 6.1, 0], scale: [0.4, 1, 0.4], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
@@ -89,7 +93,7 @@ export class Lamp extends GameObject {
         };
 
         let animator = null;
-        if(this.lampOff){
+        if(this.lampOn){
             animator = new TransformPipelineAnimator({
                 gameObject: this,
                 transforms: [
@@ -117,7 +121,7 @@ export class Lamp extends GameObject {
     }
 
     onAnimationEnd(){
-        if(this.lampOff){
+        if(this.lampOn){
             vec3.copy(this.transform.translation, this.originalTransformOff.translation); // reallign to original position
             quat.copy(this.transform.rotation, this.originalTransformOff.rotation);
             vec3.copy(this.transform.scale, this.originalTransformOff.scale);
@@ -129,6 +133,37 @@ export class Lamp extends GameObject {
         }
 
         this.swinging = false;
-        this.lampOff = !this.lampOff;
+        this.lampOn = !this.lampOn;
+    }
+
+    update(){
+        this.addFirefly();
+    }
+
+    addFirefly(){
+        const r = 1;
+        let offsetX = this.rand(0, r);
+        let offsetZ = this.rand(0, (r - offsetX));
+        let offsetY = this.rand(0, r);
+        if(this.coinFlip()){
+            offsetX *= -1;
+        }
+        if(this.coinFlip()){
+            offsetZ *= -1;
+        }
+        if(this.coinFlip()){
+            offsetY *= -1;
+        }
+
+        const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false });
+        this.cage.addChild(firefly);
+    }
+
+    rand(min, max){
+        return Math.random() * (max - min) + min;
+    }
+
+    coinFlip(){
+        return Math.random() < 0.5;
     }
 }

@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp } from "./main.js";
+import { lamp, net } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -19,7 +19,7 @@ let yaw = 0, pitch = 0;
 export function netConfig(){
     let change = 0;
     if(keys["r"]){
-        lamp.swing();
+        net.swing();
     }
     if(keys["t"]){
         change = 0.2;

@@ -1,9 +1,10 @@
 export class Node {
 
-    constructor() {
+    constructor(name = "None") {
         this.parent = null;
         this.children = [];
         this.components = [];
+        this.name = name;
     }
 
     addChild(node) {

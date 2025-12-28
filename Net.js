@@ -13,6 +13,8 @@ import { Cylinder } from "./Cylinder.js";
 import { Cone } from "./Cone.js";
 import { BoxCollider } from "./BoxCollider.js";
 import { TransformPipelineAnimator } from './TransformPipelineAnimator.js';
+import { lamp, scene } from "./main.js";
+import { Lamp } from "./Lamp.js";
 
 export class Net extends GameObject {
     constructor({
@@ -52,7 +54,9 @@ export class Net extends GameObject {
                 const collisions = col.collides();
                 collisions.forEach(col => {
                     if(col.name == "firefly"){
-                        //console.log("caught firefly");
+                        lamp.addFirefly();
+                        col.destroyed = true;
+                        scene.removeChild(col.gameObject.parent);
                     }
                 });
             }

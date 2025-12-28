@@ -17,7 +17,8 @@ export class Firefly extends GameObject {
         translation = [0, 0, 0],
         scale = [1, 1, 1],
         name = "Firefly",
-        texture
+        texture,
+        addCollider = true
     } = {}){
         super({
             euler,
@@ -25,7 +26,8 @@ export class Firefly extends GameObject {
             scale,
             name,
         });
-        this.texture = texture
+        this.texture = texture;
+        this.addCollider = addCollider;
 
         this.build();
         this.animateWings();
@@ -48,8 +50,10 @@ export class Firefly extends GameObject {
         this.wingR = new Cube({ translation: [-3.4, 6, -2], scale: [1.5, 0.2, 0.5], euler: [0, 0, 0], texture: this.texture, color: [0.71, 0.867, 1, 1] });
         this.addChild(this.wingR);
 
-        const col = new BoxCollider({ translation: [0, 0, 0], scale: [2, 0.4, 2], texture: this.texture, debug: false, dynamic: true, name: "firefly" });
-        this.body.addComponent(col);
+        if(this.addCollider){
+            const col = new BoxCollider({ translation: [0, 0, 0], scale: [2, 0.4, 2], texture: this.texture, debug: false, dynamic: true, name: "firefly" });
+            this.body.addComponent(col);
+        }
     }
 
     animateWings(){

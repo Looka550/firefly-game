@@ -24,6 +24,7 @@ export class BoxCollider extends GameObject{
         super({euler: euler, translation: translation, scale: scale, name: name});
         this.scale = scale;
         this.gravity = gravity;
+        this.destroyed = false;
 
         this.dontRender = !debug;
         this.dynamic = dynamic;
@@ -91,6 +92,11 @@ export class BoxCollider extends GameObject{
     }
 
     getBoundaries() {
+        if(this.destroyed){
+            this.min = vec3.fromValues(Infinity, Infinity, Infinity);
+            this.max = vec3.fromValues(Infinity, Infinity, Infinity);
+            return;
+        }
         this.localMin = vec3.clone(this.mesh.localMin);
         this.localMax = vec3.clone(this.mesh.localMax);
 

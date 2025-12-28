@@ -241,7 +241,7 @@ scene.addChild(borderW);
 
 const player = new GameObject();
 player.addChild(camera);
-const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+const playerCol = new BoxCollider({ scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
 player.addComponent(playerCol);
 
 
@@ -301,6 +301,9 @@ scene.addChild(f);
 */
 const firefly = new Firefly({texture: blankTexture, scale: [0.3, 0.3, 0.3]});
 scene.addChild(firefly);
+const firefly2 = new Firefly({translation: [5, 10, -3], texture: blankTexture, scale: [0.6, 0.6, 0.6]});
+scene.addChild(firefly2);
+
 
 const s = new Sphere({ translation: [-5, 5, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: blankTexture});
 scene.addChild(s);
@@ -325,7 +328,7 @@ import { netConfig } from './PlayerInput.js';
 
 export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
 //const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
-//player.addChild(net);
+player.addChild(net);
 
 player.addComponent({
     update(){

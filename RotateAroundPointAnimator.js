@@ -57,6 +57,19 @@ export class RotateAroundPointAnimator extends GameObject{
 
                 this.init();
             }
+            else{
+                if(this.gameObject.onRotateAnimationEnd){
+                    this.gameObject.onRotateAnimationEnd();
+                }
+                else{
+                    for(const component of this.gameObject.components){
+                        component.onRotateAnimationEnd?.();
+                    }
+                }
+                this.gameObject.removeComponent(this);
+                this.destroyed = true;
+                return;
+            }
         }
     }
 

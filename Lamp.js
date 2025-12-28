@@ -100,7 +100,7 @@ export class Lamp extends GameObject {
                 loop: false
             });
 
-            firefly.free = true;
+            firefly.stage++;
             firefly.addComponent(animator);
         });
     }
@@ -228,7 +228,7 @@ export class Lamp extends GameObject {
             offsetY *= -1;
         }
 
-        const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false });
+        const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false, stage: 1 });
         this.cage.addChild(firefly);
 
         this.fireflies.push(firefly);

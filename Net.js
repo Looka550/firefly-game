@@ -49,11 +49,12 @@ export class Net extends GameObject {
         this.addChild(basket);
 
         const col = new BoxCollider({ translation: [0, 0, 0], scale: [1, 0.4, 2], texture: this.texture, debug: false, dynamic: true, name: "bug net" });
+        const net = this;
         col.addComponent({
             update(){
                 const collisions = col.collides();
                 collisions.forEach(col => {
-                    if(col.name == "firefly"){
+                    if(col.name == "firefly" && net.swinging){
                         lamp.addFirefly();
                         col.destroyed = true;
                         scene.removeChild(col.gameObject.parent);
@@ -117,7 +118,7 @@ export class Net extends GameObject {
                 transformAOffset,
                 transformA,
             ],
-            frames: 40,
+            frames: 20,
             loop: false
         });
         this.addComponent(animator);

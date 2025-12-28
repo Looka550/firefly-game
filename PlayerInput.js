@@ -18,6 +18,9 @@ let yaw = 0, pitch = 0;
 
 export function netConfig(){
     let change = 0;
+    if(keys["5"]){
+        net.swing();
+    }
     if(keys["r"]){
         lamp.swing();
     }

@@ -26,3 +26,10 @@ dodam attenuation
 
 
 MAKE LEAVES MOVE
+
+
+- grass texture
+- tree texture
+- fireflies movement
+- fireflies generation
+- tree generation

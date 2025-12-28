@@ -20,7 +20,8 @@ export class Firefly extends GameObject {
         scale = [1, 1, 1],
         name = "Firefly",
         texture,
-        addCollider = true
+        addCollider = true,
+        stage = 0
     } = {}){
         super({
             euler,
@@ -30,9 +31,9 @@ export class Firefly extends GameObject {
         });
         this.texture = texture;
         this.addCollider = addCollider;
-        this.free = false;
+        this.stage = stage;
         this.destroyed = false;
-        
+
         this.scaleOriginal = vec3.clone(scale);
 
         this.build();
@@ -69,7 +70,20 @@ export class Firefly extends GameObject {
             this.body.addComponent(col);
         }
 
+        this.animateMovement();
+    }
 
+    animateMovement(){
+        if(this.stage != 0){
+            return;
+        }
+        const hinge = [2, 0, 0];
+        const anim = new RotateAroundPointAnimator({startRotation: [0, 0, 0], endRotation: [0, -360, 0], point: hinge, gameObject: this, frames: 300, loop: false});
+        this.addComponent(anim);
+    }
+
+    onRotateAnimationEnd(){
+        this.animateMovement();
     }
 
     animateWings(){
@@ -81,7 +95,11 @@ export class Firefly extends GameObject {
     }
 
     onAnimationEnd(){
-        if(this.free){
+        console.log("current stage: " + this.stage);
+        if(this.stage == 0){
+
+        }
+        else if(this.stage == 2){
             let t = getWorldTranslation(this);
             let transformA = new Transform({translation: t.translation, scale: [0.1, 0.1, 0.1]});
 
@@ -112,13 +130,16 @@ export class Firefly extends GameObject {
 
             this.parent.removeChild(this);
             scene.addChild(this);
-            this.free = false;
+            this.stage++;
 
             this.addComponent(animator);
         }
-        else{
+        else if(this.stage == 3){
             this.destroyed = true;
             scene.removeChild(this);
+        }
+        else{
+            console.log("unknown stage: " + this.stage);
         }
     }
 }

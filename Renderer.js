@@ -97,7 +97,7 @@ export class Renderer{
         // resize system
         new ResizeSystem({ canvas, resize: this.resize.bind(this) }).start();
 
-        this.maxLights = 16;
+        this.maxLights = 32;
 
         this.lightsBuffer = this.device.createBuffer({
             size: this.maxLights * 48 + 32,
@@ -308,11 +308,7 @@ export class Renderer{
             }
         });
 
-        if(lightObjects.length > this.maxLights){
-            console.log("TOO MANY LIGHTS");
-        }
-
-        const lightData = new Float32Array(16 * 12); // 12 floats per light
+        const lightData = new Float32Array(this.maxLights * 12); // 12 floats per light
 
         for(let i = 0; i < lightObjects.length; i++){
             const lightObject = lightObjects[i];
@@ -353,7 +349,7 @@ export class Renderer{
         // write lights buffers
         this.device.queue.writeBuffer(this.lightsBuffer, 0, lightData);
 
-        this.device.queue.writeBuffer(this.lightsBuffer, 16 * 48, new Uint32Array([lightObjects.length]));
+        this.device.queue.writeBuffer(this.lightsBuffer, this.maxLights * 48, new Uint32Array([lightObjects.length]));
 
 
         // traverse scene

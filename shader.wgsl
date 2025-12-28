@@ -41,7 +41,7 @@ struct LightUniforms {
 };
 
 struct LightsBlock {
-    lights     : array<LightUniforms, 16>,
+    lights     : array<LightUniforms, 32>,
     lightCount : u32,
     padding   : vec3u,
 };

@@ -1,4 +1,4 @@
-add gravity
+
 optimization (delta)
 copyrights attribution
 refactor code (clean)

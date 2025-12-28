@@ -98,8 +98,8 @@ camera.addComponent(new Transform({
 }));
 
 camera.addComponent({
-    update(){
-        parseInput(playerWrapper, player, false);
+    update(dt){
+        parseInput(playerWrapper, player, false, dt);
     }
 })
 
@@ -299,8 +299,8 @@ generator.generateFireflies(firefliesCount, 5, 5);
 
 import { trueGrounded } from './PlayerInput.js';
 playerCol.addComponent({
-    update(){
-        playerWrapper.nextMove ??= [0.05, -0.05, 0.05]; // -0.05 = gravity
+    update(dt){
+        playerWrapper.nextMove ??= [0.05 * Math.abs(dt), -0.05 * Math.abs(dt), 0.05 * Math.abs(dt)]; // -0.05 = gravity
 
         playerWrapper.move({y: playerWrapper.nextMove[1]});
         let onSlope = false;
@@ -551,18 +551,27 @@ initInput(canvas);
 
 
 // Update all components
-function update() {
+function update(dt = 1) {
     scene.traverse(node => {
         for (const component of node.components) {
-            component.update?.();
+            component.update?.(dt);
         }
     });
 }
 
 
-function frame() {
-    update();
+
+let lastTime = performance.now();
+
+function frame(time) {
+    const factor = 150;
+    const dt = (time - lastTime) / 1000 * factor; // seconds
+    lastTime = time;
+    //console.log("dt: " + dt);
+
+    update(dt);
     renderer.render();
+
     requestAnimationFrame(frame);
 }
 

@@ -28,7 +28,6 @@ export function trueGrounded(){
 
 
 export function testConfig(){
-    return;
     if(keys["v"]){
         lamp.swing();
     }
@@ -84,7 +83,7 @@ export function rotateConfig(){
 
 
 export function lightConfig(){
-
+    return;
     if(keys["u"]){
         lightY += 0.2;
     }
@@ -213,7 +212,7 @@ export function initInput(canvas){
     });
 }
 
-export function parseInput(playerWrapper, player, flight = false){
+export function parseInput(playerWrapper, player, flight = false, dt = 1 / 60){
     const wrapperTransform = playerWrapper.getComponentOfType(Transform);
     const transform = player.getComponentOfType(Transform);
     const forward = getForward(pitch, yaw);
@@ -249,16 +248,16 @@ export function parseInput(playerWrapper, player, flight = false){
         move[2] /= len;
     }
 
-    move[0] *= speed;
-    move[1] *= speed;
-    move[2] *= speed;
+    move[0] *= speed * dt;
+    move[1] *= speed * dt;
+    move[2] *= speed * dt;
     
 
     if(keys[" "]){
-        move[1] += speed;
+        move[1] += speed * dt;
     }
     if(keys["shift"]){
-        move[1] -= speed;
+        move[1] -= speed * dt;
     }
 
     if(!flight){
@@ -272,7 +271,7 @@ export function parseInput(playerWrapper, player, flight = false){
         }
         if(!grounded){
             verticalVelocity += gravity;
-            wrapperTransform.translation[1] += verticalVelocity;
+            wrapperTransform.translation[1] += verticalVelocity * dt;
         }
     }
 

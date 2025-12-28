@@ -2,12 +2,12 @@ import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
-import { Engine } from "./SceneUtils.js";
-import { sampler, blankTextureView } from "./main.js";
+import { Engine, getGlobalModelMatrix, getWorldTranslation } from "./SceneUtils.js";
+import { sampler, blankTextureView, scene } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
-import { quat, vec3 } from "./glm.js";
+import { quat, vec3, mat4 } from "./glm.js";
 import { RotateAroundPointAnimator } from "./RotateAroundPointAnimator.js";
 import { Cylinder } from "./Cylinder.js";
 import { Cone } from "./Cone.js";
@@ -32,6 +32,7 @@ export class Lamp extends GameObject {
         this.texture = texture
         this.lampOn = true;
 
+        this.fireflies = [];
         this.swinging = false;
 
         this.originalTransformOn = {
@@ -57,14 +58,90 @@ export class Lamp extends GameObject {
         this.addChild(glass);
         this.cage = new GameObject({ translation: [0.15, -0.4, 0.15], scale: [0.7, 0.9, 0.7] });
         glass.addChild(this.cage);
-        const top = new Cylinder({ translation: [0, 4.8, 0], scale: [2, 0.4, 2], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
-        this.addChild(top);
+
+        this.top = new GameObject();
+        const lamp = this;
+        this.top.addComponent({
+            onAnimationEnd(){
+                lamp.firefliesOut();
+            }
+        });
+        this.addChild(this.top);
+
+        const topCyl = new Cylinder({ translation: [0, 4.8, 0], scale: [2, 0.4, 2], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
+        this.top.addChild(topCyl);
         const rod = new Cylinder({ translation: [0, 6.1, 0], scale: [0.4, 1, 0.4], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
-        this.addChild(rod);
+        this.top.addChild(rod);
         const ball = new Sphere({ translation: [0, 7.2, 0], scale: [1, 1, 1], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
-        this.addChild(ball);
+        this.top.addChild(ball);
         const arm = new Cube({ translation: [-3.5, 6, 3.5], scale: [0.6, 6, 0.6], euler: [80, -50, 40], texture: this.texture, color: [1, 0.925, 0.745, 1] });
-        this.addChild(arm);
+        this.top.addChild(arm);
+    }
+
+    firefliesOut(){
+        this.fireflies.forEach(firefly => {
+            let transformA = new Transform();
+            vec3.copy(transformA.translation, firefly.transform.translation);
+            quat.copy(transformA.rotation, firefly.transform.rotation);
+            vec3.copy(transformA.scale, firefly.transform.scale);
+
+            let transformB = new Transform();
+            vec3.copy(transformB.translation, [firefly.transform.translation[0], firefly.transform.translation[1] + 3, firefly.transform.translation[2]]);
+            quat.copy(transformB.rotation, firefly.transform.rotation);
+            vec3.copy(transformB.scale, firefly.transform.scale);
+
+            const animator = new TransformPipelineAnimator({
+                gameObject: firefly,
+                transforms: [
+                    transformA,
+                    transformB,
+                ],
+                frames: 100,
+                loop: false
+            });
+
+            firefly.free = true;
+            firefly.addComponent(animator);
+        });
+    }
+
+    release(){
+        if(this.swinging){
+            return;
+        }
+
+        this.swinging = true;
+
+        const transformC = {
+            translation: vec3.fromValues(0, 0, 0),
+            rotation: quat.fromEuler(quat.create(), 0, 0, 0),
+            scale: vec3.fromValues(1, 1, 1),
+        };
+
+        const transformA = {
+            translation: vec3.fromValues(2.4, 2.4, -0.6),
+            rotation: quat.fromEuler(quat.create(), 27.2, -43, 21),
+            scale: vec3.fromValues(1, 1, 1),
+        };
+
+        const transformB = {
+            translation: vec3.fromValues(2.4, 5.2, -0.6),
+            rotation: quat.fromEuler(quat.create(), 52.2, -32, 35.4),
+            scale: vec3.fromValues(1, 1, 1),
+        };
+
+        const animator = new TransformPipelineAnimator({
+            gameObject: this.top,
+            transforms: [
+                transformC,
+                transformA,
+                transformB,
+            ],
+            frames: 100,
+            loop: false
+        });
+
+        this.top.addComponent(animator);
     }
     
     swing(){
@@ -136,34 +213,32 @@ export class Lamp extends GameObject {
         this.lampOn = !this.lampOn;
     }
 
-    update(){
-        this.addFirefly();
-    }
-
     addFirefly(){
         const r = 1;
-        let offsetX = this.rand(0, r);
-        let offsetZ = this.rand(0, (r - offsetX));
-        let offsetY = this.rand(0, r);
-        if(this.coinFlip()){
+        let offsetX = rand(0, r);
+        let offsetZ = rand(0, (r - offsetX));
+        let offsetY = rand(0, r);
+        if(coinFlip()){
             offsetX *= -1;
         }
-        if(this.coinFlip()){
+        if(coinFlip()){
             offsetZ *= -1;
         }
-        if(this.coinFlip()){
+        if(coinFlip()){
             offsetY *= -1;
         }
 
         const firefly = new Firefly({texture: this.texture, scale: [0.1, 0.1, 0.1], translation: [offsetX, offsetZ, offsetY], addCollider: false });
         this.cage.addChild(firefly);
-    }
 
-    rand(min, max){
-        return Math.random() * (max - min) + min;
+        this.fireflies.push(firefly);
     }
+}
 
-    coinFlip(){
-        return Math.random() < 0.5;
-    }
+function rand(min, max){
+    return Math.random() * (max - min) + min;
+}
+
+function coinFlip(){
+    return Math.random() < 0.5;
 }

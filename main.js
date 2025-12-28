@@ -253,7 +253,7 @@ import { netConfig } from './PlayerInput.js';
 
 export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
 //const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
-player.addChild(net);
+//player.addChild(net);
 
 player.addComponent({
     update(){
@@ -265,12 +265,12 @@ player.addComponent({
 const fakePlayer = new GameObject();
 scene.addChild(fakePlayer);
 //export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-17.2, -14.2, -5.2], euler: [-2.8, -20.4, -65.2]});
-//export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, -5, -5]});
+export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, -5, -5]});
 
-export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, 10, -5]});
+//export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, 10, -5]});
 lamp.addFirefly();
 
-scene.addChild(lamp);
+player.addChild(lamp);
 
 
 const playerBody = new GameObject({ translation: [0, 8, 14] });

@@ -19,69 +19,72 @@ let yaw = 0, pitch = 0;
 export function netConfig(){
     let change = 0;
     if(keys["r"]){
-        net.swing();
+        lamp.swing();
+    }
+    if(keys["e"]){
+        lamp.release();
     }
     if(keys["t"]){
         change = 0.2;
         if(keys["u"]){
-            lamp.move({x: change});
+            lamp.top.move({x: change});
         }
         if(keys["i"]){
-            lamp.move({y: change});
+            lamp.top.move({y: change});
         }
         if(keys["o"]){
-            lamp.move({z: change});
+            lamp.top.move({z: change});
         }
         if(keys["j"]){
-            lamp.rotate({x: change});
+            lamp.top.rotate({x: change});
         }
         if(keys["k"]){
-            lamp.rotate({y: change});
+            lamp.top.rotate({y: change});
         }
         if(keys["l"]){
-            lamp.rotate({z: change});
+            lamp.top.rotate({z: change});
         }
         if(keys["b"]){
-            lamp.rescale({x: change});
+            lamp.top.rescale({x: change});
         }
         if(keys["n"]){
-            lamp.rescale({y: change});
+            lamp.top.rescale({y: change});
         }
         if(keys["m"]){
-            lamp.rescale({z: change});
+            lamp.top.rescale({z: change});
         }
     }
     else{
         change = -0.2;
         if(keys["u"]){
-            lamp.move({x: change});
+            lamp.top.move({x: change});
         }
         if(keys["i"]){
-            lamp.move({y: change});
+            lamp.top.move({y: change});
         }
         if(keys["o"]){
-            lamp.move({z: change});
+            lamp.top.move({z: change});
         }
         if(keys["j"]){
-            lamp.rotate({x: change});
+            lamp.top.rotate({x: change});
         }
         if(keys["k"]){
-            lamp.rotate({y: change});
+            lamp.top.rotate({y: change});
         }
         if(keys["l"]){
-            lamp.rotate({z: change});
+            lamp.top.rotate({z: change});
         }
         if(keys["b"]){
-            lamp.rescale({x: change});
+            lamp.top.rescale({x: change});
         }
         if(keys["n"]){
-            lamp.rescale({y: change});
+            lamp.top.rescale({y: change});
         }
         if(keys["m"]){
-            lamp.rescale({z: change});
+            lamp.top.rescale({z: change});
         }
     }
-    //console.log("translation: " + lamp.transform.translation + ", rotation: " + lamp.transform.getEuler() + ", scale: " + lamp.transform.scale);
+    //console.log("translation: " + lamp.top.transform.translation + ", rotation: " + lamp.top.transform.getEuler() + ", scale: " + lamp.top.transform.scale);
 }
 
 

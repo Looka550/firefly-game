@@ -75,3 +75,12 @@ export async function loadTexture(path) {
 
     return texture;
 }
+
+export function getWorldTranslation(node){
+    const m = getGlobalModelMatrix(node);
+
+    const translation = vec3.fromValues(m[12], m[13], m[14]);
+
+    const t = new Transform({ translation: translation});
+    return t;
+}

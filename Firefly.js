@@ -2,14 +2,16 @@ import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { TextureRenderer } from './TextureRenderer.js';
-import { Engine } from "./SceneUtils.js";
-import { sampler, blankTextureView } from "./main.js";
+import { sampler, blankTextureView, scene } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
 import { quat, vec3 } from "./glm.js";
 import { RotateAroundPointAnimator } from "./RotateAroundPointAnimator.js";
 import { BoxCollider } from "./BoxCollider.js";
+import { Light } from "./Light.js";
+import { Engine, getGlobalModelMatrix, getWorldTranslation } from "./SceneUtils.js";
+import { TransformPipelineAnimator } from "./TransformPipelineAnimator.js";
 
 export class Firefly extends GameObject {
     constructor({
@@ -28,6 +30,10 @@ export class Firefly extends GameObject {
         });
         this.texture = texture;
         this.addCollider = addCollider;
+        this.free = false;
+        this.destroyed = false;
+        
+        this.scaleOriginal = vec3.clone(scale);
 
         this.build();
         this.animateWings();
@@ -50,10 +56,20 @@ export class Firefly extends GameObject {
         this.wingR = new Cube({ translation: [-3.4, 6, -2], scale: [1.5, 0.2, 0.5], euler: [0, 0, 0], texture: this.texture, color: [0.71, 0.867, 1, 1] });
         this.addChild(this.wingR);
 
+        const light = new GameObject({ name: "Light", translation: [-2, 5, -2] });
+
+        light.addComponent(new Light({
+            ambient: 0,
+            intensity: 1.0
+        }));
+        this.tail.addChild(light);
+
         if(this.addCollider){
             const col = new BoxCollider({ translation: [0, 0, 0], scale: [2, 0.4, 2], texture: this.texture, debug: false, dynamic: true, name: "firefly" });
             this.body.addComponent(col);
         }
+
+
     }
 
     animateWings(){
@@ -63,4 +79,54 @@ export class Firefly extends GameObject {
         const animL = new RotateAroundPointAnimator({startRotation: [0, 0, 30], endRotation: [0, 0, -30], point: hinge, gameObject: this.wingL, frames: 50, loop: true});
         this.wingL.addComponent(animL);
     }
+
+    onAnimationEnd(){
+        if(this.free){
+            let t = getWorldTranslation(this);
+            let transformA = new Transform({translation: t.translation, scale: [0.1, 0.1, 0.1]});
+
+            let offsetX = rand(3, 8);
+            let offsetZ = rand(3, 8);
+            let offsetY = rand(18, 26);
+            if(coinFlip()){
+                offsetX *= -1;
+            }
+            if(coinFlip()){
+                offsetZ *= -1;
+            }
+
+            let transformB = new Transform({translation: [t.translation[0] + offsetX, t.translation[1] + offsetY, t.translation[2] + offsetZ], scale: this.scaleOriginal});
+
+            let transformC = new Transform({translation: [t.translation[0] + (offsetX * 3), t.translation[1] + (offsetY * 4), t.translation[2] + (offsetZ * 3)], scale: this.scaleOriginal});
+
+            const animator = new TransformPipelineAnimator({
+                gameObject: this,
+                transforms: [
+                    transformA,
+                    transformB,
+                    transformC
+                ],
+                frames: 300,
+                loop: false
+            });
+
+            this.parent.removeChild(this);
+            scene.addChild(this);
+            this.free = false;
+
+            this.addComponent(animator);
+        }
+        else{
+            this.destroyed = true;
+            scene.removeChild(this);
+        }
+    }
+}
+
+function rand(min, max){
+    return Math.random() * (max - min) + min;
+}
+
+function coinFlip(){
+    return Math.random() < 0.5;
 }

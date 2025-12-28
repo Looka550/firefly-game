@@ -88,7 +88,14 @@ export class TransformPipelineAnimator extends GameObject {
                     this.currentIndex = 0;
                 }
                 else{
-                    this.gameObject.onAnimationEnd();
+                    if(this.gameObject.onAnimationEnd){
+                        this.gameObject.onAnimationEnd();
+                    }
+                    else{
+                        for(const component of this.gameObject.components){
+                            component.onAnimationEnd?.();
+                        }
+                    }
                     this.gameObject.removeComponent(this);
                     this.destroyed = true;
                     return;

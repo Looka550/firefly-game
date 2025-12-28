@@ -82,25 +82,25 @@ export class Net extends GameObject {
         vec3.copy(transformAOffset.scale, this.transform.scale);
 
         const transformB = {
-            translation: vec3.fromValues(8, 14-20, 12.2),
+            translation: vec3.fromValues(8, 14-20+8, 12.2-7),
             rotation: quat.fromEuler(quat.create(), -14.4, -7.8, 31),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformC = {
-            translation: vec3.fromValues(4.8, 17.6-20, 4.6),
+            translation: vec3.fromValues(4.8, 17.6-20+8, 4.6-7),
             rotation: quat.fromEuler(quat.create(), -120, 9.4, -165.6),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformD = {
-            translation: vec3.fromValues(3.8, 17-20, -1.14),
+            translation: vec3.fromValues(3.8, 17-20+8, -1.14-7),
             rotation: quat.fromEuler(quat.create(), 7.9, -21.7, 95.8),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformE = {
-            translation: vec3.fromValues(-0.2, 16.4-20, 9.7),
+            translation: vec3.fromValues(-0.2, 16.4-20+8, 9.7-7),
             rotation: quat.fromEuler(quat.create(), 87, -21.7, 91),
             scale: vec3.fromValues(1, 1, 1),
         };

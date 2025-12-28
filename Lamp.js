@@ -40,13 +40,13 @@ export class Lamp extends GameObject {
         this.collectedAll = false;
 
         this.originalTransformOn = {
-            translation: vec3.fromValues(-4, -5, -5),
+            translation: vec3.fromValues(-4, -5+8, -5-7),
             rotation: quat.fromEuler(quat.create(), 0, 0, 0),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         this.originalTransformOff = {
-            translation: vec3.fromValues(-17.2, -14.2, -5.2),
+            translation: vec3.fromValues(-17.2, -14.2+8, -5.2-7),
             rotation: quat.fromEuler(quat.create(), -2.8, -20.4, -65.2),
             scale: vec3.fromValues(1, 1, 1),
         };
@@ -117,19 +117,19 @@ export class Lamp extends GameObject {
         this.swinging = true;
 
         const transformC = {
-            translation: vec3.fromValues(0, 0, 0),
+            translation: vec3.fromValues(0, 0+8, 0-7),
             rotation: quat.fromEuler(quat.create(), 0, 0, 0),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformA = {
-            translation: vec3.fromValues(2.4, 2.4, -0.6),
+            translation: vec3.fromValues(2.4, 2.4+8, -0.6-7),
             rotation: quat.fromEuler(quat.create(), 27.2, -43, 21),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformB = {
-            translation: vec3.fromValues(2.4, 5.2, -0.6),
+            translation: vec3.fromValues(2.4, 5.2+8, -0.6-7),
             rotation: quat.fromEuler(quat.create(), 52.2, -32, 35.4),
             scale: vec3.fromValues(1, 1, 1),
         };
@@ -155,19 +155,19 @@ export class Lamp extends GameObject {
         this.swinging = true;
 
         const transformA = {
-            translation: vec3.fromValues(-4, -5, -5),
+            translation: vec3.fromValues(-4, -5+8, -5-7),
             rotation: quat.fromEuler(quat.create(), 0, 0, 0),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformB = {
-            translation: vec3.fromValues(-8.2, -7.2, -5.2),
+            translation: vec3.fromValues(-8.2, -7.2+8, -5.2-7),
             rotation: quat.fromEuler(quat.create(), -3.2, -6.6, -56),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformC = {
-            translation: vec3.fromValues(-17.2, -14.2, -5.2),
+            translation: vec3.fromValues(-17.2, -14.2+8, -5.2-7),
             rotation: quat.fromEuler(quat.create(), -2.8, -20.4, -65.2),
             scale: vec3.fromValues(1, 1, 1),
         };

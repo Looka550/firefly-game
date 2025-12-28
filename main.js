@@ -94,7 +94,7 @@ export const playerWrapper = new GameObject();
 const camera = new Node();
 camera.addComponent(new Camera());
 camera.addComponent(new Transform({
-    translation: [0, 0, 9]
+    translation: [0, 8, 2]
 }));
 
 camera.addComponent({
@@ -267,10 +267,10 @@ const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug
 borderW.addComponent(colW);
 scene.addChild(borderW);
 
-const player = new GameObject();
+const player = new GameObject({translation: [0, 0, 0]});
 player.addChild(camera);
 
-export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
+export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
 playerWrapper.addComponent(playerCol);
 
 /*
@@ -314,7 +314,6 @@ playerCol.addComponent({
                 }
                 else if(col.tags.includes("flat")){
                     playerWrapper.move({y: -playerWrapper.nextMove[1]});
-                    console.log("on flat plane: " + col.name);
                 }
                 else{
                     console.log("none of these");
@@ -385,7 +384,7 @@ scene.addChild(transparent);
 
 import { netConfig, lightConfig, rotateConfig, testConfig } from './PlayerInput.js';
 
-export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 14-20, -2], euler: [45, 10, 0]}); // on player // y+20
+export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 2, -9], euler: [45, 10, 0]}); // on player // y+20
 //const net = new Net({texture: blankTexture, translation: [10, 10, 0]}); // in world
 player.addChild(net);
 
@@ -403,7 +402,7 @@ player.addComponent({
 const fakePlayer = new GameObject();
 scene.addChild(fakePlayer);
 //export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-17.2, -14.2, -5.2], euler: [-2.8, -20.4, -65.2]});
-export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, -5, -5]});
+export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, 3, -12]});
 
 //export const lamp = new Lamp({texture: blankTexture, scale: [1, 1, 1], translation: [-4, 10, -5]});
 //lamp.addFirefly();

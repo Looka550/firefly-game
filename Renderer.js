@@ -17,16 +17,20 @@ export class Renderer{
         device,
         scene,
         context,
-        camera,
+        mainCamera,
         module,
         format,
-        canvas
+        canvas,
+        secondaryCamera
     ){
         this.device = device;
         this.scene = scene;
         this.context = context;
-        this.camera = camera;
+        this.mainCamera = mainCamera;
         this.module = module;
+        this.secondaryCamera = secondaryCamera;
+
+        this.currentCamera = this.mainCamera;
 
 
         // pipeline
@@ -275,11 +279,11 @@ export class Renderer{
 
         renderPass.setPipeline(Engine.pipeline);
 
-        const viewMatrix = getGlobalViewMatrix(this.camera);
-        const projectionMatrix = getProjectionMatrix(this.camera);
+        const viewMatrix = getGlobalViewMatrix(this.currentCamera);
+        const projectionMatrix = getProjectionMatrix(this.currentCamera);
 
         // camera uniforms
-        const cameraMatrix = getGlobalModelMatrix(this.camera);
+        const cameraMatrix = getGlobalModelMatrix(this.currentCamera);
         const cameraPosition = vec3.create();
         mat4.getTranslation(cameraPosition, cameraMatrix);
 
@@ -424,7 +428,7 @@ export class Renderer{
     }
 
     resize({ displaySize: { width, height }}) {
-        this.camera.getComponentOfType(Camera).aspect = width / height;
+        this.currentCamera.getComponentOfType(Camera).aspect = width / height;
         this.depthTexture = this.createDepthTexture(width, height);
     }
 

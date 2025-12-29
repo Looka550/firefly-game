@@ -240,6 +240,7 @@ export class Lamp extends GameObject {
         }
 
         if(!this.playerLit){ // assist lights
+            console.log("adding assist lights");
             const assistLightPositions = [[-1.6, 0, 19.6], [8.8, 0, 18.6], [17.4, 0, 8]]; // [[19.4, -0.2+8, 26.4-7], [-18.8, -0.2+8, 26.4-7], [0, -0.2+8, 26.4-7]];
             for(let i = 0; i < assistLightPositions.length; i++){
                 const assistLight = new GameObject({name: "Assist light"});

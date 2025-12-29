@@ -79,7 +79,7 @@ export let animationSpeed = 1;
 
 // PARAMETERS
 const ambient = 0.05;
-export const firefliesCount = 20;
+export const firefliesCount = 8;
 const treesCount = 40;
 export const globalDebugMode = false;
 
@@ -100,7 +100,13 @@ camera.addComponent({
     }
 })
 
-const renderer = new Renderer(device, scene, context, camera, module, format, canvas);
+const secondaryCamera = new Node();
+secondaryCamera.addComponent(new Camera());
+secondaryCamera.addComponent(new Transform({
+    translation: [0, 13, 2]
+}));
+
+const renderer = new Renderer(device, scene, context, camera, module, format, canvas, secondaryCamera);
 
 const ambientLight = new GameObject({name: "Ambient Light"});
 ambientLight.addComponent(new Light({
@@ -173,6 +179,7 @@ scene.addChild(borderW);
 
 const player = new GameObject({translation: [0, 0, 0]});
 player.addChild(camera);
+player.addChild(secondaryCamera);
 
 export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 playerWrapper.addComponent(playerCol);
@@ -240,6 +247,7 @@ export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation
 player.addChild(net);
 
 export let assistLight1 = new GameObject({name: "Player Assist Light"});
+/*
 assistLight1.addComponent(new Transform({
     translation: [0, 0, 0]
 }));
@@ -248,7 +256,7 @@ assistLight1.addComponent(new Light({
     intensity: 2
 }));
 playerWrapper.addChild(assistLight1);
-
+*/
 player.addComponent({
     update(){
         testConfig();

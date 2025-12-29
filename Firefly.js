@@ -58,7 +58,9 @@ export class Firefly extends GameObject {
         this.wingR = new Cube({ translation: [-3.4, 6, -2], scale: [1.5, 0.2, 0.5], euler: [0, 0, 0], texture: this.texture, color: [0.71, 0.867, 1, 1] });
         this.addChild(this.wingR);
 
-        const light = new GameObject({ name: "Firefly Main Light", translation: [-2, 5, -2] });
+        const lightPos = [0, -3, 3];
+
+        const light = new GameObject({ name: "Firefly Main Light", translation: lightPos });
 
         light.addComponent(new Light({
             ambient: 0,
@@ -66,11 +68,15 @@ export class Firefly extends GameObject {
         }));
         this.tail.addChild(light);
 
+        //const lightVisualizer = new Cube({ texture: this.texture, name: "Firefly Main Light", translation: lightPos, scale: [0.5, 0.5, 0.5] });
+
+        //this.tail.addChild(lightVisualizer);
+
         const assistLight = new GameObject({ name: "Firefly Assist Light", translation: [-2, -2, 2] });
 
         assistLight.addComponent(new Light({
             ambient: 0,
-            intensity: this.intensity / 2
+            intensity: 0
         }));
         this.tail.addChild(assistLight);
 
@@ -106,7 +112,6 @@ export class Firefly extends GameObject {
     }
 
     onAnimationEnd(){
-        console.log("current stage: " + this.stage);
         if(this.stage == 0){
 
         }

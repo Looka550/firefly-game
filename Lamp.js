@@ -1,7 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { Engine, getGlobalModelMatrix, getWorldTranslation } from "./SceneUtils.js";
 import { sampler, blankTextureView, scene, playerWrapper, firefliesCount, animationSpeed } from "./main.js";
 import { Sphere } from "./Sphere.js";

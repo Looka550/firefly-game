@@ -1,7 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { Engine } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 
@@ -35,7 +34,7 @@ export class Cube extends GameObject {
     createMesh(){
 
         const vertices = new Float32Array([
-            // position    color   uv
+            // position    color   uv   normals
             // FRONT
             -1, -1,  1, 1,   ...this.color,    0, 0,   1, 1, 1,
              1, -1,  1, 1,   ...this.color,    1, 0,   1, 1, 1,

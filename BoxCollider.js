@@ -1,7 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { Engine, getGlobalModelMatrix } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 import { physics } from "./main.js";
@@ -44,45 +43,6 @@ export class BoxCollider extends GameObject{
         });
     }
 
-    update(){
-        if(this.gravity){
-            //this.move({y: -0.1});
-            //this.collides();
-        }
-        /*
-        if(this.gravity){
-            this.velocity ??= [0, 0, 0]; // initialize if not present
-            this.velocity[1] -= 0.981 * 0.016; // gravity per frame
-            this.transform.translation[1] += this.velocity[1] * 0.016;
- 
-            // check collisions with planes
-            const collisions = physics.checkCollisions(this);
-            console.log("checking collisions: " + collisions);
-
-            collisions.forEach(col => {
-                if(col instanceof PlaneCollider){
-                    // find the Y position of the plane at this X,Z
-                    const modelMatrix = getGlobalModelMatrix(col);
-                    const planeCenter = [modelMatrix[12], modelMatrix[13], modelMatrix[14]];
-
-                    // assuming rotation around X-axis only
-                    const rotX = col.transform.getEuler()[0] * Math.PI / 180;
-                    const localZ = this.transform.translation[2] - planeCenter[2];
-                    const planeY = planeCenter[1] + Math.tan(rotX) * localZ;
-
-                    // if below plane, snap up
-                    if(this.transform.translation[1] < planeY){
-                        this.transform.translation[1] = planeY;
-                        this.velocity[1] = 0;
-                    }
-                }
-            });
-        }
-            */
-    }
-
-
-
     onAttach(gameObject){
         gameObject.addChild(this);
         this.gameObject = gameObject;
@@ -107,7 +67,7 @@ export class BoxCollider extends GameObject{
         const scaleMatrix = mat4.create();
         mat4.fromScaling(scaleMatrix, this.scale);
 
-        // combine parent matrix with collider scale
+        // combine parent matrix with collider
         const modelMatrix = mat4.create();
         mat4.multiply(modelMatrix, parentMatrix, scaleMatrix);
 
@@ -235,24 +195,4 @@ export class BoxCollider extends GameObject{
             "indices": indices
         };
     }
-/*
-    update() {
-        this.updateAABB();
-    }
-
-
-    updateAABB() {
-        const modelMatrix = getGlobalModelMatrix(this.gameObject);
-
-        const center = vec3.create();
-        mat4.getTranslation(center, modelMatrix);
-
-        vec3.add(center, center, this.offset);
-
-        const half = vec3.scale(vec3.create(), this.size, 0.5);
-
-        vec3.sub(this.min, center, half);
-        vec3.add(this.max, center, half);
-    }
-*/
 }

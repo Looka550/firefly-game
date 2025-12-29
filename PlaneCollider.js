@@ -44,70 +44,71 @@ export class PlaneCollider extends GameObject {
     }
 
 
-AABBcollision(box){
-    box.getBoundaries();
+    planeCollision(box){
+        box.getBoundaries();
 
-    const modelMatrix = getGlobalModelMatrix(this);
+        const modelMatrix = getGlobalModelMatrix(this);
 
-    const rotationMatrix = mat4.create();
+        const rotationMatrix = mat4.create();
 
-    let planeRotation = null;
-    if(this.transform.getEuler()[0] > 90){ // bug fix for 90...180 rotation slopes
-        planeRotation = quat.create();
-        quat.fromEuler(planeRotation, this.transform.getEuler()[0] - 180, this.transform.getEuler()[1], this.transform.getEuler()[2]);
+        let planeRotation = null;
+        if(this.transform.getEuler()[0] > 90){ // bug fix for 90...180 rotation slopes
+            planeRotation = quat.create();
+            quat.fromEuler(planeRotation, this.transform.getEuler()[0] - 180, this.transform.getEuler()[1], this.transform.getEuler()[2]);
+        }
+        else{
+            planeRotation = this.transform.rotation;
+        }
+
+        mat4.fromRotationTranslation(rotationMatrix, planeRotation, [0,0,0]);
+
+        const normal = vec3.transformMat4(vec3.create(), [0,1,0], rotationMatrix);
+        vec3.normalize(normal, normal);
+        
+
+        const planePos = [
+            modelMatrix[12],
+            modelMatrix[13],
+            modelMatrix[14]
+        ];
+
+        // height test
+        const boxMinProj = vec3.dot(box.min, normal);
+        const boxMaxProj = vec3.dot(box.max, normal);
+        const planeProj = vec3.dot(planePos, normal);
+
+        if(!(boxMinProj <= planeProj && boxMaxProj >= planeProj)){
+            return false;
+        }
+
+        // plane local axes
+        const right = vec3.transformMat4(vec3.create(), [1,0,0], rotationMatrix);
+        const forward = vec3.transformMat4(vec3.create(), [0,0,1], rotationMatrix);
+
+        vec3.normalize(right, right);
+        vec3.normalize(forward, forward);
+
+        // box center
+        const boxCenter = vec3.scale(
+            vec3.create(),
+            vec3.add(vec3.create(), box.min, box.max),
+            0.5
+        );
+
+        const toBox = vec3.subtract(vec3.create(), boxCenter, planePos);
+
+        const distX = vec3.dot(toBox, right);
+        const distZ = vec3.dot(toBox, forward);
+
+        if(Math.abs(distX) > this.transform.scale[0]){
+            return false;
+        }
+        if(Math.abs(distZ) > this.transform.scale[2]){
+            return false;
+        }
+
+        return true;
     }
-    else{
-        planeRotation = this.transform.rotation;
-    }
-
-    mat4.fromRotationTranslation(rotationMatrix, planeRotation, [0,0,0]);
-
-    const normal = vec3.transformMat4(vec3.create(), [0,1,0], rotationMatrix);
-    vec3.normalize(normal, normal);
-    
-
-    const planePos = [
-        modelMatrix[12],
-        modelMatrix[13],
-        modelMatrix[14]
-    ];
-
-    // height test
-    const boxMinProj = vec3.dot(box.min, normal);
-    const boxMaxProj = vec3.dot(box.max, normal);
-    const planeProj = vec3.dot(planePos, normal);
-
-    if (!(boxMinProj <= planeProj && boxMaxProj >= planeProj)) {
-        return false;
-    }
-
-    // plane local axes
-    const right = vec3.transformMat4(vec3.create(), [1,0,0], rotationMatrix);
-    const forward = vec3.transformMat4(vec3.create(), [0,0,1], rotationMatrix);
-
-    vec3.normalize(right, right);
-    vec3.normalize(forward, forward);
-
-    // box center
-    const boxCenter = vec3.scale(
-        vec3.create(),
-        vec3.add(vec3.create(), box.min, box.max),
-        0.5
-    );
-
-    const toBox = vec3.subtract(vec3.create(), boxCenter, planePos);
-
-    const xDist = vec3.dot(toBox, right);
-    const zDist = vec3.dot(toBox, forward);
-
-    if (Math.abs(xDist) > this.transform.scale[0]) return false;
-    if (Math.abs(zDist) > this.transform.scale[2]) return false;
-
-    return true;
-}
-
-
-
 
 
     createMesh(){

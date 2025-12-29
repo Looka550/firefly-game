@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net, moon, assistLight1, playerCol } from "./main.js";
+import { lamp, net, moon, playerCol } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;

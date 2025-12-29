@@ -1,7 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { sampler, blankTextureView, scene } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
@@ -176,8 +175,4 @@ export class WorldGenerator extends GameObject {
 
 function rand(min, max){
     return Math.random() * (max - min) + min;
-}
-
-function coinFlip(){
-    return Math.random() < 0.5;
 }

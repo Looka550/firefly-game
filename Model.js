@@ -1,7 +1,8 @@
+// tega ne uporablam več ker sem vse modele naredil iz osnovnih 3D geometrijskih teles
+
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { Engine } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 import { GLTFLoader } from "./webgpu/engine/loaders/GLTFLoader.js";
@@ -28,7 +29,7 @@ export class Model extends GameObject {
                 const rotation = transform.rotation;
             }
         });
-        this.textureRenderer = new TextureRenderer();
+
         this.gltfPath = gltfPath;
 
         this.providesNormals = false;

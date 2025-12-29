@@ -36,7 +36,7 @@ export class Physics{
             }
             else if(other instanceof PlaneCollider){
                 //console.log(`testing plane collider: ${col.name} : ${other.name}`);
-                if(other.AABBcollision(col)){
+                if(other.planeCollision(col)){
                     //console.log(`PLANE COLLISION: ${col.name} : ${other.name}`);
                     collisions.push(other);
                 }

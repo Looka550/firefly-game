@@ -1,7 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { sampler, blankTextureView, scene, playerWrapper, animationSpeed } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";

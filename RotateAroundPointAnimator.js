@@ -1,7 +1,6 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { TextureRenderer } from './TextureRenderer.js';
 import { Engine } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 import { Sphere } from "./Sphere.js";
@@ -76,7 +75,6 @@ export class RotateAroundPointAnimator extends GameObject{
     rotateAroundPoint(gameObject, point, euler){
         const transform = gameObject.getComponentOfType(Transform);
         
-        // euler to quat
         const rotationQuat = quat.create();
         quat.fromEuler(rotationQuat, ...euler);
         
@@ -84,14 +82,11 @@ export class RotateAroundPointAnimator extends GameObject{
         const distance = vec3.create();
         vec3.subtract(distance, transform.translation, point);
 
-        // rotate distance
         const rotatedDistance = vec3.create();
         vec3.transformQuat(rotatedDistance, distance, rotationQuat);
 
-        // set new pos
+        // set new pos and rot
         vec3.add(transform.translation, point, rotatedDistance);
-
-        // rotate object
         quat.multiply(transform.rotation, rotationQuat, transform.rotation);
     }
 

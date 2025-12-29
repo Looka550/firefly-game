@@ -11,8 +11,8 @@ export class Mesh{
         blankTextureView,
         sampler
     }){
-        if (!structure || !structure.vertices || !structure.indices) {
-            throw new Error("Mesh created without valid geometry structure");
+        if(!structure || !structure.vertices || !structure.indices){
+            console.log("invalid params");
         }
 
         this.vertices = structure.vertices;
@@ -24,11 +24,8 @@ export class Mesh{
 
         this.setBindGroup();
 
-        if (!hasNormals) {
+        if(!hasNormals) {
             this.calculateNormals();
-        }
-        else{
-            //console.log("model provides normals");
         }
         
         this.setVertexBuffers();
@@ -94,6 +91,8 @@ export class Mesh{
                 { binding: 7, resource: { buffer: this.hasNormalMapBuffer } }
             ]
         });
+
+
     }
     setVertexBuffers(){
         this.vertexBuffer = device.createBuffer({

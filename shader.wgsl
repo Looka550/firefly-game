@@ -1,11 +1,11 @@
-struct VertexInput {
+struct VertexInput{
     @location(0) position : vec4f,
     @location(1) color    : vec4f,
     @location(2) texcoords: vec2f,
     @location(3) normal   : vec3f,
 };
 
-struct VertexOutput {
+struct VertexOutput{
     @builtin(position) clipPosition : vec4f,
     @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
@@ -13,7 +13,7 @@ struct VertexOutput {
     @location(3) color : vec4f,
 };
 
-struct FragmentOutput {
+struct FragmentOutput{
     @location(0) color : vec4f,
 };
 
@@ -32,15 +32,15 @@ struct FragmentOutput {
 
 
 
-struct LightUniforms {
+struct LightUniforms{
     position    : vec3f,
     ambient     : f32,
     attenuation : f32,
     intensity   : f32,
-    padding    : vec3f, // poravnava na 32 B
+    padding    : vec3f, // poravnava na 32b
 };
 
-struct LightsBlock {
+struct LightsBlock{
     lights     : array<LightUniforms, 32>,
     lightCount : u32,
     padding   : vec3u,
@@ -48,7 +48,7 @@ struct LightsBlock {
 
 @group(3) @binding(0) var<uniform> lightsBlock : LightsBlock;
 
-struct CameraUniforms {
+struct CameraUniforms{
     position : vec3f,
     padding : f32,
 };
@@ -57,7 +57,7 @@ struct CameraUniforms {
 
 
 @vertex
-fn vertex(input: VertexInput) -> VertexOutput {
+fn vertex(input: VertexInput) -> VertexOutput{
     var output: VertexOutput;
 
     let worldPos = modelMatrix * input.position;
@@ -72,7 +72,7 @@ fn vertex(input: VertexInput) -> VertexOutput {
 }
 
 @fragment
-fn fragment(input: VertexOutput) -> FragmentOutput {
+fn fragment(input: VertexOutput) -> FragmentOutput{
     var output: FragmentOutput;
 
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords) * input.color;
@@ -127,13 +127,13 @@ fn fragment(input: VertexOutput) -> FragmentOutput {
 
     var shadowSum: f32 = 0.0;
     let texSize: vec2f = vec2f(textureDimensions(shadowMap));
-    for(var x: i32 = -2; x <= 2; x = x + 1){
-        for(var y: i32 = -2; y <= 2; y = y + 1){
+    for(var x: i32 = -1; x <= 1; x = x + 1){
+        for(var y: i32 = -1; y <= 1; y = y + 1){
             let offset: vec2f = vec2f(f32(x)/texSize.x, f32(y)/texSize.y);
             shadowSum += textureSampleCompare(shadowMap, shadowSampler, shadowUV + offset, proj.z - normalBias);
         }
     }
-    let shadow = shadowSum / 25.0; // 5x5 kernel (-2...2)
+    let shadow = shadowSum / 9.0; // 3x3 kernel
 
     //var color = materialColor.rgb * ((diffuseSum) + ambientSum) + vec3f(specularSum);
 

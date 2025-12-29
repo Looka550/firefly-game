@@ -1,4 +1,4 @@
-struct VertexInput {
+struct VertexInput{
     @location(0) position : vec4f,
 };
 
@@ -6,9 +6,9 @@ struct VertexInput {
 @group(0) @binding(1) var<uniform> lightViewProj : mat4x4f;
 
 @vertex
-fn vertex(input: VertexInput) -> @builtin(position) vec4f {
+fn vertex(input: VertexInput) -> @builtin(position) vec4f{
     return lightViewProj * modelMatrix * input.position;
 }
 
 @fragment
-fn fragment() {}
+fn fragment(){}

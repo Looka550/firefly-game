@@ -3,13 +3,13 @@ import {
     getGlobalViewMatrix,
     getProjectionMatrix,
     Engine,
-} from './SceneUtils.js';
-import { quat, mat4, vec3 } from './glm.js';
-import { GameObject } from './GameObject.js';
-import { ResizeSystem } from 'engine/systems/ResizeSystem.js';
-import { Camera } from './Camera.js';
-import { shadowModule } from './main.js';
-import { Light } from './Light.js';
+} from "./SceneUtils.js";
+import { quat, mat4, vec3 } from "./glm.js";
+import { GameObject } from "./GameObject.js";
+import { ResizeSystem } from "engine/systems/ResizeSystem.js";
+import { Camera } from "./Camera.js";
+import { shadowModule } from "./main.js";
+import { Light } from "./Light.js";
 import { lightY, near, far } from "./PlayerInput.js";
 
 export class Renderer{
@@ -36,22 +36,22 @@ export class Renderer{
                 {
                     shaderLocation: 0,
                     offset: 0,
-                    format: 'float32x4', // position
+                    format: "float32x4", // position
                 },
                 {
                     shaderLocation: 1,
                     offset: 16,
-                    format: 'float32x4', // color
+                    format: "float32x4", // color
                 },
                 {
                     shaderLocation: 2,
                     offset: 32,
-                    format: 'float32x2', // texcoords
+                    format: "float32x2", // texcoords
                 },
                 {
                     shaderLocation: 3,
                     offset: 40,
-                    format: 'float32x3', // normal
+                    format: "float32x3", // normal
                 },
             ],
         };
@@ -67,24 +67,24 @@ export class Renderer{
                     format,
                     blend: {
                         color: {
-                            srcFactor: 'src-alpha',
-                            dstFactor: 'one-minus-src-alpha',
-                            operation: 'add',
+                            srcFactor: "src-alpha",
+                            dstFactor: "one-minus-src-alpha",
+                            operation: "add",
                         },
                         alpha: {
-                            srcFactor: 'one',
-                            dstFactor: 'one-minus-src-alpha',
-                            operation: 'add',
+                            srcFactor: "one",
+                            dstFactor: "one-minus-src-alpha",
+                            operation: "add",
                         },
                     },
                 }],
             },
             depthStencil: {
                 depthWriteEnabled: true,
-                depthCompare: 'less',
-                format: 'depth24plus',
+                depthCompare: "less",
+                format: "depth24plus",
             },
-            layout: 'auto',
+            layout: "auto",
         });
 
 
@@ -127,18 +127,18 @@ export class Renderer{
         // shadows
         
 
-        this.shadowSize = 4096;
+        this.shadowSize = 1024;
 
         this.shadowDepthTexture = device.createTexture({
             size: [this.shadowSize, this.shadowSize],
-            format: 'depth24plus',
+            format: "depth24plus",
             usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
         });
 
         this.shadowSampler = device.createSampler({
-            compare: 'less',
-            minFilter: 'linear',
-            magFilter: 'linear',
+            compare: "less",
+            minFilter: "linear",
+            magFilter: "linear",
         });
 
         this.lightMatrixBuffer = this.device.createBuffer({
@@ -158,20 +158,20 @@ export class Renderer{
         this.shadowPipeline = device.createRenderPipeline({
             vertex: {
                 module: shadowModule,
-                entryPoint: 'vertex',
+                entryPoint: "vertex",
                 buffers: [vertexBufferLayout],
             },
             fragment: {
                 module: shadowModule,
-                entryPoint: 'fragment',
+                entryPoint: "fragment",
                 targets: [],
             },
             depthStencil: {
-                format: 'depth24plus',
+                format: "depth24plus",
                 depthWriteEnabled: true,
-                depthCompare: 'less',
+                depthCompare: "less",
             },
-            layout: 'auto',
+            layout: "auto",
         });
 
 
@@ -225,8 +225,8 @@ export class Renderer{
             depthStencilAttachment: {
                 view: this.shadowDepthTexture.createView(),
                 depthClearValue: 1,
-                depthLoadOp: 'clear',
-                depthStoreOp: 'store',
+                depthLoadOp: "clear",
+                depthStoreOp: "store",
             },
         });
 
@@ -242,24 +242,17 @@ export class Renderer{
                     ],
                 });
 
-                this.device.queue.writeBuffer(
-                    node.mesh.modelBuffer,
-                    0,
-                    getGlobalModelMatrix(node)
-                );
+                this.device.queue.writeBuffer(node.mesh.modelBuffer, 0, getGlobalModelMatrix(node));
 
-                    this.device.queue.writeBuffer(
-                        this.lightMatrixBuffer,
-                        0,
-                        lightViewProj
-                    );
 
                 shadowPass.setBindGroup(0, node.mesh.shadowBindGroup);
                 shadowPass.setVertexBuffer(0, node.mesh.vertexBuffer);
-                shadowPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
+                shadowPass.setIndexBuffer(node.mesh.indexBuffer, "uint32");
                 shadowPass.drawIndexed(node.mesh.indexCount);
             }
         });
+
+        this.device.queue.writeBuffer(this.lightMatrixBuffer, 0, lightViewProj);
 
         shadowPass.end();
 
@@ -268,15 +261,15 @@ export class Renderer{
         const renderPass = commandEncoder.beginRenderPass({
             colorAttachments: [{
                 view: this.context.getCurrentTexture().createView(),
-                loadOp: 'clear',
+                loadOp: "clear",
                 clearValue: [0.165, 0.161, 0.2, 1],
-                storeOp: 'store',
+                storeOp: "store",
             }],
             depthStencilAttachment: {
                 view: this.depthTexture.createView(),
                 depthClearValue: 1,
-                depthLoadOp: 'clear',
-                depthStoreOp: 'discard',
+                depthLoadOp: "clear",
+                depthStoreOp: "discard",
             },
         });
 
@@ -388,7 +381,7 @@ export class Renderer{
                 renderPass.setBindGroup(1, this.cameraBindGroup);
 
                 renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
-                renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
+                renderPass.setIndexBuffer(node.mesh.indexBuffer, "uint32");
                 renderPass.drawIndexed(node.mesh.indexCount);
             }
         });
@@ -422,7 +415,7 @@ export class Renderer{
             renderPass.setBindGroup(1, this.cameraBindGroup);
 
             renderPass.setVertexBuffer(0, node.mesh.vertexBuffer);
-            renderPass.setIndexBuffer(node.mesh.indexBuffer, 'uint32');
+            renderPass.setIndexBuffer(node.mesh.indexBuffer, "uint32");
             renderPass.drawIndexed(node.mesh.indexCount);
         });
 
@@ -438,7 +431,7 @@ export class Renderer{
     createDepthTexture(width, height) {
         return this.device.createTexture({
             size: [width, height],
-            format: 'depth24plus',
+            format: "depth24plus",
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
     }

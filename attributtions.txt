@@ -5,13 +5,3 @@
 <a href="https://www.freepik.com/free-vector/dark-wood-cartoon-style-texture_1076803.htm#fromView=search&page=1&position=1&uuid=d1c891f2-dcb0-4fd1-b93a-496f85070430&query=low+poly+tree+trunk+texture">Image by 0melapics on Freepik</a>
 
 https://polyhaven.com/a/moon_01
-
-
-bug:
-ID3D12Device::GetDeviceRemovedReason failed with DXGI_ERROR_DEVICE_HUNG (0x887A0006)
- - While handling unexpected error type Internal when allowed errors are (Validation|DeviceLost).
-    at CheckHRESULTImpl (..\..\third_party\dawn\src\dawn\native\d3d\D3DError.cpp:121)
-
-Backend messages:
- * Device removed reason: DXGI_ERROR_DEVICE_HUNG (0x887A0006)
-

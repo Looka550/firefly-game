@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net, moon, playerCol } from "./main.js";
+import { lamp, net, moon, playerCol, assistLight1 } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -55,7 +55,7 @@ export function testConfig(){
     if(keys["l"]){
         assistLight1.move({z: -0.2});
     }
-    //console.log("move: " + assistLight1.transform.translation);
+    console.log("move: " + assistLight1.transform.translation);
 }
 
 export function rotateConfig(){

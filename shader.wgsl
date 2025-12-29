@@ -31,7 +31,6 @@ struct FragmentOutput{
 @group(2) @binding(2) var<uniform> lightViewProj : mat4x4f;
 
 
-
 struct LightUniforms{
     position    : vec3f,
     ambient     : f32,
@@ -70,6 +69,62 @@ fn vertex(input: VertexInput) -> VertexOutput{
 
     return output;
 }
+/*
+@fragment
+fn fragment(input: VertexOutput) -> FragmentOutput {
+    var output: FragmentOutput;
+
+    _ = modelMatrix;
+    _ = viewProjMatrix;
+    _ = baseTexture;
+    _ = baseSampler;
+    _ = normalMatrix;
+    _ = normalSampler;
+    _ = normalTexture;
+    _ = hasNormalMap;
+    _ = shadowMap;
+    _ = shadowSampler;
+    _ = lightViewProj;
+    _ = lightsBlock;
+    _ = camera;
+
+    let N = normalize(input.normal);
+
+    var lightInfluence: f32 = 0.0;
+
+    for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
+        let light = lightsBlock.lights[i];
+
+        let Lvec = light.position - input.position;
+        let dist = length(Lvec);
+
+        // Avoid NaNs
+        if (dist <= 0.0001) {
+            continue;
+        }
+
+        let L = Lvec / dist;
+
+        // Lambert term (NO clamp to 0 yet)
+        let lambert = max(dot(N, L), 0.0);
+
+        // Standard quadratic attenuation
+        let attenuation = 1.0 / (1.0 + light.attenuation * dist * dist);
+
+        // Contribution from this light
+        let contribution = lambert * attenuation * light.intensity;
+
+        lightInfluence += contribution;
+    }
+
+    // Normalize / clamp so it becomes a mask
+    let mask = clamp(lightInfluence, 0.0, 1.0);
+
+    output.color = vec4f(mask, mask, mask, 1.0);
+    return output;
+}
+*/
+
 
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput{
@@ -111,6 +166,8 @@ fn fragment(input: VertexOutput) -> FragmentOutput{
         ambientSum += light.ambient;
     }
 
+    let pointLightMask = clamp(diffuseSum + specularSum, 0.0, 1.0);
+
 
     // shadows
     let lightPos = lightViewProj * vec4f(input.position, 1.0);
@@ -135,11 +192,18 @@ fn fragment(input: VertexOutput) -> FragmentOutput{
     }
     let shadow = shadowSum / 9.0; // 3x3 kernel
 
-    //var color = materialColor.rgb * ((diffuseSum) + ambientSum) + vec3f(specularSum);
 
-    var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * shadow;
+    //var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * shadow; // BEFORE SHADOWS LIGHT UP FIX
+var finalShadow = shadow;
 
-    output.color = vec4f(color, materialColor.a); // color + shadows
+if (pointLightMask > 0.3) {
+    finalShadow = 1.0;
+}
+var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * finalShadow;
+
+    output.color = vec4f(color, materialColor.a); // color + shadows + removing of shadows
+
+    //output.color = vec4f(color, materialColor.a); // color + shadows
     //output.color = vec4f(vec3f(shadow), 1.0); // only shadows
     return output;
 }

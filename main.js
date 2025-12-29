@@ -78,7 +78,7 @@ export const sampler = device.createSampler({
 export let animationSpeed = 1;
 
 // PARAMETERS
-const ambient = 0.5;
+const ambient = 0.05;
 export const firefliesCount = 20;
 const treesCount = 40;
 
@@ -237,6 +237,16 @@ playerCol.addComponent({
 
 export const net = new Net({texture: blankTexture, scale: [1, 1, 1], translation: [8, 2, -9], euler: [45, 10, 0]}); // on player
 player.addChild(net);
+
+export let assistLight1 = new GameObject({name: "Player Assist Light"});
+assistLight1.addComponent(new Transform({
+    translation: [0, 0, 0]
+}));
+assistLight1.addComponent(new Light({
+    ambient: 0,
+    intensity: 2
+}));
+playerWrapper.addChild(assistLight1);
 
 player.addComponent({
     update(){

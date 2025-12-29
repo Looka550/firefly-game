@@ -100,7 +100,7 @@ camera.addComponent({
     }
 })
 
-export const secondaryCamera = new GameObject({ translation: [-400, 89, -31], euler: [0.4, -90, 0]});
+export const secondaryCamera = new GameObject({ translation: [-368, 46, -35], euler: [174, -90, -180]});
 secondaryCamera.addComponent(new Camera());
 
 export const renderer = new Renderer(device, scene, context, camera, module, format, canvas, secondaryCamera);

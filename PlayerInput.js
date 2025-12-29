@@ -37,9 +37,9 @@ export function testConfig(){
     if(keys["c"]){
         lamp.release();
     }
-    //if(keys["t"]){
-    //    renderer.swapCamera();
-    //}
+    if(keys["t"]){
+        renderer.swapCamera();
+    }
     return;
     if(keys["u"]){
         assistLight1.move({x: 0.2});

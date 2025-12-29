@@ -58,13 +58,21 @@ export class Firefly extends GameObject {
         this.wingR = new Cube({ translation: [-3.4, 6, -2], scale: [1.5, 0.2, 0.5], euler: [0, 0, 0], texture: this.texture, color: [0.71, 0.867, 1, 1] });
         this.addChild(this.wingR);
 
-        const light = new GameObject({ name: "Light", translation: [-2, 5, -2] });
+        const light = new GameObject({ name: "Firefly Main Light", translation: [-2, 5, -2] });
 
         light.addComponent(new Light({
             ambient: 0,
             intensity: this.intensity
         }));
         this.tail.addChild(light);
+
+        const assistLight = new GameObject({ name: "Firefly Assist Light", translation: [-2, -2, 2] });
+
+        assistLight.addComponent(new Light({
+            ambient: 0,
+            intensity: this.intensity / 2
+        }));
+        this.tail.addChild(assistLight);
 
         if(this.addCollider){
             const col = new BoxCollider({ translation: [0, 0, 0], scale: [2, 0.4, 2], texture: this.texture, debug: false, dynamic: true, name: "firefly" });

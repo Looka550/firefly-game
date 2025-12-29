@@ -11,8 +11,8 @@ export let near = -14.78; // 0.1
 export let far = 54; // 50
 
 // settings
-const speed = 0.1;
-const sensitivity = 0.0015;
+const speed = 0.2;
+const sensitivity = 0.0022;
 let yaw = 0, pitch = 0;
 
 // gravity

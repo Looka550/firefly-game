@@ -11,7 +11,7 @@ export let near = -14.78; // 0.1
 export let far = 54; // 50
 
 // settings
-const speed = 0.2;
+const speed = 0.1;
 const sensitivity = 0.0015;
 let yaw = 0, pitch = 0;
 
@@ -28,6 +28,7 @@ export function trueGrounded(){
 
 
 export function testConfig(){
+    return;
     if(keys["v"]){
         lamp.swing();
     }
@@ -59,7 +60,6 @@ export function testConfig(){
 }
 
 export function rotateConfig(){
-    return;
     if(keys["u"]){
         playerCol.move({x: 0.2});
     }
@@ -78,7 +78,7 @@ export function rotateConfig(){
     if(keys["l"]){
         playerCol.move({z: -0.2});
     }
-    //console.log("playerCol: " + playerCol.transform.translation);
+    console.log("playerCol: " + playerCol.transform.translation);
 }
 
 

@@ -96,8 +96,8 @@ export class WorldGenerator extends GameObject {
 
     generateFireflies(n, treeRadius = 20, fireflyRadius = 5){
         for(let i = 0; i < n; i++){
-            const x = rand(this.minX, this.maxX);
-            const z = rand(this.minZ, this.maxZ);
+            const x = rand(this.minX + 10, this.maxX - 10);
+            const z = rand(this.minZ + 10, this.maxZ - 10);
             let y = 0;
             for(let i = 0; i < this.offsets.length; i++){
                 const offset = this.offsets[i];

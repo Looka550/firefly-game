@@ -81,6 +81,7 @@ export let animationSpeed = 1;
 const ambient = 0.05;
 export const firefliesCount = 20;
 const treesCount = 40;
+export const globalDebugMode = false;
 
 // Create scene objects
 export const scene = new Node("scene");
@@ -130,10 +131,10 @@ for(let i = 0; i < moonAssistPositions.length; i++){
 const plane1 = new PlaneCollider({ texture: grassTexture, debug: true, normalTexture: grassNor, translation: [-10, -10, 0], scale: [300, 0, 30], name: "flat grass1", tags: ["flat"] });
 scene.addChild(plane1);
 
-const slope1 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
+const slope1 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3, -55], scale: [300, 0, 30], euler: [14.5, 0, 0], name: "big slope", tags: ["slope"] });
 scene.addChild(slope1);
 
-const slope2 = new PlaneCollider({ texture: grassTexture, debug: true, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
+const slope2 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -7, 52], scale: [300, 0, 30], euler: [173, 0, 0], name: "small slope", tags: ["slope"] });
 scene.addChild(slope2);
 
 const plane2 = new PlaneCollider({ texture: grassTexture, normalTexture: grassNor, debug: true, translation: [-10, -3.344, 111.5], scale: [300, 0, 32], name: "flat grass2", tags: ["flat"] }); // [-10, -3.344, 111.5]
@@ -150,30 +151,30 @@ scene.addChild(plane5);
 
 
 // NORTH WORLD BORDER
-const borderN = new GameObject({ translation: [0, 15, -204], texture: blankTexture});
-const colN = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: false, dynamic: false, name: "border north", tags: ["border", "north"] });
+const borderN = new GameObject({ translation: [0, 15, -198], texture: blankTexture});
+const colN = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: globalDebugMode, dynamic: false, name: "border north", tags: ["border", "north"] });
 borderN.addComponent(colN);
 scene.addChild(borderN);
 // SOUTH WORLD BORDER
-const borderS = new GameObject({ translation: [0, 15, 201.5], texture: blankTexture});
-const colS = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: false, dynamic: false, name: "border south", tags: ["border", "south"] });
+const borderS = new GameObject({ translation: [0, 15, 198], texture: blankTexture});
+const colS = new BoxCollider({ scale: [300, 30, 1], texture: blankTexture, debug: globalDebugMode, dynamic: false, name: "border south", tags: ["border", "south"] });
 borderS.addComponent(colS);
 scene.addChild(borderS);
 // EAST WORLD BORDER
 const borderE = new GameObject({ translation: [286, 15, 0], texture: blankTexture});
-const colE = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: false, dynamic: false, name: "border east", tags: ["border", "east"] });
+const colE = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: globalDebugMode, dynamic: false, name: "border east", tags: ["border", "east"] });
 borderE.addComponent(colE);
 scene.addChild(borderE);
 //WEST WORLD BORDER
 const borderW = new GameObject({ translation: [-286, 15, 0], texture: blankTexture});
-const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: false, dynamic: false, name: "border west", tags: ["border", "west"] });
+const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug: globalDebugMode, dynamic: false, name: "border west", tags: ["border", "west"] });
 borderW.addComponent(colW);
 scene.addChild(borderW);
 
 const player = new GameObject({translation: [0, 0, 0]});
 player.addChild(camera);
 
-export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: false, dynamic: false, name: "player", gravity: false });
+export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 playerWrapper.addComponent(playerCol);
 
 
@@ -183,7 +184,7 @@ generator.generateFireflies(firefliesCount, 5, 5);
 
 playerCol.addComponent({
     update(dt){
-        playerWrapper.nextMove ??= [0.05 * Math.abs(dt), -0.20, 0.05 * Math.abs(dt)]; // non-jumping gravity
+        playerWrapper.nextMove ??= [0.05, -0.20, 0.05]; // non-jumping gravity
 
         playerWrapper.move({y: playerWrapper.nextMove[1]});
         let onSlope = false;

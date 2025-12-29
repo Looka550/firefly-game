@@ -193,13 +193,14 @@ fn fragment(input: VertexOutput) -> FragmentOutput{
     let shadow = shadowSum / 9.0; // 3x3 kernel
 
 
-    //var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * shadow; // BEFORE SHADOWS LIGHT UP FIX
-var finalShadow = shadow;
+    let shadowFadeStart = 0.15;
+    let shadowFadeEnd   = 0.5;
 
-if (pointLightMask > 0.3) {
-    finalShadow = 1.0;
-}
-var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * finalShadow;
+    // 0 = no light, 1 = strong light
+    let shadowErase = smoothstep(shadowFadeStart, shadowFadeEnd, pointLightMask);
+    let finalShadow = mix(shadow, 1.0, shadowErase);
+    
+    var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * finalShadow;
 
     output.color = vec4f(color, materialColor.a); // color + shadows + removing of shadows
 

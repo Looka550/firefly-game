@@ -1,7 +1,7 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { Engine, getGlobalModelMatrix } from "./SceneUtils.js";
+import { Engine, getGlobalModelMatrix, getLocalModelMatrix } from "./SceneUtils.js";
 import { sampler, blankTextureView } from "./main.js";
 import { physics } from "./main.js";
 import { quat, mat4, vec3 } from './glm.js';
@@ -63,13 +63,14 @@ export class BoxCollider extends GameObject{
         this.localMax = vec3.clone(this.mesh.localMax);
 
         const parentMatrix = getGlobalModelMatrix(this.gameObject);
+        const colMatrix = getLocalModelMatrix(this);
 
-        const scaleMatrix = mat4.create();
-        mat4.fromScaling(scaleMatrix, this.scale);
+        //const scaleMatrix = mat4.create();
+        //mat4.fromScaling(scaleMatrix, this.scale);
 
         // combine parent matrix with collider
         const modelMatrix = mat4.create();
-        mat4.multiply(modelMatrix, parentMatrix, scaleMatrix);
+        mat4.multiply(modelMatrix, parentMatrix, colMatrix);
 
         const corners = [
             [this.localMin[0], this.localMin[1], this.localMin[2]],

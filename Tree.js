@@ -2,7 +2,7 @@ import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { Engine } from "./SceneUtils.js";
-import { sampler, blankTextureView } from "./main.js";
+import { sampler, blankTextureView, globalDebugMode } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -46,22 +46,22 @@ export class Tree extends GameObject {
 
         // NORTH BORDER
         const borderN = new GameObject({ translation: [0, 15, 2], texture: this.texture});
-        const colN = new BoxCollider({ scale: [1, 30, 0.2], texture: this.texture, debug: false, dynamic: false, name: "border north", tags: ["border", "north"] });
+        const colN = new BoxCollider({ scale: [1, 30, 0.2], texture: this.texture, debug: globalDebugMode, dynamic: false, name: "border north", tags: ["border", "north"] });
         borderN.addComponent(colN);
         this.addChild(borderN);
         // SOUTH BORDER
         const borderS = new GameObject({ translation: [0, 15, -2], texture: this.texture});
-        const colS = new BoxCollider({ scale: [1, 30, 0.2], texture: this.texture, debug: false, dynamic: false, name: "border south", tags: ["border", "south"] });
+        const colS = new BoxCollider({ scale: [1, 30, 0.2], texture: this.texture, debug: globalDebugMode, dynamic: false, name: "border south", tags: ["border", "south"] });
         borderS.addComponent(colS);
         this.addChild(borderS);
         // EAST BORDER
         const borderE = new GameObject({ translation: [-2, 15, 0], texture: this.texture});
-        const colE = new BoxCollider({ scale: [0.2, 30, 1], texture: this.texture, debug: false, dynamic: false, name: "border east", tags: ["border", "east"] });
+        const colE = new BoxCollider({ scale: [0.2, 30, 1], texture: this.texture, debug: globalDebugMode, dynamic: false, name: "border east", tags: ["border", "east"] });
         borderE.addComponent(colE);
         this.addChild(borderE);
         //WEST BORDER
         const borderW = new GameObject({ translation: [2, 15, 0], texture: this.texture});
-        const colW = new BoxCollider({ scale: [0.2, 30, 1], texture: this.texture, debug: false, dynamic: false, name: "border west", tags: ["border", "west"] });
+        const colW = new BoxCollider({ scale: [0.2, 30, 1], texture: this.texture, debug: globalDebugMode, dynamic: false, name: "border west", tags: ["border", "west"] });
         borderW.addComponent(colW);
         this.addChild(borderW);
     }

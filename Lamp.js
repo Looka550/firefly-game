@@ -2,7 +2,7 @@ import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
 import { Engine, getGlobalModelMatrix, getWorldTranslation } from "./SceneUtils.js";
-import { sampler, blankTextureView, scene, playerWrapper, firefliesCount, animationSpeed } from "./main.js";
+import { sampler, blankTextureView, scene, playerWrapper, firefliesCount, animationSpeed, renderer } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -37,6 +37,7 @@ export class Lamp extends GameObject {
         this.swinging = false;
         this.playerLit = false;
         this.collectedAll = false;
+        this.released = false;
 
         this.originalTransformOn = {
             translation: vec3.fromValues(-4, -5+8, -5-7),
@@ -54,7 +55,7 @@ export class Lamp extends GameObject {
     }
 
     build(){
-        const bottom = new Cylinder({ translation: [0, -0.01, 0], scale: [2, 0.4, 2], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
+        const bottom = new Cylinder({ translation: [0, -0.02, 0], scale: [2, 0.4, 2], euler: [0, 0, 0], texture: this.texture, color: [0.212, 0.208, 0.208, 1] });
         this.addChild(bottom);
         const glass = new Cylinder({ translation: [0, 2.4, 0], scale: [2, 2, 2], euler: [0, 0, 0], texture: this.texture, color: [1, 1, 1, 0.2] });
         glass.transparent = true;
@@ -82,6 +83,7 @@ export class Lamp extends GameObject {
     }
 
     firefliesOut(){
+        //renderer.swapCamera();
         this.fireflies.forEach(firefly => {
             let transformA = new Transform();
             vec3.copy(transformA.translation, firefly.transform.translation);
@@ -109,26 +111,26 @@ export class Lamp extends GameObject {
     }
 
     release(){
-        if(this.swinging || !this.lampOn || !this.collectedAll){
+        if(this.swinging || !this.lampOn){// || !this.collectedAll){
             return;
         }
 
         this.swinging = true;
 
         const transformC = {
-            translation: vec3.fromValues(0, 0+8, 0-7),
+            translation: vec3.fromValues(0, 0, 0),
             rotation: quat.fromEuler(quat.create(), 0, 0, 0),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformA = {
-            translation: vec3.fromValues(2.4, 2.4+8, -0.6-7),
+            translation: vec3.fromValues(2.4, 2.4, -0.6),
             rotation: quat.fromEuler(quat.create(), 27.2, -43, 21),
             scale: vec3.fromValues(1, 1, 1),
         };
 
         const transformB = {
-            translation: vec3.fromValues(2.4, 5.2+8, -0.6-7),
+            translation: vec3.fromValues(2.4, 5.2, -0.6),
             rotation: quat.fromEuler(quat.create(), 52.2, -32, 35.4),
             scale: vec3.fromValues(1, 1, 1),
         };
@@ -145,6 +147,8 @@ export class Lamp extends GameObject {
         });
 
         this.top.addComponent(animator);
+
+        this.released = true;
     }
     
     swing(){

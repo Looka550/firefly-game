@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net, moon, playerCol, assistLight1 } from "./main.js";
+import { lamp, net, moon, playerCol, assistLight1, renderer, secondaryCamera } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -28,7 +28,6 @@ export function trueGrounded(){
 
 
 export function testConfig(){
-    return;
     if(keys["v"]){
         lamp.swing();
     }
@@ -38,6 +37,10 @@ export function testConfig(){
     if(keys["c"]){
         lamp.release();
     }
+    //if(keys["t"]){
+    //    renderer.swapCamera();
+    //}
+    return;
     if(keys["u"]){
         assistLight1.move({x: 0.2});
     }
@@ -60,6 +63,51 @@ export function testConfig(){
 }
 
 export function rotateConfig(){
+    if(keys["1"]){
+        if(keys["u"]){
+            secondaryCamera.move({x: 0.2});
+        }
+        if(keys["j"]){
+            secondaryCamera.move({x: -0.2});
+        }
+        if(keys["i"]){
+            secondaryCamera.move({y: 0.2});
+        }
+        if(keys["k"]){
+            secondaryCamera.move({y: -0.2});
+        }
+        if(keys["o"]){
+            secondaryCamera.move({z: 0.2});
+        }
+        if(keys["l"]){
+            secondaryCamera.move({z: -0.2});
+        }
+    }
+    else{
+        if(keys["u"]){
+            secondaryCamera.rotate({x: 0.4});
+        }
+        if(keys["j"]){
+            secondaryCamera.rotate({x: -0.4});
+        }
+        if(keys["i"]){
+            secondaryCamera.rotate({y: 0.4});
+        }
+        if(keys["k"]){
+            secondaryCamera.rotate({y: -0.4});
+        }
+        if(keys["o"]){
+            secondaryCamera.rotate({z: 0.4});
+        }
+        if(keys["l"]){
+            secondaryCamera.rotate({z: -0.4});
+        }
+    }
+    console.log("sec cam: " + secondaryCamera.transform.translation + " , " + secondaryCamera.transform.getEuler());
+}
+
+/*
+export function rotateConfig(){
     if(keys["u"]){
         playerCol.move({x: 0.2});
     }
@@ -81,7 +129,7 @@ export function rotateConfig(){
     console.log("playerCol: " + playerCol.transform.translation);
 }
 
-
+*/
 export function lightConfig(){
     return;
     if(keys["u"]){

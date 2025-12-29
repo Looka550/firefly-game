@@ -1,7 +1,7 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { sampler, blankTextureView, scene, playerWrapper, animationSpeed } from "./main.js";
+import { sampler, blankTextureView, scene, playerWrapper, animationSpeed, renderer } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
@@ -153,6 +153,7 @@ export class Firefly extends GameObject {
         else if(this.stage == 3){
             this.destroyed = true;
             scene.removeChild(this);
+            renderer.swapCamera();
         }
         else{
             console.log("unknown stage: " + this.stage);

@@ -100,13 +100,10 @@ camera.addComponent({
     }
 })
 
-const secondaryCamera = new Node();
+export const secondaryCamera = new GameObject({ translation: [-400, 89, -31], euler: [0.4, -90, 0]});
 secondaryCamera.addComponent(new Camera());
-secondaryCamera.addComponent(new Transform({
-    translation: [0, 13, 2]
-}));
 
-const renderer = new Renderer(device, scene, context, camera, module, format, canvas, secondaryCamera);
+export const renderer = new Renderer(device, scene, context, camera, module, format, canvas, secondaryCamera);
 
 const ambientLight = new GameObject({name: "Ambient Light"});
 ambientLight.addComponent(new Light({
@@ -179,7 +176,7 @@ scene.addChild(borderW);
 
 const player = new GameObject({translation: [0, 0, 0]});
 player.addChild(camera);
-player.addChild(secondaryCamera);
+scene.addChild(secondaryCamera);
 
 export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 playerWrapper.addComponent(playerCol);

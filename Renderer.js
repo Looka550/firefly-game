@@ -439,4 +439,10 @@ export class Renderer{
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
     }
+
+    swapCamera(){
+        if(this.currentCamera == this.mainCamera){
+            this.currentCamera = this.secondaryCamera;
+        }
+    }
 }

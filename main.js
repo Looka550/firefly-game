@@ -100,6 +100,7 @@ camera.addComponent({
     }
 })
 
+
 export const secondaryCamera = new GameObject({ translation: [-368, 46, -35], euler: [174, -90, -180]});
 secondaryCamera.addComponent(new Camera());
 
@@ -174,15 +175,19 @@ const colW = new BoxCollider({ scale: [1, 30, 205], texture: blankTexture, debug
 borderW.addComponent(colW);
 scene.addChild(borderW);
 
-const player = new GameObject({translation: [0, 0, 0]});
+export const player = new GameObject({translation: [0, 0, 0]});
 player.addChild(camera);
 scene.addChild(secondaryCamera);
+
+//console.log("spawned particle at: translation - " + playerWrapper.transform.translation + ", euler - " + player.transform.getEuler());
+export const particle = new Cube({ texture: blankTexture, translation: [0, 0, -9]});
+player.addChild(particle);
 
 export const playerCol = new BoxCollider({ translation: [0, 0, 0], scale: [1, 3, 1], texture: blankTexture, debug: true, dynamic: false, name: "player", gravity: false });
 playerWrapper.addComponent(playerCol);
 
 
-const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: leavesTexture, trunkTexture: trunkTexture, fireflyTexture: blankTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [0, -25], [0, 27], [0, 81.5], [6, 200]]});
+export const generator = new WorldGenerator({ texture: blankTexture, leavesTexture: leavesTexture, trunkTexture: trunkTexture, fireflyTexture: blankTexture, particleTexture: moonTexture, minX: -310, maxX: 280, minZ: -200, maxZ: 200, checkpoints: [[14, -84], [0, -25], [0, 27], [0, 81.5], [6, 200]]});
 generator.generateTrees(treesCount, 20);
 generator.generateFireflies(firefliesCount, 5, 5);
 

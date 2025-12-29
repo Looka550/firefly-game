@@ -1,7 +1,7 @@
 import { Transform } from './Transform.js';
 import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
-import { lamp, net, moon, playerCol, assistLight1, renderer, secondaryCamera } from "./main.js";
+import { lamp, net, moon, playerCol, assistLight1, renderer, secondaryCamera, generator, particle } from "./main.js";
 const keys = {};
 let mouseMove = [0, 0];
 let oldAvg = 1;
@@ -18,6 +18,7 @@ let yaw = 0, pitch = 0;
 // gravity
 let verticalVelocity = 0;
 let grounded = true;
+let groundedBefore = true;
 const gravity = -0.015;
 const jumpVelocity = 0.35;
 
@@ -39,6 +40,9 @@ export function testConfig(){
     }
     if(keys["t"]){
         renderer.swapCamera();
+    }
+    if(keys["r"]){
+        generator.spawnParticle();
     }
     return;
     if(keys["u"]){
@@ -65,45 +69,45 @@ export function testConfig(){
 export function rotateConfig(){
     if(keys["1"]){
         if(keys["u"]){
-            secondaryCamera.move({x: 0.2});
+            particle.move({x: 0.2});
         }
         if(keys["j"]){
-            secondaryCamera.move({x: -0.2});
+            particle.move({x: -0.2});
         }
         if(keys["i"]){
-            secondaryCamera.move({y: 0.2});
+            particle.move({y: 0.2});
         }
         if(keys["k"]){
-            secondaryCamera.move({y: -0.2});
+            particle.move({y: -0.2});
         }
         if(keys["o"]){
-            secondaryCamera.move({z: 0.2});
+            particle.move({z: 0.2});
         }
         if(keys["l"]){
-            secondaryCamera.move({z: -0.2});
+            particle.move({z: -0.2});
         }
     }
     else{
         if(keys["u"]){
-            secondaryCamera.rotate({x: 0.4});
+            particle.rotate({x: 0.4});
         }
         if(keys["j"]){
-            secondaryCamera.rotate({x: -0.4});
+            particle.rotate({x: -0.4});
         }
         if(keys["i"]){
-            secondaryCamera.rotate({y: 0.4});
+            particle.rotate({y: 0.4});
         }
         if(keys["k"]){
-            secondaryCamera.rotate({y: -0.4});
+            particle.rotate({y: -0.4});
         }
         if(keys["o"]){
-            secondaryCamera.rotate({z: 0.4});
+            particle.rotate({z: 0.4});
         }
         if(keys["l"]){
-            secondaryCamera.rotate({z: -0.4});
+            particle.rotate({z: -0.4});
         }
     }
-    console.log("sec cam: " + secondaryCamera.transform.translation + " , " + secondaryCamera.transform.getEuler());
+    //console.log("particle: " + particle.transform.translation + " , " + particle.transform.getEuler());
 }
 
 /*
@@ -267,6 +271,10 @@ export function parseInput(playerWrapper, player, flight = false, dt = 1 / 60){
     const right   = getRight(yaw);
     let move = [0, 0, 0];
 
+    if(!groundedBefore && grounded){
+        generator.spawnParticle();
+    }
+
     // movement
     if(keys["w"]){
         move[0] += forward[0];
@@ -343,6 +351,6 @@ export function parseInput(playerWrapper, player, flight = false, dt = 1 / 60){
     quat.rotateY(transform.rotation, transform.rotation, yaw);
     quat.rotateX(transform.rotation, transform.rotation, pitch);
 
-
+    groundedBefore = grounded;
     mouseMove = [0, 0];
 }

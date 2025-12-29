@@ -1,11 +1,11 @@
 import { GameObject } from "./GameObject.js";
 import { Transform } from './Transform.js';
 import { Mesh } from './Mesh.js';
-import { sampler, blankTextureView, scene } from "./main.js";
+import { sampler, blankTextureView, scene, player, playerWrapper } from "./main.js";
 import { Sphere } from "./Sphere.js";
 import { Cube } from "./Cube.js";
 import { LinearAnimator } from "./webgpu/engine/animators/LinearAnimator.js";
-import { quat, vec3 } from "./glm.js";
+import { quat, vec3, mat4 } from "./glm.js";
 import { RotateAroundPointAnimator } from "./RotateAroundPointAnimator.js";
 import { BoxCollider } from "./BoxCollider.js";
 import { Light } from "./Light.js";
@@ -28,7 +28,8 @@ export class WorldGenerator extends GameObject {
         checkpoints = [],
         leavesTexture,
         trunkTexture,
-        fireflyTexture
+        fireflyTexture,
+        particleTexture
     } = {}){
         super({
             euler,
@@ -46,6 +47,7 @@ export class WorldGenerator extends GameObject {
         this.leavesTexture = leavesTexture;
         this.trunkTexture = trunkTexture;
         this.fireflyTexture = fireflyTexture;
+        this.particleTexture = particleTexture;
 
         this.trees = [];
         this.fireflies = [];
@@ -91,6 +93,43 @@ export class WorldGenerator extends GameObject {
             const treeObject = new Tree({trunkTexture: this.trunkTexture, leavesTexture: this.leavesTexture, texture: this.texture, scale: [1, 1, 1], translation: [x, y, z], leavesColor: leavesColor, leaves: leaves});
             scene.addChild(treeObject);
 
+        }
+    }
+
+    spawnParticle(){
+        const playerMatrix = getGlobalModelMatrix(player);
+
+        const t = vec3.create();
+        const r = quat.create();
+        const s = vec3.create();
+
+        mat4.getTranslation(t, playerMatrix);
+        mat4.getRotation(r, playerMatrix);
+        mat4.getScaling(s, playerMatrix);
+
+        //particle.translation = [t[0], t[1] + 5, t[2]];
+        //particle.rotation = r;
+        //particle.scale = s;5
+
+        for(let i = -1; i <= 1; i += 2){
+            for(let j = -1; j <= 1; j += 2){
+                const particle = new Cube({ texture: this.particleTexture, color: [0.306, 0.459, 0.314, 0.8], translation: [t[0] - i * 2, t[1], t[2] - j * 2], scale: [0.5 + i / 4, 1, 0.5 + i / 4]});
+                scene.addChild(particle);
+
+                particle.addComponent({
+                    update(dt){
+                        const velocity = -0.05;
+
+                        particle.move({y: velocity});
+
+                        if(particle.transform.translation[1] < -18){
+                            particle.destroyed = true;
+                            scene.removeChild(particle);
+                            particle.dontRender = true;
+                        }
+                    }
+                });
+            }
         }
     }
 

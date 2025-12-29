@@ -199,8 +199,21 @@ fn fragment(input: VertexOutput) -> FragmentOutput{
     // 0 = no light, 1 = strong light
     let shadowErase = smoothstep(shadowFadeStart, shadowFadeEnd, pointLightMask);
     let finalShadow = mix(shadow, 1.0, shadowErase);
-    
+
     var color = materialColor.rgb * (diffuseSum + specularSum + ambientSum) * finalShadow;
+
+    // fog
+
+    let fogColor = vec3f(0.165, 0.161, 0.2);
+    let fogDensity = 0.01;
+
+    // dist from camera
+    let viewDistance = distance(camera.position, input.position);
+
+    let fogFactor = exp(-viewDistance * fogDensity);
+    let fog = clamp(fogFactor, 0.0, 1.0);
+
+    color = mix(fogColor, color, fog);
 
     output.color = vec4f(color, materialColor.a); // color + shadows + removing of shadows
 

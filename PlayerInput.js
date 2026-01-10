@@ -3,6 +3,10 @@ import { getForward, getRight } from './SceneUtils.js';
 import { quat } from './glm.js';
 import { lamp, net, moon, playerCol, assistLight1, renderer, secondaryCamera, generator, particle } from "./main.js";
 const keys = {};
+const mouseButtons = {
+    left: false,
+    right: false
+};
 let mouseMove = [0, 0];
 let oldAvg = 1;
 
@@ -28,214 +32,45 @@ export function trueGrounded(){
 }
 
 
-export function testConfig(){
-    if(keys["v"]){
-        lamp.swing();
+export function getActions(){
+    if(mouseButtons.right){
+        if(lamp.collectedAll && lamp.lampOn){
+            lamp.release();
+        }
+        else{
+            lamp.swing();
+        }
     }
-    if(keys["b"]){
+    if(mouseButtons.left){
         net.swing();
     }
-    if(keys["c"]){
-        lamp.release();
-    }
-    if(keys["t"]){
-        renderer.swapCamera();
-    }
-    if(keys["r"]){
-        generator.spawnParticle();
-    }
-    return;
-    if(keys["u"]){
-        assistLight1.move({x: 0.2});
-    }
-    if(keys["j"]){
-        assistLight1.move({x: -0.2});
-    }
-    if(keys["i"]){
-        assistLight1.move({y: 0.2});
-    }
-    if(keys["k"]){
-        assistLight1.move({y: -0.2});
-    }
-    if(keys["o"]){
-        assistLight1.move({z: 0.2});
-    }
-    if(keys["l"]){
-        assistLight1.move({z: -0.2});
-    }
-    console.log("move: " + assistLight1.transform.translation);
-}
-
-export function rotateConfig(){
-    if(keys["1"]){
-        if(keys["u"]){
-            particle.move({x: 0.2});
-        }
-        if(keys["j"]){
-            particle.move({x: -0.2});
-        }
-        if(keys["i"]){
-            particle.move({y: 0.2});
-        }
-        if(keys["k"]){
-            particle.move({y: -0.2});
-        }
-        if(keys["o"]){
-            particle.move({z: 0.2});
-        }
-        if(keys["l"]){
-            particle.move({z: -0.2});
-        }
-    }
-    else{
-        if(keys["u"]){
-            particle.rotate({x: 0.4});
-        }
-        if(keys["j"]){
-            particle.rotate({x: -0.4});
-        }
-        if(keys["i"]){
-            particle.rotate({y: 0.4});
-        }
-        if(keys["k"]){
-            particle.rotate({y: -0.4});
-        }
-        if(keys["o"]){
-            particle.rotate({z: 0.4});
-        }
-        if(keys["l"]){
-            particle.rotate({z: -0.4});
-        }
-    }
-    //console.log("particle: " + particle.transform.translation + " , " + particle.transform.getEuler());
-}
-
-/*
-export function rotateConfig(){
-    if(keys["u"]){
-        playerCol.move({x: 0.2});
-    }
-    if(keys["j"]){
-        playerCol.move({x: -0.2});
-    }
-    if(keys["i"]){
-        playerCol.move({y: 0.2});
-    }
-    if(keys["k"]){
-        playerCol.move({y: -0.2});
-    }
-    if(keys["o"]){
-        playerCol.move({z: 0.2});
-    }
-    if(keys["l"]){
-        playerCol.move({z: -0.2});
-    }
-    console.log("playerCol: " + playerCol.transform.translation);
-}
-
-*/
-export function lightConfig(){
-    return;
-    if(keys["u"]){
-        lightY += 0.2;
-    }
-    if(keys["j"]){
-        lightY -= 0.2;
-    }
-    if(keys["i"]){
-        near += 0.2;
-    }
-    if(keys["k"]){
-        near -= 0.2;
-    }
-    if(keys["o"]){
-        far += 0.2;
-    }
-    if(keys["l"]){
-        far -= 0.2;
-    }
-    console.log(lightY + " : " + near + " : " + far);
-}
-
-export function netConfig(){
-    return;
-    let change = 0;
-    if(keys["5"]){
-        net.swing();
-    }
-    if(keys["r"]){
-        lamp.swing();
-    }
-    if(keys["e"]){
-        lamp.release();
-    }
-    if(keys["t"]){
-        change = 0.2;
-        if(keys["u"]){
-            lamp.top.move({x: change});
-        }
-        if(keys["i"]){
-            lamp.top.move({y: change});
-        }
-        if(keys["o"]){
-            lamp.top.move({z: change});
-        }
-        if(keys["j"]){
-            lamp.top.rotate({x: change});
-        }
-        if(keys["k"]){
-            lamp.top.rotate({y: change});
-        }
-        if(keys["l"]){
-            lamp.top.rotate({z: change});
-        }
-        if(keys["b"]){
-            lamp.top.rescale({x: change});
-        }
-        if(keys["n"]){
-            lamp.top.rescale({y: change});
-        }
-        if(keys["m"]){
-            lamp.top.rescale({z: change});
-        }
-    }
-    else{
-        change = -0.2;
-        if(keys["u"]){
-            lamp.top.move({x: change});
-        }
-        if(keys["i"]){
-            lamp.top.move({y: change});
-        }
-        if(keys["o"]){
-            lamp.top.move({z: change});
-        }
-        if(keys["j"]){
-            lamp.top.rotate({x: change});
-        }
-        if(keys["k"]){
-            lamp.top.rotate({y: change});
-        }
-        if(keys["l"]){
-            lamp.top.rotate({z: change});
-        }
-        if(keys["b"]){
-            lamp.top.rescale({x: change});
-        }
-        if(keys["n"]){
-            lamp.top.rescale({y: change});
-        }
-        if(keys["m"]){
-            lamp.top.rescale({z: change});
-        }
-    }
-    //console.log("translation: " + lamp.top.transform.translation + ", rotation: " + lamp.top.transform.getEuler() + ", scale: " + lamp.top.transform.scale);
 }
 
 
 export function initInput(canvas){
     document.addEventListener("keydown", (e) => keys[e.key.toLowerCase()] = true);
     document.addEventListener("keyup", (e) => keys[e.key.toLowerCase()] = false);
+
+    canvas.addEventListener("mousedown", (e) => {
+        if(e.button === 0){
+            mouseButtons.left = true;
+        }
+        if(e.button === 2){
+            mouseButtons.right = true;
+        }
+    });
+
+    canvas.addEventListener("mouseup", (e) => {
+        if(e.button === 0){
+            mouseButtons.left = false;
+        }
+        if(e.button === 2){
+            mouseButtons.right = false;
+        }
+    });
+
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
     canvas.addEventListener("mousemove", (e) => {
         if(document.pointerLockElement !== canvas){
             return;

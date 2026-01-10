@@ -29,8 +29,7 @@ import { Net } from "./Net.js";
 import { Lamp } from './Lamp.js';
 import { Renderer } from './Renderer.js';
 import { WorldGenerator } from './WorldGenerator.js';
-import { trueGrounded } from './PlayerInput.js';
-import { netConfig, lightConfig, rotateConfig, testConfig } from './PlayerInput.js';
+import { trueGrounded, getActions } from './PlayerInput.js';
 
 // Initialize WebGPU
 const adapter = await navigator.gpu.requestAdapter();
@@ -79,7 +78,7 @@ export let animationSpeed = 1;
 
 // PARAMETERS
 const ambient = 0.05;
-export const firefliesCount = 8;
+export const firefliesCount = 2;
 const treesCount = 40;
 export const globalDebugMode = false;
 
@@ -113,10 +112,11 @@ ambientLight.addComponent(new Light({
 }));
 scene.addChild(ambientLight);
 
-export const moon = new Sphere({ translation: [0, 400, 0], scale: [50, 50, 50], euler: [90, 0, 0], texture: moonTexture, normalTexture: moonNormal, color: [0.251, 0.208, 0.208, 1]});
+const moonY = 100;
+export const moon = new Sphere({ translation: [0, 400 - moonY, 0], scale: [50, 50, 50], euler: [90, 0, 0], texture: moonTexture, normalTexture: moonNormal, color: [0.251, 0.208, 0.208, 1]});
 scene.addChild(moon);
 
-const moonAssistPositions = [[0, 335, 0], [0, 335, -40]];
+const moonAssistPositions = [[0, 335 - moonY, 0], [0, 335 - moonY, -40]];
 for(let i = 0; i < moonAssistPositions.length; i++){
     const moonAssist = new GameObject({name: "Moon Assist Light"});
     moonAssist.addComponent(new Transform({
@@ -261,10 +261,7 @@ playerWrapper.addChild(assistLight1);
 */
 player.addComponent({
     update(){
-        testConfig();
-        rotateConfig();
-        netConfig();
-        lightConfig();
+        getActions();
     }
 });
 

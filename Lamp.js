@@ -111,7 +111,7 @@ export class Lamp extends GameObject {
     }
 
     release(){
-        if(this.swinging || !this.lampOn){// || !this.collectedAll){
+        if(this.swinging || !this.lampOn || !this.collectedAll){
             return;
         }
 

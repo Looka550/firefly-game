@@ -31,7 +31,7 @@ export class Sphere extends GameObject {
         });
     }
 
-    createMesh(n_slices = 32, n_stacks = 16){ // https://danielsieger.com/blog/2021/03/27/generating-spheres.html
+    createMesh(n_slices = 32, n_stacks = 16){ // basic uv sphere algoritem (brez optimizacij)
         const vertices = [];
         const indices = [];
 
@@ -104,8 +104,7 @@ export class Sphere extends GameObject {
                 const i1 = j0 + (i + 1) % n_slices;
                 const i2 = j1 + (i + 1) % n_slices;
                 const i3 = j1 + i;
-                
-                // add quad
+
                 indices.push(i0, i1, i2);
                 indices.push(i0, i2, i3);
             }

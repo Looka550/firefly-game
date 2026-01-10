@@ -118,9 +118,9 @@ export class WorldGenerator extends GameObject {
 
                 particle.addComponent({
                     update(dt){
-                        const velocity = -0.05;
+                        const gravity = -0.05;
 
-                        particle.move({y: velocity});
+                        particle.move({y: gravity});
 
                         if(particle.transform.translation[1] < -18){
                             particle.destroyed = true;

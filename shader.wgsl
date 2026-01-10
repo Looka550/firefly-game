@@ -69,62 +69,6 @@ fn vertex(input: VertexInput) -> VertexOutput{
 
     return output;
 }
-/*
-@fragment
-fn fragment(input: VertexOutput) -> FragmentOutput {
-    var output: FragmentOutput;
-
-    _ = modelMatrix;
-    _ = viewProjMatrix;
-    _ = baseTexture;
-    _ = baseSampler;
-    _ = normalMatrix;
-    _ = normalSampler;
-    _ = normalTexture;
-    _ = hasNormalMap;
-    _ = shadowMap;
-    _ = shadowSampler;
-    _ = lightViewProj;
-    _ = lightsBlock;
-    _ = camera;
-
-    let N = normalize(input.normal);
-
-    var lightInfluence: f32 = 0.0;
-
-    for (var i: u32 = 0u; i < lightsBlock.lightCount; i = i + 1u) {
-        let light = lightsBlock.lights[i];
-
-        let Lvec = light.position - input.position;
-        let dist = length(Lvec);
-
-        // Avoid NaNs
-        if (dist <= 0.0001) {
-            continue;
-        }
-
-        let L = Lvec / dist;
-
-        // Lambert term (NO clamp to 0 yet)
-        let lambert = max(dot(N, L), 0.0);
-
-        // Standard quadratic attenuation
-        let attenuation = 1.0 / (1.0 + light.attenuation * dist * dist);
-
-        // Contribution from this light
-        let contribution = lambert * attenuation * light.intensity;
-
-        lightInfluence += contribution;
-    }
-
-    // Normalize / clamp so it becomes a mask
-    let mask = clamp(lightInfluence, 0.0, 1.0);
-
-    output.color = vec4f(mask, mask, mask, 1.0);
-    return output;
-}
-*/
-
 
 @fragment
 fn fragment(input: VertexOutput) -> FragmentOutput{
